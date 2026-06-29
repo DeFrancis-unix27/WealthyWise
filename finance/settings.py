@@ -307,12 +307,10 @@ else:
     CELERY_BROKER_URL = "memory://"
     CELERY_RESULT_BACKEND = "cache+memory://"
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
-SESSION_CACHE_ALIAS = "default"
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 if "migrate" in sys.argv or "makemigrations" in sys.argv:
     CACHES["default"] = {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}
-    SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 if "test" in sys.argv:
     DATABASES["default"] = {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}
