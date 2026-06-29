@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "crispy_forms",
     "crispy_bootstrap5",
-    "bootstrap5",
+    "django_bootstrap5",
     "whitenoise.runserver_nostatic",
     # 2FA / OTP
     "django_otp",
