@@ -4,35 +4,11 @@
 {% block title %}Linked Banks - WealthPoint{% endblock %}
 
 {% block content %}
-<style>
-  .bank-container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
-  .bank-header { margin-bottom: 2rem; }
-  .bank-header h1 { font-size: 1.75rem; font-weight: 700; margin: 0; }
-  .bank-header p { color: var(--text-secondary); margin: 0.25rem 0 0 0; }
-  .provider-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-  .provider-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; }
-  .provider-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
-  .provider-card .icon { font-size: 2rem; margin-bottom: 0.75rem; }
-  .provider-card h3 { font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem 0; }
-  .provider-card p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
-  .bank-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
-  .bank-info h3 { font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem 0; }
-  .bank-info p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
-  .bank-status { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
-  .bank-status.active { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-  .bank-status.revoked { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-  .bank-status.expired { background: rgba(234, 179, 8, 0.15); color: #eab308; }
-  .bank-actions { display: flex; gap: 0.5rem; align-items: center; }
-  .btn-bank { padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary); cursor: pointer; transition: all 0.2s; font-size: 0.85rem; text-decoration: none; }
-  .btn-bank:hover { border-color: var(--accent-color); }
-  .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
-  .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
-</style>
 
-<div class="bank-container">
-  <div class="bank-header">
-    <h1>Linked Banks</h1>
-    <p>Connect your bank accounts to automatically sync transactions</p>
+<div class="page-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Linked Banks</h1>
+    <p class="page-subtitle">Connect your bank accounts to automatically sync transactions</p>
   </div>
 
   {% if messages %}
@@ -42,11 +18,11 @@
   {% endif %}
 
   {% if providers %}
-    <h2 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Connect a new bank</h2>
-    <div class="provider-grid">
+    <h2 class="section-title">Connect a new bank</h2>
+    <div class="grid-4">
       {% for provider in providers %}
-        <a href="{% url 'link_bank' provider=provider.provider %}" class="provider-card" style="text-decoration: none; color: inherit;">
-          <div class="icon">
+        <a href="{% url 'link_bank' provider=provider.provider %}" class="glass-card fade-in delay-{{ forloop.counter }}" data-tilt style="text-align:center;text-decoration:none;color:inherit;">
+          <div class="mb-1" style="font-size:2rem;">
             {% if provider.provider == "mono" %}
               <i class="fas fa-university"></i>
             {% elif provider.provider == "plaid" %}
@@ -55,37 +31,37 @@
               <i class="fas fa-globe"></i>
             {% endif %}
           </div>
-          <h3>{{ provider.get_provider_display }}</h3>
-          <p>{{ provider.environment|title }} environment</p>
+          <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ provider.get_provider_display }}</h3>
+          <p class="text-sm text-muted" style="margin:0;">{{ provider.environment|title }} environment</p>
         </a>
       {% endfor %}
     </div>
   {% endif %}
 
-  <h2 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Your linked banks</h2>
+  <h2 class="section-title">Your linked banks</h2>
 
   {% if linked_banks %}
     {% for bank in linked_banks %}
-      <div class="bank-card">
+      <div class="glass-card-sm mb-1 flex-between fade-in delay-{{ forloop.counter }}" data-tilt>
         <div class="bank-info">
-          <h3>{{ bank.institution_name|default:"Bank Account" }}</h3>
-          <p>{{ bank.account_name }} · {{ bank.account_number }} · {{ bank.currency }}</p>
-          <p style="margin-top: 0.25rem;">
-            <span class="bank-status {{ bank.status }}">{{ bank.status }}</span>
+          <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ bank.institution_name|default:"Bank Account" }}</h3>
+          <p class="text-sm text-muted" style="margin:0;">{{ bank.account_name }} · {{ bank.account_number }} · {{ bank.currency }}</p>
+          <p class="mt-1">
+            <span class="badge badge-{{ bank.status }}">{{ bank.status }}</span>
             {% if bank.last_sync_at %}
-              <span style="margin-left: 0.5rem;">Last sync: {{ bank.last_sync_at|timesince }} ago</span>
+              <span class="text-xs text-muted" style="margin-left:0.5rem;">Last sync: {{ bank.last_sync_at|timesince }} ago</span>
             {% endif %}
           </p>
         </div>
-        <div class="bank-actions">
+        <div class="bank-actions" style="display:flex;gap:0.5rem;align-items:center;">
           {% if bank.status == "active" %}
             <form method="post" action="{% url 'sync_bank' bank.id %}" style="display:inline;">
               {% csrf_token %}
-              <button type="submit" class="btn-bank"><i class="fas fa-sync"></i> Sync</button>
+              <button type="submit" class="btn-glass"><i class="fas fa-sync"></i> Sync</button>
             </form>
             <form method="post" action="{% url 'unlink_bank' bank.id %}" style="display:inline;" onsubmit="return confirm('Unlink this bank?')">
               {% csrf_token %}
-              <button type="submit" class="btn-bank" style="color: #ef4444;"><i class="fas fa-unlink"></i> Unlink</button>
+              <button type="submit" class="btn-glass" style="color: #ef4444;"><i class="fas fa-unlink"></i> Unlink</button>
             </form>
           {% endif %}
         </div>

@@ -1,299 +1,36 @@
 {% extends 'layout.html' %}
 {% block content %}
 {% load static %}
-<style>
-        .faq-container {
-       max-width: 1000px; 
-        margin: 0 auto;
-        padding: 2rem;
-        background: var(--card);
-        border-radius: var(--radius);
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow);
-    }
-
-    .faq-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .faq-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1rem;
-    }
-
-    .faq-subtitle {
-        color: var(--muted);
-        font-size: 1.1rem;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .search-container {
-        margin-bottom: 2rem;
-        position: relative;
-    }
-
-    .search-input {
-        width: 100%;
-        padding: 1rem 1.5rem;
-        padding-left: 3rem;
-        background: var(--panel);
-        border: 2px solid var(--border);
-        border-radius: 50px;
-        color: var(--text);
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .search-input:focus {
-        outline: none;
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 1.2rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--muted);
-    }
-
-    .faq-categories {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-    }
-
-    .category-btn {
-        padding: 0.75rem 1.5rem;
-        background: var(--panel);
-        border: 2px solid var(--border);
-        border-radius: 50px;
-        color: var(--text);
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        white-space: nowrap;
-    }
-
-    .category-btn:hover,
-    .category-btn.active {
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        border-color: transparent;
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    .faq-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .faq-item {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .faq-item:hover {
-        border-color: var(--accent);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow);
-    }
-
-    .faq-question {
-        padding: 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        font-weight: 600;
-        color: var(--text);
-    }
-
-    .faq-question:hover {
-        color: var(--accent);
-    }
-
-    .faq-icon {
-        transition: transform 0.3s ease;
-        color: var(--muted);
-    }
-
-    .faq-item.active .faq-icon {
-        transform: rotate(180deg);
-        color: var(--accent);
-    }
-
-    .faq-answer {
-        padding: 0 1.5rem;
-        max-height: 0;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        color: var(--muted);
-        line-height: 1.6;
-    }
-
-    .faq-item.active .faq-answer {
-        padding: 0 1.5rem 1.5rem 1.5rem;
-        max-height: 500px;
-    }
-
-    .faq-answer-content {
-        padding: 1rem 0;
-        border-top: 1px solid var(--border);
-    }
-
-    .contact-section {
-        margin-top: 3rem;
-        padding: 2rem;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        border-radius: var(--radius);
-        color: white;
-        text-align: center;
-    }
-
-    .contact-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    .contact-text {
-        margin-bottom: 1.5rem;
-        opacity: 0.9;
-    }
-
-    .contact-btn {
-        background: white;
-        color: var(--accent);
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .contact-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .no-results {
-        text-align: center;
-        padding: 2rem;
-        color: var(--muted);
-        display: none;
-    }
-
-    /* Animation for FAQ items */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .faq-item {
-        animation: fadeIn 0.3s ease-out;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .faq-container {
-            padding: 1rem;
-            margin: 1rem;
-        }
-
-        .faq-title {
-            font-size: 2rem;
-        }
-
-        .faq-categories {
-            gap: 0.5rem;
-        }
-
-        .category-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        .faq-question {
-            padding: 1rem;
-            font-size: 0.95rem;
-        }
-
-        .faq-answer {
-            padding: 0 1rem;
-        }
-
-        .faq-item.active .faq-answer {
-            padding: 0 1rem 1rem 1rem;
-        }
-    }
-
-    /* Dark mode adjustments */
-    [data-theme="dark"] .search-input {
-        background: var(--card);
-    }
-
-    [data-theme="dark"] .category-btn {
-        background: var(--card);
-    }
-
-</style>
-<div class="faq-container">
-    <div class="faq-header">
-        <h1 class="faq-title">Frequently Asked Questions</h1>
-        <p class="faq-subtitle">Find answers to common questions about WealthPoint and how to make the most of your financial management experience.</p>
+<div class="page-wrap">
+    <div class="page-header" style="text-align:center;">
+        <h1 class="page-title" style="font-size:2.5rem;">Frequently Asked Questions</h1>
+        <p class="page-subtitle" style="font-size:1.1rem;max-width:600px;margin:0 auto;">Find answers to common questions about WealthPoint and how to make the most of your financial management experience.</p>
     </div>
 
-    <div class="search-container">
-        <i class="fas fa-search search-icon"></i>
-        <input type="text" class="search-input" placeholder="Search for questions or topics..." id="faqSearch">
+    <div class="glass-card mb-3" data-tilt>
+        <div style="position:relative;">
+            <i class="fas fa-search" style="position:absolute;left:1.2rem;top:50%;transform:translateY(-50%);color:var(--muted);"></i>
+            <input type="text" class="form-input" style="padding-left:3rem;border-radius:50px;" placeholder="Search for questions or topics..." id="faqSearch">
+        </div>
     </div>
 
-    <div class="faq-categories">
-        <button class="category-btn active" data-category="all">All Questions</button>
-        <button class="category-btn" data-category="account">Account & Security</button>
-        <button class="category-btn" data-category="transactions">Transactions</button>
-        <button class="category-btn" data-category="features">Features
-            <!-- <blockquote style="color: aqua;">Coming soon</blockquote> -->
-        </button>
-        <button class="category-btn" data-category="billing">Billing & Plans <br>
-            <!-- <blockquote style="color: aqua;">Coming soon</blockquote> -->
-        </button>
-        <button class="category-btn" data-category="technical">Technical
-            <!-- <blockquote style="color: aqua;">Coming soon</blockquote> -->
-        </button>
+    <div class="filter-bar mb-3">
+        <a class="filter-link active" data-category="all">All Questions</a>
+        <a class="filter-link" data-category="account">Account & Security</a>
+        <a class="filter-link" data-category="transactions">Transactions</a>
+        <a class="filter-link" data-category="features">Features</a>
+        <a class="filter-link" data-category="billing">Billing & Plans</a>
+        <a class="filter-link" data-category="technical">Technical</a>
     </div>
 
     <div class="faq-list" id="faqList">
-        <!-- Account & Security -->
-        <div class="faq-item" data-categories="account">
-            <div class="faq-question">
+        <div class="glass-card-sm" data-categories="account" style="cursor:pointer;">
+            <div class="faq-header-wrap" style="display:flex;justify-content:space-between;align-items:center;font-weight:600;">
                 <span>How do I create an account on WealthPoint?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
+                <i class="fas fa-chevron-down faq-icon" style="transition:transform 0.3s ease;color:var(--muted);"></i>
             </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
+            <div class="faq-answer-wrap" style="max-height:0;overflow:hidden;transition:all 0.3s ease;color:var(--muted);line-height:1.6;">
+                <div style="padding:1rem 0;border-top:1px solid var(--border);">
                     <p>To create an account on WealthPoint:</p>
                     <ol>
                         <li>Click on the "Sign Up" button on the homepage</li>
@@ -307,13 +44,13 @@
             </div>
         </div>
 
-        <div class="faq-item" data-categories="account">
-            <div class="faq-question">
+        <div class="glass-card-sm" data-categories="account" style="cursor:pointer;">
+            <div class="faq-header-wrap" style="display:flex;justify-content:space-between;align-items:center;font-weight:600;">
                 <span>Is my financial data secure with WealthPoint?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
+                <i class="fas fa-chevron-down faq-icon" style="transition:transform 0.3s ease;color:var(--muted);"></i>
             </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
+            <div class="faq-answer-wrap" style="max-height:0;overflow:hidden;transition:all 0.3s ease;color:var(--muted);line-height:1.6;">
+                <div style="padding:1rem 0;border-top:1px solid var(--border);">
                     <p>Yes, your financial data is extremely secure with WealthPoint. We employ:</p>
                     <ul>
                         <li>Bank-level 256-bit encryption for all data transmission and storage</li>
@@ -327,17 +64,16 @@
             </div>
         </div>
 
-        <div class="faq-item" data-categories="account">
-            <div class="faq-question">
+        <div class="glass-card-sm" data-categories="account" style="cursor:pointer;">
+            <div class="faq-header-wrap" style="display:flex;justify-content:space-between;align-items:center;font-weight:600;">
                 <span>How do I enable two-factor authentication?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
+                <i class="fas fa-chevron-down faq-icon" style="transition:transform 0.3s ease;color:var(--muted);"></i>
             </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
+            <div class="faq-answer-wrap" style="max-height:0;overflow:hidden;transition:all 0.3s ease;color:var(--muted);line-height:1.6;">
+                <div style="padding:1rem 0;border-top:1px solid var(--border);">
                     <p>To enable two-factor authentication (2FA):</p>
                     <ol>
                         <li>Click to your Account Settings from the Sidebar </li>
-                        <!-- <li>Select the "Security" tab</li> -->
                         <li>Click on "Enable Two-Factor Authentication"</li>
                         <li>Scan the QR code with your authenticator app (Google Authenticator, Authy, etc.)</li>
                         <li>Enter the verification code from your authenticator app</li>
@@ -348,14 +84,13 @@
             </div>
         </div>
 
-        <!-- Transactions -->
-        <div class="faq-item" data-categories="transactions">
-            <div class="faq-question">
+        <div class="glass-card-sm" data-categories="transactions" style="cursor:pointer;">
+            <div class="faq-header-wrap" style="display:flex;justify-content:space-between;align-items:center;font-weight:600;">
                 <span>How do I add a transaction manually?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
+                <i class="fas fa-chevron-down faq-icon" style="transition:transform 0.3s ease;color:var(--muted);"></i>
             </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
+            <div class="faq-answer-wrap" style="max-height:0;overflow:hidden;transition:all 0.3s ease;color:var(--muted);line-height:1.6;">
+                <div style="padding:1rem 0;border-top:1px solid var(--border);">
                     <p>To add a transaction manually:</p>
                     <ol>
                         <li>Navigate to the Transactions page from your dashboard</li>
@@ -372,13 +107,13 @@
             </div>
         </div>
 
-        <div class="faq-item" data-categories="transactions">
-            <div class="faq-question">
+        <div class="glass-card-sm" data-categories="transactions" style="cursor:pointer;">
+            <div class="faq-header-wrap" style="display:flex;justify-content:space-between;align-items:center;font-weight:600;">
                 <span>Why isn't my transaction showing up immediately?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
+                <i class="fas fa-chevron-down faq-icon" style="transition:transform 0.3s ease;color:var(--muted);"></i>
             </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
+            <div class="faq-answer-wrap" style="max-height:0;overflow:hidden;transition:all 0.3s ease;color:var(--muted);line-height:1.6;">
+                <div style="padding:1rem 0;border-top:1px solid var(--border);">
                     <p>There are several reasons why transactions might not appear immediately:</p>
                     <ul>
                         <li><strong>Pending transactions:</strong> Most banks show transactions as "pending" for 1-3 business days before they clear</li>
@@ -390,180 +125,18 @@
                 </div>
             </div>
         </div>
-
-        <!-- Features -->
-        <!-- <div class="faq-item" data-categories="features">
-            <div class="faq-question">
-                <span>How does the AI spending analysis work?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
-                    <p>Our AI spending analysis uses machine learning to:</p>
-                    <ul>
-                        <li><strong>Categorize transactions:</strong> Automatically sorts your spending into categories based on merchant patterns</li>
-                        <li><strong>Identify trends:</strong> Detects spending patterns and alerts you to unusual activity</li>
-                        <li><strong>Predict future spending:</strong> Forecasts your cash flow based on historical data</li>
-                        <li><strong>Provide insights:</strong> Offers personalized recommendations to optimize your finances</li>
-                        <li><strong>Detect savings opportunities:</strong> Identifies areas where you could potentially save money</li>
-                    </ul>
-                    <p>The more you use WealthPoint, the smarter our AI becomes at understanding your financial habits and providing valuable insights.</p>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- <div class="faq-item" data-categories="features">
-            <div class="faq-question">
-                <span>Can I set up custom budgeting categories?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
-                    <p>Yes, you can create custom budgeting categories in WealthPoint:</p>
-                    <ol>
-                        <li>Go to the "Budgets" section in your dashboard</li>
-                        <li>Click on "Manage Categories"</li>
-                        <li>Select "Create New Category"</li>
-                        <li>Name your category and choose an icon/color</li>
-                        <li>Set spending limits and alerts if desired</li>
-                        <li>Save your new category</li>
-                    </ol>
-                    <p>You can also assign transactions to your custom categories manually or set rules to automatically categorize future transactions.</p>
-                    <p>Custom categories work alongside our default categories and are included in all reports and analytics.</p>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- Billing & Plans -->
-        <!-- <div class="faq-item" data-categories="billing">
-            <div class="faq-question">
-                <span>What's the difference between free and premium plans?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
-                    <p>WealthPoint offers two main plans:</p>
-                    
-                    <h4>Free Plan</h4>
-                    <ul>
-                        <li>Basic budgeting and expense tracking</li>
-                        <li>Up to 2 connected bank accounts</li>
-                        <li>Manual transaction entry</li>
-                        <li>Standard reports</li>
-                        <li>Email support</li>
-                    </ul>
-                    
-                    <h4>Premium Plan ($9.99/month or $99/year)</h4>
-                    <ul>
-                        <li>Unlimited connected accounts</li>
-                        <li>Advanced AI-powered insights</li>
-                        <li>Automated transaction categorization</li>
-                        <li>Custom categories and tags</li>
-                        <li>Investment tracking</li>
-                        <li>Bill reminders and predictions</li>
-                        <li>Priority support</li>
-                        <li>Data export capabilities</li>
-                        <li>Advanced reporting and analytics</li>
-                    </ul>
-                    
-                    <p>You can upgrade to Premium at any time from your account settings.</p>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- <div class="faq-item" data-categories="billing">
-            <div class="faq-question">
-                <span>How do I cancel my subscription?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
-                    <p>To cancel your Premium subscription:</p>
-                    <ol>
-                        <li>Go to your Account Settings</li>
-                        <li>Select the "Billing" tab</li>
-                        <li>Click on "Manage Subscription"</li>
-                        <li>Select "Cancel Subscription"</li>
-                        <li>Follow the prompts to confirm cancellation</li>
-                    </ol>
-                    <p>Important information about cancellation:</p>
-                    <ul>
-                        <li>You'll have access to Premium features until the end of your current billing period</li>
-                        <li>No refunds are provided for partial months</li>
-                        <li>After cancellation, your account will revert to the Free plan</li>
-                        <li>Your data will be preserved, but some features may become unavailable</li>
-                    </ul>
-                    <p>If you're having issues, please contact our support team before canceling - we might be able to help!</p>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- Technical Issues -->
-        <!-- <div class="faq-item" data-categories="technical">
-            <div class="faq-question">
-                <span>What should I do if my bank connection fails?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
-                    <p>If your bank connection fails, try these troubleshooting steps:</p>
-                    <ol>
-                        <li><strong>Check bank status:</strong> First, verify that your bank's website is accessible and not experiencing outages</li>
-                        <li><strong>Reconnect account:</strong> Go to Settings → Connected Accounts and try reconnecting the problematic account</li>
-                        <li><strong>Update credentials:</strong> If prompted, re-enter your banking credentials (we use encrypted tokens and never store your actual login details)</li>
-                        <li><strong>Check for updates:</strong> Ensure you're using the latest version of the app</li>
-                        <li><strong>Clear cache:</strong> Try clearing your browser cache or app data</li>
-                    </ol>
-                    <p>If these steps don't resolve the issue:</p>
-                    <ul>
-                        <li>Some banks require additional security steps for third-party connections</li>
-                        <li>Your bank might have changed their security protocols</li>
-                        <li>There could be temporary technical issues on either side</li>
-                    </ul>
-                    <p>If problems persist, contact our support team with details about your bank and the error message you're receiving.</p>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- <div class="faq-item" data-categories="technical">
-            <div class="faq-question">
-                <span>Why are my transactions duplicated?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <div class="faq-answer-content">
-                    <p>Transaction duplication can occur for several reasons:</p>
-                    <ul>
-                        <li><strong>Manual and automatic entry:</strong> If you add a transaction manually that was also imported from your bank</li>
-                        <li><strong>Bank sync issues:</strong> Occasionally during sync processes, transactions can be imported multiple times</li>
-                        <li><strong>Account connections:</strong> If you have the same account connected through multiple methods (direct connect and file upload)</li>
-                        <li><strong>Pending vs posted transactions:</strong> Some banks show both pending and posted versions of the same transaction</li>
-                    </ul>
-                    <p>To resolve duplication issues:</p>
-                    <ol>
-                        <li>Use the "Find Duplicates" tool in the Transactions menu</li>
-                        <li>Review and merge duplicate transactions</li>
-                        <li>Check your connected accounts for overlaps</li>
-                        <li>Consider disabling manual entry if you have full bank connectivity</li>
-                    </ol>
-                    <p>Our system automatically detects most duplicates, but occasional manual review may be needed.</p>
-                </div>
-            </div>
-        </div> -->
     </div>
 
-    <div class="no-results" id="noResults">
-        <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-        <h3>No results found</h3>
+    <div class="empty-state" id="noResults" style="display:none;">
+        <i class="fas fa-search"></i>
+        <h5>No results found</h5>
         <p>Try different keywords or browse the categories above</p>
     </div>
 
-   
-    
-    <div class="contact-section" data-bs-toggle="modal" data-bs-target="#addContactModel">
-        <h2 class="contact-title">Still have questions?</h2>
-        <p class="contact-text">Our support team is here to help you with any other questions you might have.</p>
-        <a href="#" class="contact-btn">Contact Support</a>
+    <div class="glass-card mt-3" style="background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;text-align:center;" data-bs-toggle="modal" data-bs-target="#addContactModel">
+        <h2 class="section-title" style="color:white;justify-content:center;">Still have questions?</h2>
+        <p style="opacity:0.9;margin-bottom:1.5rem;">Our support team is here to help you with any other questions you might have.</p>
+        <a href="#" class="btn-gradient" style="background:white;color:var(--accent);">Contact Support</a>
     </div>
 
     <!-- Contact Modal -->
@@ -571,7 +144,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title" id="addTransactionModalLabel">
+                    <h1 class="modal-title fs-5" id="addTransactionModalLabel">
                         <i class="fas fa-plus-circle me-2"></i>
                         Contact Support
                     </h1>
@@ -580,7 +153,6 @@
                 <form id="contactForm" method="post" action="{% url 'contact' %}">
                     {% csrf_token %}
                     <div class="modal-body text-success">
-                        <!-- Contact Information -->
                         <div class="form-group mb-4">
                             <label class="form-label">
                                 <i class="fas fa-phone me-2"></i>
@@ -596,13 +168,12 @@
                             </label>
                         </div>
                         
-                        <!-- Form Fields -->
                         <div class="row"> 
                             <div class="col-md-6 mb-3">
                                 {% if form.name %}
                                     {{ form.name }}
                                 {% else %}
-                                    <input type="text" class="form-control" placeholder="Enter your name" name="name" required>
+                                    <input type="text" class="form-input" placeholder="Enter your name" name="name" required>
                                 {% endif %}
                                 {% if form.name.errors %}
                                     <div class="text-danger">{{ form.name.errors }}</div>
@@ -612,7 +183,7 @@
                                 {% if form.email %}
                                     {{ form.email }}
                                 {% else %}
-                                    <input type="email" class="form-control" placeholder="Enter your email" name="email" required>
+                                    <input type="email" class="form-input" placeholder="Enter your email" name="email" required>
                                 {% endif %}
                                 {% if form.email.errors %}
                                     <div class="text-danger">{{ form.email.errors }}</div>
@@ -624,23 +195,22 @@
                             {% if form.subject %}
                                 {{ form.subject }}
                             {% else %}
-                                <input type="text" class="form-control" placeholder="Subject" name="subject" required>
+                                <input type="text" class="form-input" placeholder="Subject" name="subject" required>
                             {% endif %}
                             {% if form.subject.errors %}
                                 <div class="text-danger">{{ form.subject.errors }}</div>
                             {% endif %}
                         </div>
                         
-                        <!-- Description -->
                         <div class="form-group">
-                            <label for="description" class="form-label">
+                            <label for="id_description" class="form-label">
                                 <i class="fas fa-file-alt me-2"></i>
                                 Description
                             </label>
                             {% if form.description %}
                                 {{ form.description }}
                             {% else %}
-                                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter your message..." required></textarea>
+                                <textarea class="form-input" id="id_description" name="description" rows="3" placeholder="Enter your message..." style="height:auto;padding:0.75rem 1rem;" required></textarea>
                             {% endif %}
                             {% if form.description.errors %}
                                 <div class="text-danger">{{ form.description.errors }}</div>
@@ -649,11 +219,11 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn-glass" data-bs-dismiss="modal">
                             <i class="fas fa-times me-2"></i>
                             Close
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn-gradient">
                             <i class="fas fa-paper-plane me-2"></i>Send message
                         </button>
                     </div>
@@ -661,180 +231,123 @@
             </div>
         </div>
     </div>
-
-    <!-- Success/Error Alert Container -->
-    <div id="formAlert" class="alert alert-dismissible fade" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
-        <span id="alertMessage"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
 </div>
 
-
-
-<!-- Success/Error Alert Container -->
-<div id="formAlert" class="alert alert-dismissible fade" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+<div id="formAlert" class="alert" role="alert" style="position:fixed;top:20px;right:20px;z-index:9999;display:none;">
   <span id="alertMessage"></span>
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
 </div>
 
 <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        // FAQ toggle functionality
-        const faqItems = document.querySelectorAll('.faq-item');
+document.addEventListener('DOMContentLoaded', function() {
+    const faqItems = document.querySelectorAll('.glass-card-sm[data-categories]');
+    
+    faqItems.forEach(item => {
+        const header = item.querySelector('.faq-header-wrap');
+        const answer = item.querySelector('.faq-answer-wrap');
+        const icon = item.querySelector('.faq-icon');
         
-        faqItems.forEach(item => {
-            const question = item.querySelector('.faq-question');
-            
-            question.addEventListener('click', () => {
-                // Close all other items
-                faqItems.forEach(otherItem => {
-                    if (otherItem !== item && otherItem.classList.contains('active')) {
-                        otherItem.classList.remove('active');
-                    }
+        if (header) {
+            header.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                faqItems.forEach(other => {
+                    other.classList.remove('active');
+                    const otherAnswer = other.querySelector('.faq-answer-wrap');
+                    const otherIcon = other.querySelector('.faq-icon');
+                    if (otherAnswer) otherAnswer.style.maxHeight = '0';
+                    if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
                 });
-                
-                // Toggle current item
-                item.classList.toggle('active');
-            });
-        });
-
-        // Category filtering
-        const categoryButtons = document.querySelectorAll('.category-btn');
-        const allFaqItems = document.querySelectorAll('.faq-item');
-        
-        categoryButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Update active button
-                categoryButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                const category = button.dataset.category;
-                
-                // Filter items
-                allFaqItems.forEach(item => {
-                    if (category === 'all' || item.dataset.categories.includes(category)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-                
-                // Check if any results are visible
-                checkNoResults();
-            });
-        });
-
-        // Search functionality
-        const searchInput = document.getElementById('faqSearch');
-        
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            
-            allFaqItems.forEach(item => {
-                const question = item.querySelector('.faq-question span').textContent.toLowerCase();
-                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
-                
-                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
+                if (!isActive) {
+                    item.classList.add('active');
+                    if (answer) answer.style.maxHeight = answer.scrollHeight + 'px';
+                    if (icon) icon.style.transform = 'rotate(180deg)';
                 }
             });
-            
-            checkNoResults();
-        });
-
-        function checkNoResults() {
-            const visibleItems = document.querySelectorAll('.faq-item[style="display: block"]');
-            const noResults = document.getElementById('noResults');
-            
-            if (visibleItems.length === 0) {
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-            }
-        }
-
-        // Open first FAQ item by default
-        if (faqItems.length > 0) {
-            faqItems[0].classList.add('active');
         }
     });
 
-
+    const categoryLinks = document.querySelectorAll('.filter-link');
+    const allFaqItems = document.querySelectorAll('.glass-card-sm[data-categories]');
     
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            categoryLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            const category = link.dataset.category;
+            allFaqItems.forEach(item => {
+                item.style.display = (category === 'all' || item.dataset.categories.includes(category)) ? 'block' : 'none';
+            });
+            checkNoResults();
+        });
+    });
+
+    const searchInput = document.getElementById('faqSearch');
+    searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase();
+        allFaqItems.forEach(item => {
+            const q = item.querySelector('.faq-header-wrap span').textContent.toLowerCase();
+            const a = item.querySelector('.faq-answer-wrap').textContent.toLowerCase();
+            item.style.display = (q.includes(term) || a.includes(term)) ? 'block' : 'none';
+        });
+        checkNoResults();
+    });
+
+    function checkNoResults() {
+        const visible = document.querySelectorAll('.glass-card-sm[data-categories][style*="block"]');
+        document.getElementById('noResults').style.display = visible.length === 0 ? 'block' : 'none';
+    }
+
+    if (faqItems.length > 0) {
+        faqItems[0].classList.add('active');
+        const firstAnswer = faqItems[0].querySelector('.faq-answer-wrap');
+        const firstIcon = faqItems[0].querySelector('.faq-icon');
+        if (firstAnswer) firstAnswer.style.maxHeight = firstAnswer.scrollHeight + 'px';
+        if (firstIcon) firstIcon.style.transform = 'rotate(180deg)';
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');
     const alertDiv = document.getElementById('formAlert');
     const alertMessage = document.getElementById('alertMessage');
     
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(contactForm);
-        
-        fetch(contactForm.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Show success message
-                showAlert(data.message, 'success');
-                // Reset form
-                contactForm.reset();
-                // Close modal after 2 seconds
-                setTimeout(() => {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addContactModel'));
-                    modal.hide();
-                }, 2000);
-            } else {
-                // Show errors
-                if (data.errors) {
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(contactForm);
+            fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    contactForm.reset();
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addContactModel'));
+                        if (modal) modal.hide();
+                    }, 2000);
+                } else if (data.errors) {
                     let errorMsg = 'Please fix the following errors:<ul>';
                     for (const field in data.errors) {
-                        errorMsg += `<li>${data.errors[field][0]}</li>`;
+                        errorMsg += '<li>' + data.errors[field][0] + '</li>';
                     }
                     errorMsg += '</ul>';
                     showAlert(errorMsg, 'danger');
                 }
-            }
-        })
-        .catch(error => {
-            showAlert('An error occurred. Please try again.', 'danger');
+            })
+            .catch(() => showAlert('An error occurred. Please try again.', 'danger'));
         });
-    });
+    }
     
     function showAlert(message, type) {
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
         alertMessage.innerHTML = message;
-        
-        // Auto-close alert after 5 seconds
         setTimeout(() => {
             const bsAlert = new bootstrap.Alert(alertDiv);
             bsAlert.close();
         }, 5000);
-    }
-});
-
-</script>
-
-<!-- Add this JavaScript for form handling -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Your existing FAQ JavaScript code
-    
-    // Add form submission handling if needed
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            // Add any custom validation or AJAX submission here
-        });
     }
 });
 </script>

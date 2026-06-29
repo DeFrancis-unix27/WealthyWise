@@ -5,113 +5,87 @@
     {% trans "Two-Factor Authentication" %}
 {% endblock head_title %}
 {% block content %}
-    {% element h1 tags="mfa,index" %}
-        {% trans "Two-Factor Authentication" %}
-    {% endelement %}
+{% load static %}
+<div class="page-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Two-Factor Authentication</h1>
+    <p class="page-subtitle">Manage your security settings</p>
+  </div>
     {% if "totp" in MFA_SUPPORTED_TYPES %}
-        {% element panel %}
-            {% slot title %}
+        <div class="glass-card-sm fade-in delay-1">
+            <h3 class="section-title">
                 {% translate "Authenticator App" %}
-            {% endslot %}
-            {% slot body %}
+            </h3>
+            <div>
                 {% if authenticators.totp %}
-                    {% element p %}
-                        {% translate "Authentication using an authenticator app is active." %}
-                    {% endelement %}
+                    <p>{% translate "Authentication using an authenticator app is active." %}</p>
                 {% else %}
-                    {% element p %}
-                        {% translate "An authenticator app is not active." %}
-                    {% endelement %}
+                    <p>{% translate "An authenticator app is not active." %}</p>
                 {% endif %}
-            {% endslot %}
-            {% slot actions %}
+            </div>
+            <div class="form-actions" style="justify-content:flex-start;">
                 {% url 'mfa_deactivate_totp' as deactivate_url %}
                 {% url 'mfa_activate_totp' as activate_url %}
                 {% if authenticators.totp %}
-                    {% element button href=deactivate_url tags="danger,delete,panel" %}
-                        {% translate "Deactivate" %}
-                    {% endelement %}
+                    <a href="{{ deactivate_url }}" class="btn-glass">{% translate "Deactivate" %}</a>
                 {% else %}
-                    {% element button href=activate_url tags="panel" %}
-                        {% translate "Activate" %}
-                    {% endelement %}
+                    <a href="{{ activate_url }}" class="btn-gradient">{% translate "Activate" %}</a>
                 {% endif %}
-            {% endslot %}
-        {% endelement %}
+            </div>
+        </div>
     {% endif %}
     {% if "webauthn" in MFA_SUPPORTED_TYPES %}
-        {% element panel %}
-            {% slot title %}
+        <div class="glass-card-sm fade-in delay-2">
+            <h3 class="section-title">
                 {% translate "Security Keys" %}
-            {% endslot %}
-            {% slot body %}
+            </h3>
+            <div>
                 {% if authenticators.webauthn|length %}
-                    {% element p %}
-                        {% blocktranslate count count=authenticators.webauthn|length %}You have added {{ count }} security key.{% plural %}You have added {{ count }} security keys.{% endblocktranslate %}
-                    {% endelement %}
+                    <p>{% blocktranslate count count=authenticators.webauthn|length %}You have added {{ count }} security key.{% plural %}You have added {{ count }} security keys.{% endblocktranslate %}</p>
                 {% else %}
-                    {% element p %}
-                        {% translate "No security keys have been added." %}
-                    {% endelement %}
+                    <p>{% translate "No security keys have been added." %}</p>
                 {% endif %}
-            {% endslot %}
-            {% slot actions %}
+            </div>
+            <div class="form-actions" style="justify-content:flex-start;">
                 {% if authenticators.webauthn|length %}
                     {% url 'mfa_list_webauthn' as webauthn_list_url %}
-                    {% element button href=webauthn_list_url %}
-                        {% translate "Manage" %}
-                    {% endelement %}
+                    <a href="{{ webauthn_list_url }}" class="btn-glass">{% translate "Manage" %}</a>
                 {% else %}
                     {% url 'mfa_add_webauthn' as webauthn_add_url %}
-                    {% element button href=webauthn_add_url %}
-                        {% translate "Add" %}
-                    {% endelement %}
+                    <a href="{{ webauthn_add_url }}" class="btn-gradient">{% translate "Add" %}</a>
                 {% endif %}
-            {% endslot %}
-        {% endelement %}
+            </div>
+        </div>
     {% endif %}
     {% if "recovery_codes" in MFA_SUPPORTED_TYPES %}
         {% with total_count=authenticators.recovery_codes.generate_codes|length unused_count=authenticators.recovery_codes.get_unused_codes|length %}
-            {% element panel %}
-                {% slot title %}
+            <div class="glass-card-sm fade-in delay-3">
+                <h3 class="section-title">
                     {% translate "Recovery Codes" %}
-                {% endslot %}
-                {% slot body %}
+                </h3>
+                <div>
                     {% if authenticators.recovery_codes %}
-                        {% element p %}
-                            {% blocktranslate count unused_count=unused_count %}There is {{ unused_count }} out of {{ total_count }} recovery codes available.{% plural %}There are {{ unused_count }} out of {{ total_count }} recovery codes available.{% endblocktranslate %}
-                        {% endelement %}
+                        <p>{% blocktranslate count unused_count=unused_count %}There is {{ unused_count }} out of {{ total_count }} recovery codes available.{% plural %}There are {{ unused_count }} out of {{ total_count }} recovery codes available.{% endblocktranslate %}</p>
                     {% else %}
-                        {% element p %}
-                            {% translate "No recovery codes set up." %}
-                        {% endelement %}
+                        <p>{% translate "No recovery codes set up." %}</p>
                     {% endif %}
-                {% endslot %}
+                </div>
                 {% if is_mfa_enabled %}
-                    {% if authenticators.recovery_codes %}
-                        {% if unused_count > 0 %}
-                            {% slot actions %}
+                    <div class="form-actions" style="justify-content:flex-start;">
+                        {% if authenticators.recovery_codes %}
+                            {% if unused_count > 0 %}
                                 {% url 'mfa_view_recovery_codes' as view_url %}
-                                {% element button href=view_url tags="panel" %}
-                                    {% translate "View" %}
-                                {% endelement %}
-                            {% endslot %}
-                            {% slot actions %}
+                                <a href="{{ view_url }}" class="btn-glass">{% translate "View" %}</a>
                                 {% url 'mfa_download_recovery_codes' as download_url %}
-                                {% element button href=download_url tags="secondary,panel" %}
-                                    {% translate "Download" %}
-                                {% endelement %}
-                            {% endslot %}
+                                <a href="{{ download_url }}" class="btn-glass">{% translate "Download" %}</a>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                    {% slot actions %}
                         {% url 'mfa_generate_recovery_codes' as generate_url %}
-                        {% element button href=generate_url tags="secondary,panel" %}
-                            {% translate "Generate" %}
-                        {% endelement %}
-                    {% endslot %}
+                        <a href="{{ generate_url }}" class="btn-glass">{% translate "Generate" %}</a>
+                    </div>
                 {% endif %}
-            {% endelement %}
+            </div>
         {% endwith %}
     {% endif %}
+</div>
 {% endblock content %}

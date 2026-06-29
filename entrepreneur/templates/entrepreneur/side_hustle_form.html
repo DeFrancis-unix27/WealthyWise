@@ -1,9 +1,9 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %}{% load static %}
 {% block title %}Add Side Hustle - WealthPoint{% endblock %}
 {% block content %}
-<div class="page-wrap-sm">
-  <div class="form-card">
-    <h1>New Side Hustle</h1>
+<div class="page-wrap">
+  <div class="glass-card" data-tilt>
+    <div class="page-header"><h1 class="page-title">New Side Hustle</h1></div>
     <form method="POST">
       {% csrf_token %}
       <div class="form-group">
@@ -19,9 +19,9 @@
           <option value="other">Other</option>
         </select>
       </div>
-      <div style="display:flex;gap:1rem;align-items:center;">
-        <button type="submit" class="btn btn-primary">Add Hustle</button>
-        <a href="{% url 'side_hustle_list' %}" class="link">Cancel</a>
+      <div class="form-actions">
+        <button type="submit" class="btn-gradient">Add Hustle</button>
+        <a href="{% url 'side_hustle_list' %}" class="btn-glass">Cancel</a>
       </div>
     </form>
   </div>

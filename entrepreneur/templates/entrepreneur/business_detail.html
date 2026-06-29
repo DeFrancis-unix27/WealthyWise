@@ -1,25 +1,25 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %}{% load static %}
 {% block title %}{{ business.name }} - WealthPoint{% endblock %}
 {% block content %}
 <div class="page-wrap">
   <div class="page-header">
-    <h1 class="page-title">{{ business.name }} <span class="stage-badge">{{ business.get_stage_display }}</span></h1>
+    <h1 class="page-title">{{ business.name }} <span class="badge">{{ business.get_stage_display }}</span></h1>
     <div class="text-muted text-sm">{{ business.get_business_type_display }} &middot; {{ business.currency }} &middot; Created {{ business.created_at|date }}</div>
   </div>
-  <div class="card mb-2">
+  <div class="glass-card mb-2" data-tilt>
     <h2 class="section-title">Details</h2>
     <p class="text-muted text-sm">{{ business.description|default:"No description yet." }}</p>
     {% if business.website %}<p><a href="{{ business.website }}" target="_blank" class="link">{{ business.website }}</a></p>{% endif %}
   </div>
-  <div class="card mb-2">
+  <div class="glass-card mb-2" data-tilt>
     <h2 class="section-title">Business Plans</h2>
     {% if business.business_plans.exists %}
-      <ul class="list-stack">{% for bp in business.business_plans.all %}<li>{{ bp.title }} {% if bp.is_complete %}<span style="color:#22c55e;">&#10003;</span>{% endif %}</li>{% endfor %}</ul>
+      <ul class="list-stack">{% for bp in business.business_plans.all %}<li>{{ bp.title }} {% if bp.is_complete %}<span class="text-success">&#10003;</span>{% endif %}</li>{% endfor %}</ul>
     {% else %}
       <p class="text-muted text-sm">No business plans yet.</p>
     {% endif %}
   </div>
-  <div class="card mb-2">
+  <div class="glass-card mb-2" data-tilt>
     <h2 class="section-title">Revenue Streams</h2>
     {% if business.revenue_streams.exists %}
       <ul class="list-stack">{% for rs in business.revenue_streams.all %}<li><span>{{ rs.source_name }}</span><span>{{ rs.currency }} {{ rs.amount|floatformat:2 }}</span></li>{% endfor %}</ul>
@@ -27,6 +27,6 @@
       <p class="text-muted text-sm">No revenue recorded yet.</p>
     {% endif %}
   </div>
-  <a href="{% url 'business_list' %}" class="link">&larr; All businesses</a>
+  <a href="{% url 'business_list' %}" class="btn-glass">&larr; All businesses</a>
 </div>
 {% endblock %}

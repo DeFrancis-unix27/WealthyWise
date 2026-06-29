@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load static %}
 {% block title %}Subscription - WealthPoint{% endblock %}
 {% block content %}
 <div class="page-wrap">
@@ -8,7 +9,7 @@
   <h2 class="section-title">Current Subscriptions</h2>
   {% if subscriptions %}
     {% for sub in subscriptions %}
-      <div class="card card-hover mb-2" style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="glass-card-sm mb-2 flex-between fade-in delay-{{ forloop.counter }}" data-tilt>
         <div>
           <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ sub.plan.name }} <span class="badge badge-{{ sub.status }}">{{ sub.status }}</span></h3>
           <p class="text-muted text-sm">{{ sub.plan.currency }} {{ sub.plan.price }}/{{ sub.plan.duration }} &middot; Started {{ sub.start_date|date }}</p>
@@ -16,28 +17,28 @@
         </div>
         <div>
           {% if sub.status == "active" %}
-            <a href="{% url 'cancel_subscription' sub.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Cancel subscription?')">Cancel</a>
+            <a href="{% url 'cancel_subscription' sub.id %}" class="btn-glass" style="color:var(--danger);" onclick="return confirm('Cancel subscription?')">Cancel</a>
           {% endif %}
         </div>
       </div>
     {% endfor %}
   {% else %}
-    <p class="text-muted mb-3">No active subscriptions. <a href="{% url 'pricing' %}" class="link">View plans</a></p>
+    <p class="text-muted mb-3">No active subscriptions. <a href="{% url 'pricing' %}" class="btn-glass">View plans</a></p>
   {% endif %}
   <h2 class="section-title mt-3">Invoices</h2>
   {% if invoices %}
-    <div class="card card-flush">
-      <table style="width:100%;border-collapse:collapse;">
-        <thead><tr style="color:var(--text-secondary);font-size:0.85rem;text-align:left;">
-          <th style="padding:0.75rem;">Invoice</th><th style="padding:0.75rem;">Amount</th><th style="padding:0.75rem;">Status</th><th style="padding:0.75rem;">Date</th>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Invoice</th><th>Amount</th><th>Status</th><th>Date</th>
         </tr></thead>
         <tbody>
           {% for inv in invoices %}
-            <tr style="border-top:1px solid var(--border-color);">
-              <td style="padding:0.75rem;">#{{ inv.id }}</td>
-              <td style="padding:0.75rem;">{{ inv.currency }} {{ inv.amount }}</td>
-              <td style="padding:0.75rem;"><span class="badge badge-{{ inv.status }}">{{ inv.status }}</span></td>
-              <td style="padding:0.75rem;">{{ inv.created_at|date }}</td>
+            <tr>
+              <td>#{{ inv.id }}</td>
+              <td>{{ inv.currency }} {{ inv.amount }}</td>
+              <td><span class="badge badge-{{ inv.status }}">{{ inv.status }}</span></td>
+              <td>{{ inv.created_at|date }}</td>
             </tr>
           {% endfor %}
         </tbody>

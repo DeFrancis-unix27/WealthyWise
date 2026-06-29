@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load static %}
 {% block title %}Financial Literacy - WealthPoint{% endblock %}
 {% block content %}
 <div class="page-wrap">
@@ -7,18 +8,18 @@
     <p class="page-subtitle">Track your knowledge across financial topics</p>
   </div>
   <h2 class="section-title">Your Levels</h2>
-  <div class="level-grid">
-    <div class="level-item"><div class="level-label">Overall</div><div class="level-value {{ level.overall }}">{{ level.get_overall_display }}</div></div>
-    <div class="level-item"><div class="level-label">Budgeting</div><div class="level-value {{ level.budgeting }}">{{ level.get_budgeting_display }}</div></div>
-    <div class="level-item"><div class="level-label">Saving</div><div class="level-value {{ level.saving }}">{{ level.get_saving_display }}</div></div>
-    <div class="level-item"><div class="level-label">Investing</div><div class="level-value {{ level.investing }}">{{ level.get_investing_display }}</div></div>
-    <div class="level-item"><div class="level-label">Debt</div><div class="level-value {{ level.debt }}">{{ level.get_debt_display }}</div></div>
-    <div class="level-item"><div class="level-label">Retirement</div><div class="level-value {{ level.retirement }}">{{ level.get_retirement_display }}</div></div>
+  <div class="grid-4">
+    <div class="glass-card-sm fade-in delay-1" data-tilt><div class="level-label mb-1">Overall</div><span class="badge badge-{{ level.overall }}">{{ level.get_overall_display }}</span></div>
+    <div class="glass-card-sm fade-in delay-2" data-tilt><div class="level-label mb-1">Budgeting</div><span class="badge badge-{{ level.budgeting }}">{{ level.get_budgeting_display }}</span></div>
+    <div class="glass-card-sm fade-in delay-3" data-tilt><div class="level-label mb-1">Saving</div><span class="badge badge-{{ level.saving }}">{{ level.get_saving_display }}</span></div>
+    <div class="glass-card-sm fade-in delay-4" data-tilt><div class="level-label mb-1">Investing</div><span class="badge badge-{{ level.investing }}">{{ level.get_investing_display }}</span></div>
+    <div class="glass-card-sm fade-in delay-5" data-tilt><div class="level-label mb-1">Debt</div><span class="badge badge-{{ level.debt }}">{{ level.get_debt_display }}</span></div>
+    <div class="glass-card-sm fade-in delay-6" data-tilt><div class="level-label mb-1">Retirement</div><span class="badge badge-{{ level.retirement }}">{{ level.get_retirement_display }}</span></div>
   </div>
   <h2 class="section-title">Assessment History</h2>
   {% for a in assessments %}
-    <div class="card mb-1">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="glass-card-sm mb-1 fade-in delay-{{ forloop.counter }}" data-tilt>
+      <div class="flex-between">
         <span style="font-weight:600;">{{ a.get_topic_display }}</span>
         <span style="font-size:1.25rem;font-weight:700;">{{ a.score }}/{{ a.max_score }}</span>
       </div>
