@@ -245,12 +245,12 @@ def landing(request):
 
     goals = FinancialGoal.objects.filter(user=user).order_by("-created_at")[:3]
     linked_banks = LinkedBank.objects.filter(user=user, status="active")
-    literacy = LiteracyAssessment.objects.filter(user=user).order_by("-assessed_at").first()
-    enrollments = Enrollment.objects.filter(user=user).order_by("-enrolled_at")[:3]
+    literacy = LiteracyAssessment.objects.filter(user=user).order_by("-taken_at").first()
+    enrollments = Enrollment.objects.filter(user=user).order_by("-started_at")[:3]
     submissions = ProjectSubmission.objects.filter(user=user).order_by("-submitted_at")[:3]
     businesses = Business.objects.filter(user=user)[:2]
 
-    net_worth = total_balance + sum(lb.balance or 0 for lb in linked_banks)
+    net_worth = total_balance
 
     context = {
         "transactions": transactions,
