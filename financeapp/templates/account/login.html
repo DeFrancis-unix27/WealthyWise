@@ -2,329 +2,523 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - WealthyWise</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      :root {
-        --bg: #0b0f14; --panel: #111821; --muted: #92a2b3;
-        --text: #e8eef6; --accent: #4aa8ff; --accent-2: #7c5cff;
-        --danger: #ff6b6b; --success: #3ddc97; --warning: #fbbf24;
-        --card: #0f141b; --border: #1a2330;
-        --shadow: 0 10px 30px rgba(0,0,0,0.25);
-        --radius: 16px; --radius-sm: 12px;
-      }
-      [data-theme="light"] {
-        --bg: #f5f7fa; --panel: #ffffff; --muted: #6b7280;
-        --text: #1f2937; --accent: #3b82f6; --accent-2: #8b5cf6;
-        --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
-        --card: #ffffff; --border: #e5e7eb;
-        --shadow: 0 10px 30px rgba(0,0,0,0.1);
-      }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — WealthyWise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-      body {
-        font-family: 'Inter', sans-serif;
-        background: var(--bg); color: var(--text);
-        min-height: 100vh; display: flex; align-items: center;
-        overflow: hidden;
-      }
-      #three-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-      .particle-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
-        background: radial-gradient(circle at 20% 50%, rgba(74,168,255,0.08) 0%, transparent 40%),
-                    radial-gradient(circle at 80% 50%, rgba(124,92,255,0.08) 0%, transparent 40%); }
+    :root {
+      --bg: #070b10; --panel: rgba(15, 20, 27, 0.85); --muted: #8899aa;
+      --text: #e2eaf3; --accent: #3b9eff; --accent-2: #7c5cff;
+      --accent-glow: rgba(59, 158, 255, 0.15);
+      --danger: #ff4757; --success: #2ed573; --warning: #ffa502;
+      --card: #0d1219; --border: rgba(255,255,255,0.06);
+      --shadow: 0 25px 80px rgba(0,0,0,0.5);
+      --radius: 20px; --radius-sm: 14px; --radius-xs: 10px;
+    }
+    [data-theme="light"] {
+      --bg: #f0f2f5; --panel: rgba(255,255,255,0.85); --muted: #6b7280;
+      --text: #111827; --accent: #2563eb; --accent-2: #7c3aed;
+      --accent-glow: rgba(37, 99, 235, 0.1);
+      --danger: #dc2626; --success: #059669; --warning: #d97706;
+      --card: #ffffff; --border: rgba(0,0,0,0.08);
+      --shadow: 0 25px 80px rgba(0,0,0,0.1);
+    }
 
-      .login-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 2rem; width: 100%; }
-      .login-card {
-        background: var(--panel); border-radius: var(--radius);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 1px solid var(--border);
-        overflow: hidden; animation: cardIn 0.6s ease-out;
-      }
-      @keyframes cardIn { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-      .login-left {
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        color: white; padding: 3.5rem 2.5rem;
-        display: flex; flex-direction: column; justify-content: center;
-        position: relative; overflow: hidden;
-      }
-      .login-left::before {
-        content: ''; position: absolute; top: -60%; right: -40%;
-        width: 100%; height: 200%;
-        background: rgba(255,255,255,0.08); transform: rotate(-15deg);
-      }
-      .login-left::after {
-        content: ''; position: absolute; bottom: -30%; left: -20%;
-        width: 80%; height: 80%; border-radius: 50%;
-        background: rgba(255,255,255,0.05);
-      }
-      .brand { font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; position: relative; z-index: 1; }
-      .brand i { font-size: 1.8rem; }
-      .brand span { font-weight: 300; color: rgba(255,255,255,0.7); }
-      .left-lead { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin-bottom: 2rem; position: relative; z-index: 1; }
-      .testimonial { background: rgba(255,255,255,0.1); padding: 1.25rem; border-radius: var(--radius-sm); position: relative; z-index: 1; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-      .testimonial p { font-size: 0.85rem; line-height: 1.5; font-style: italic; margin-bottom: 0.5rem; }
-      .testimonial .author { font-size: 0.75rem; opacity: 0.7; }
-      .testimonial .stars { color: #fbbf24; font-size: 0.8rem; }
+    /* ─── BG: Animated gradient mesh ─── */
+    .bg-mesh {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(59,158,255,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(124,92,255,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 40% 80%, rgba(59,158,255,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 70%, rgba(124,92,255,0.05) 0%, transparent 50%);
+    }
+    @keyframes meshShift {
+      0% { filter: hue-rotate(0deg) blur(0px); }
+      50% { filter: hue-rotate(5deg) blur(1px); }
+      100% { filter: hue-rotate(0deg) blur(0px); }
+    }
+    .bg-mesh { animation: meshShift 20s ease-in-out infinite; }
 
-      .login-right { padding: 3rem 2.5rem; animation: fadeIn 0.8s ease-out 0.2s both; }
-      @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-      .login-header { text-align: center; margin-bottom: 2rem; }
-      .login-header h2 { font-weight: 800; font-size: 1.75rem; color: var(--text); margin-bottom: 0.35rem; }
-      .login-header p { color: var(--muted); font-size: 0.95rem; }
+    .bg-noise {
+      position: fixed; inset: 0; z-index: 1; opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
 
-      .form-floating-group { position: relative; margin-bottom: 1.25rem; }
-      .form-floating-group .form-control {
-        background: var(--card); border: 1px solid var(--border);
-        color: var(--text); padding: 1rem 1rem 0.5rem; height: 56px;
-        border-radius: var(--radius-sm); transition: all 0.3s ease;
-        font-size: 0.95rem;
-      }
-      .form-floating-group .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,168,255,0.15); }
-      .form-floating-group label {
-        position: absolute; top: 50%; left: 1rem; transform: translateY(-50%);
-        color: var(--muted); font-size: 0.9rem; pointer-events: none;
-        transition: all 0.2s ease; padding: 0 0.25rem;
-      }
-      .form-floating-group .form-control:focus ~ label,
-      .form-floating-group .form-control:not(:placeholder-shown) ~ label {
-        top: 0.65rem; transform: translateY(0); font-size: 0.7rem; color: var(--accent);
-      }
-      .form-floating-group .form-control::placeholder { color: transparent; }
+    .orb {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+      filter: blur(80px); opacity: 0.15;
+    }
+    .orb-1 { width: 400px; height: 400px; top: -100px; left: -100px; background: var(--accent); animation: orbFloat 25s ease-in-out infinite; }
+    .orb-2 { width: 350px; height: 350px; bottom: -80px; right: -80px; background: var(--accent-2); animation: orbFloat 30s ease-in-out infinite reverse; }
+    .orb-3 { width: 250px; height: 250px; top: 50%; left: 50%; background: var(--accent); animation: orbFloat 20s ease-in-out infinite 5s; }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(30px, -40px) scale(1.05); }
+      50% { transform: translate(-20px, 20px) scale(0.95); }
+      75% { transform: translate(40px, 30px) scale(1.02); }
+    }
 
-      .password-field { position: relative; }
-      .password-toggle {
-        position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-        background: none; border: none; color: var(--muted); cursor: pointer; z-index: 2;
-        padding: 0.5rem; font-size: 0.9rem;
-      }
-      .password-toggle:hover { color: var(--accent); }
+    .wrapper { position: relative; z-index: 2; width: 100%; max-width: 1120px; padding: 1.5rem; }
 
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        border: none; padding: 0.85rem 1.5rem; border-radius: var(--radius-sm);
-        font-weight: 600; font-size: 1rem; transition: all 0.3s ease;
-        position: relative; overflow: hidden;
-      }
-      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(74,168,255,0.3); }
-      .btn-primary:active { transform: translateY(0); }
-      .btn-primary .spinner { display: none; }
-      .btn-primary.loading .spinner { display: inline-block; }
-      .btn-primary.loading .btn-text { opacity: 0.7; }
+    .card {
+      display: flex; border-radius: var(--radius);
+      background: var(--panel); backdrop-filter: blur(24px) saturate(1.4);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: cardEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes cardEnter {
+      0% { opacity: 0; transform: translateY(40px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
-      .btn-google {
-        background: var(--card); color: var(--text);
-        border: 1px solid var(--border); font-weight: 600;
-        padding: 0.85rem 1.5rem; border-radius: var(--radius-sm);
-        transition: all 0.3s ease; display: flex; align-items: center;
-        justify-content: center; gap: 0.75rem; text-decoration: none; width: 100%;
-      }
-      .btn-google:hover { border-color: var(--accent); transform: translateY(-1px); color: var(--text); }
+    /* ─── Left panel ─── */
+    .panel-left {
+      flex: 1.1; padding: 3.5rem 3rem;
+      display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; overflow: hidden;
+      background: linear-gradient(160deg, var(--accent), var(--accent-2));
+    }
+    .panel-left::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 0%, transparent 40%);
+    }
+    .panel-left::after {
+      content: ''; position: absolute; top: -50%; right: -30%; width: 80%; height: 150%;
+      background: rgba(255,255,255,0.06); transform: rotate(-12deg);
+    }
 
-      .divider { display: flex; align-items: center; margin: 1.25rem 0; color: var(--muted); gap: 1rem; }
-      .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-      .divider span { font-size: 0.8rem; white-space: nowrap; }
+    .panel-left-content { position: relative; z-index: 1; }
+    .brand {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-size: 1.8rem; font-weight: 800; color: #fff;
+      margin-bottom: 2.5rem;
+    }
+    .brand img { height: 38px; width: auto; display: block; filter: brightness(0) invert(1); }
+    .brand span { font-weight: 300; opacity: 0.6; }
 
-      .auth-links { text-align: center; margin-top: 1.25rem; }
-      .auth-links a { color: var(--accent); text-decoration: none; font-size: 0.9rem; transition: color 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; }
-      .auth-links a:hover { color: var(--accent-2); }
-      .auth-links .forgot-link { display: block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--muted); }
+    .panel-left h2 {
+      font-size: 2.2rem; font-weight: 800; color: #fff; line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .panel-left h2 em {
+      font-style: normal;
+      background: rgba(255,255,255,0.15); padding: 0 0.15em;
+      border-radius: 4px;
+    }
+    .panel-left > p {
+      font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.75);
+      max-width: 420px; margin-bottom: 2.5rem; position: relative; z-index: 1;
+    }
 
-      .form-check { display: flex; align-items: center; gap: 0.5rem; margin: 0.75rem 0; }
-      .form-check-input { width: 18px; height: 18px; background: var(--card); border: 1px solid var(--border); cursor: pointer; border-radius: 4px; }
-      .form-check-input:checked { background: var(--accent); border-color: var(--accent); }
-      .form-check-label { font-size: 0.85rem; color: var(--muted); cursor: pointer; }
+    .stats { display: flex; gap: 2.5rem; position: relative; z-index: 1; }
+    .stat-item .stat-num { font-size: 1.6rem; font-weight: 800; color: #fff; }
+    .stat-item .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.15rem; }
 
-      .theme-toggle {
-        position: fixed; top: 20px; right: 20px; z-index: 100;
-        background: var(--panel); border: 1px solid var(--border);
-        color: var(--text); width: 44px; height: 44px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; box-shadow: var(--shadow); transition: all 0.3s ease;
-      }
-      .theme-toggle:hover { transform: rotate(15deg); border-color: var(--accent); }
+    .quote {
+      position: relative; z-index: 1; margin-top: 2rem;
+      padding: 1.25rem 1.5rem;
+      background: rgba(255,255,255,0.08); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-sm);
+    }
+    .quote i { color: rgba(255,255,255,0.3); font-size: 1.2rem; margin-bottom: 0.5rem; display: block; }
+    .quote p { font-size: 0.85rem; line-height: 1.6; color: rgba(255,255,255,0.85); font-style: italic; }
+    .quote .author { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 0.5rem; font-style: normal; }
 
-      .alert { border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; animation: slideIn 0.3s ease-out; }
-      @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-      .alert-error { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.2); color: var(--danger); }
-      .alert-success { background: rgba(61,220,151,0.1); border: 1px solid rgba(61,220,151,0.2); color: var(--success); }
-      .alert-info { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); color: var(--info); }
+    /* ─── Right panel ─── */
+    .panel-right {
+      flex: 1; padding: 3rem 3rem 2.5rem;
+      display: flex; flex-direction: column;
+      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-      @media (max-width: 992px) {
-        .login-left { display: none; }
-        .login-container { padding: 1rem; }
-        .login-right { padding: 2rem 1.5rem; }
-      }
-    </style>
+    .panel-right .header { text-align: center; margin-bottom: 2rem; }
+    .panel-right .header h2 { font-size: 1.5rem; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+    .panel-right .header p { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+
+    /* ─── Alert ─── */
+    .alert {
+      border-radius: var(--radius-xs); padding: 0.75rem 1rem; margin-bottom: 1rem;
+      font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;
+      animation: alertSlide 0.3s ease-out;
+    }
+    @keyframes alertSlide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .alert-error { background: rgba(255,71,87,0.1); border: 1px solid rgba(255,71,87,0.15); color: var(--danger); }
+    .alert-success { background: rgba(46,213,115,0.1); border: 1px solid rgba(46,213,115,0.15); color: var(--success); }
+    .alert-info { background: rgba(59,158,255,0.1); border: 1px solid rgba(59,158,255,0.15); color: var(--accent); }
+
+    /* ─── Form ─── */
+    .field {
+      position: relative; margin-bottom: 1.25rem;
+    }
+    .field input {
+      width: 100%; height: 56px;
+      background: var(--card); border: 1.5px solid var(--border);
+      color: var(--text); padding: 1.35rem 1rem 0.4rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.9rem; font-family: inherit;
+      transition: border 0.25s ease, box-shadow 0.25s ease;
+      outline: none;
+    }
+    .field input:hover { border-color: rgba(59,158,255,0.2); }
+    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); }
+    .field input.is-invalid { border-color: var(--danger); box-shadow: 0 0 0 4px rgba(255,71,87,0.12); }
+    .field input:-webkit-autofill,
+    .field input:-webkit-autofill:hover,
+    .field input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 30px var(--card) inset !important;
+      -webkit-text-fill-color: var(--text) !important;
+      caret-color: var(--text);
+    }
+
+    .field label {
+      position: absolute; top: 50%; left: 1rem;
+      transform: translateY(-50%);
+      color: var(--muted); font-size: 0.85rem; font-weight: 400;
+      pointer-events: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0 0.25rem; background: transparent;
+      transform-origin: left center;
+    }
+    .field input:focus ~ label,
+    .field input:not(:placeholder-shown) ~ label {
+      top: 0.65rem; transform: translateY(0) scale(0.75);
+      color: var(--accent); background: var(--card); padding: 0 0.35rem;
+    }
+    .field input::placeholder { color: transparent; }
+
+    .field .input-icon {
+      position: absolute; right: 2.5rem; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 0.8rem; opacity: 0; transition: all 0.25s ease;
+    }
+    .field input:focus ~ .input-icon.valid { opacity: 1; color: var(--success); }
+    .field input.is-invalid ~ .input-icon.invalid { opacity: 1; color: var(--danger); }
+
+    .field .error-text {
+      font-size: 0.7rem; color: var(--danger); margin-top: 0.25rem;
+      display: flex; align-items: center; gap: 0.3rem;
+      opacity: 0; transform: translateY(-4px); transition: all 0.25s ease;
+      height: 0; overflow: hidden;
+    }
+    .field .error-text.show { opacity: 1; transform: translateY(0); height: 1.2rem; }
+
+    /* ─── Password eye ─── */
+    .pwd-eye {
+      position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      padding: 0.4rem; font-size: 0.85rem; z-index: 2;
+      transition: color 0.2s ease;
+    }
+    .pwd-eye:hover { color: var(--accent); }
+
+    /* ─── Remember me ─── */
+    .remember-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 0.5rem 0 1.25rem;
+    }
+    .checkbox-wrap {
+      display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+    }
+    .checkbox-wrap input[type="checkbox"] {
+      display: none;
+    }
+    .check-box {
+      width: 20px; height: 20px; border-radius: 5px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.25s ease; flex-shrink: 0;
+    }
+    .checkbox-wrap input:checked + .check-box {
+      background: var(--accent); border-color: var(--accent);
+    }
+    .check-box i { color: #fff; font-size: 0.6rem; opacity: 0; transform: scale(0); transition: all 0.2s ease; }
+    .checkbox-wrap input:checked + .check-box i { opacity: 1; transform: scale(1); }
+    .checkbox-wrap .label { font-size: 0.8rem; color: var(--muted); }
+
+    .forgot-link {
+      font-size: 0.8rem; color: var(--accent); text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .forgot-link:hover { color: var(--accent-2); }
+
+    /* ─── Submit ─── */
+    .btn-submit {
+      width: 100%; height: 50px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff; border: none; border-radius: var(--radius-xs);
+      font-size: 0.95rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .btn-submit::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+      transform: translateX(-100%); transition: transform 0.6s ease;
+    }
+    .btn-submit:hover::before { transform: translateX(100%); }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(59,158,255,0.3); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    .btn-submit .spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-text { opacity: 0.6; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Divider ─── */
+    .divider { display: flex; align-items: center; gap: 1rem; margin: 1.25rem 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .divider span { font-size: 0.75rem; color: var(--muted); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ─── Google ─── */
+    .btn-google {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+      width: 100%; height: 48px;
+      background: var(--card); border: 1.5px solid var(--border);
+      color: var(--text); border-radius: var(--radius-xs);
+      font-size: 0.85rem; font-weight: 500; font-family: inherit;
+      cursor: pointer; transition: all 0.25s ease;
+      text-decoration: none;
+    }
+    .btn-google:hover { border-color: var(--accent); background: var(--accent-glow); transform: translateY(-1px); }
+
+    /* ─── Footer links ─── */
+    .footer-links { text-align: center; margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.8rem; transition: color 0.2s ease; display: inline-flex; align-items: center; gap: 0.4rem; justify-content: center; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ─── Theme toggle ─── */
+    .theme-btn {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 100;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--panel); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    .theme-btn:hover { transform: rotate(20deg); border-color: var(--accent); }
+
+    /* ─── Toast ─── */
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toast {
+      padding: 0.85rem 1.25rem; border-radius: var(--radius-xs);
+      background: var(--panel); backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      color: var(--text); font-size: 0.85rem;
+      display: flex; align-items: center; gap: 0.65rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      transform: translateX(120%); opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show { transform: translateX(0); opacity: 1; }
+    .toast.error { border-left: 3px solid var(--danger); }
+    .toast.success { border-left: 3px solid var(--success); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 992px) {
+      .panel-left { display: none; }
+      .panel-right { padding: 2rem 1.5rem; }
+      .card { border-radius: var(--radius-sm); }
+    }
+    @media (max-width: 480px) {
+      .wrapper { padding: 0.75rem; }
+      .panel-right { padding: 1.5rem 1.25rem; }
+    }
+  </style>
 </head>
 <body>
-    <canvas id="three-canvas"></canvas>
-    <div class="particle-overlay"></div>
+  <div class="bg-mesh"></div>
+  <div class="bg-noise"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
-    <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+  <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
+    <i class="fas fa-moon"></i>
+  </button>
 
-    <div class="login-container">
-        <div class="row g-0 login-card">
-            <div class="col-lg-6 login-left">
-                <div class="brand"><i class="fas fa-chart-line"></i> Wealthy<span>Wise</span></div>
-                <p class="left-lead">Your financial intelligence platform — AI-powered insights, real market data, and personalized education to build lasting wealth.</p>
-                <div class="testimonial">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <p>"WealthyWise transformed how I manage my finances. The AI insights alone are worth it."</p>
-                    <div class="author">— Sarah K., Premium User</div>
-                </div>
-            </div>
-            <div class="col-lg-6 login-right">
-                <div class="login-header">
-                    <h2>Welcome Back</h2>
-                    <p>Sign in to continue your financial journey</p>
-                </div>
-
-                {% if messages %}
-                    {% for message in messages %}
-                    <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
-                        <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
-                        {{ message }}
-                    </div>
-                    {% endfor %}
-                {% endif %}
-
-                {% if form.errors %}
-                <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i>
-                    Invalid username or password. Please try again.
-                </div>
-                {% endif %}
-
-                <form method="post" id="loginForm">
-                    {% csrf_token %}
-
-                    <div class="form-floating-group">
-                        <input type="text" name="username" class="form-control" id="id_username" required placeholder="Username" autocomplete="username" autofocus>
-                        <label for="id_username">Username</label>
-                    </div>
-
-                    <div class="form-floating-group password-field">
-                        <input type="password" name="password" class="form-control" id="id_password" required placeholder="Password" autocomplete="current-password">
-                        <label for="id_password">Password</label>
-                        <button type="button" class="password-toggle" id="passwordToggle"><i class="fas fa-eye"></i></button>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rememberMe" name="remember_me">
-                        <label class="form-check-label" for="rememberMe">Remember me for 30 days</label>
-                    </div>
-
-                    <button class="btn btn-primary w-100 py-2" type="submit" id="submitBtn">
-                        <span class="spinner"><i class="fas fa-spinner fa-spin me-2"></i></span>
-                        <span class="btn-text"><i class="fas fa-sign-in-alt me-2"></i>Sign In</span>
-                    </button>
-                </form>
-
-                <div class="divider"><span>or</span></div>
-
-                <a href="{% url 'google_login' %}" class="btn-google mb-3">
-                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    Continue with Google
-                </a>
-
-                <div class="auth-links">
-                    <a href="{% url 'signup' %}"><i class="fas fa-user-plus"></i> Don't have an account? Sign up</a>
-                    <a href="{% url 'password_reset' %}" class="forgot-link"><i class="fas fa-key"></i> Forgot your password?</a>
-                </div>
-            </div>
+  <div class="wrapper">
+    <div class="card">
+      <!-- Left -->
+      <div class="panel-left">
+        <div class="panel-left-content">
+          <div class="brand"><img src="{% static 'images/logo.png' %}" alt="WealthyWise" /> Wealthy<span>Wise</span></div>
+          <div>
+            <h2>Welcome back to<br>your <em>financial hub</em></h2>
+            <p>Track your portfolio, master new concepts, and make data-driven decisions with AI-powered tools.</p>
+          </div>
+          <div class="stats">
+            <div class="stat-item"><div class="stat-num">50K+</div><div class="stat-label">Users</div></div>
+            <div class="stat-item"><div class="stat-num">$2M+</div><div class="stat-label">Tracked / mo</div></div>
+            <div class="stat-item"><div class="stat-num">4.9★</div><div class="stat-label">Rating</div></div>
+          </div>
         </div>
+        <div class="quote">
+          <i class="fas fa-quote-left"></i>
+          <p>The best financial decision I ever made was joining WealthyWise. It&rsquo;s like having a personal CFO.</p>
+          <div class="author">— Michael T., Premium Member</div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="panel-right">
+        <div class="header">
+          <h2>Sign in</h2>
+          <p>Welcome back — let&rsquo;s pick up where you left off</p>
+        </div>
+
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+          </div>
+          {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="alert alert-error">
+          <i class="fas fa-exclamation-circle"></i>
+          Invalid username or password. Please try again.
+        </div>
+        {% endif %}
+
+        <form method="post" id="loginForm" novalidate>
+          {% csrf_token %}
+
+          <div class="field">
+            <input type="text" name="username" id="id_username" required placeholder="Username" autocomplete="username" autofocus>
+            <label for="id_username">Username</label>
+            <span class="input-icon valid"><i class="fas fa-check-circle"></i></span>
+            <span class="input-icon invalid"><i class="fas fa-exclamation-circle"></i></span>
+            <div class="error-text" id="err_username"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+          </div>
+
+          <div class="field">
+            <input type="password" name="password" id="id_password" required placeholder="Password" autocomplete="current-password">
+            <label for="id_password">Password</label>
+            <button type="button" class="pwd-eye" id="pwdEye" tabindex="-1"><i class="fas fa-eye"></i></button>
+            <span class="input-icon valid"><i class="fas fa-check-circle"></i></span>
+            <span class="input-icon invalid"><i class="fas fa-exclamation-circle"></i></span>
+            <div class="error-text" id="err_password"><i class="fas fa-exclamation-circle"></i> <span></span></div>
+          </div>
+
+          <div class="remember-row">
+            <label class="checkbox-wrap">
+              <input type="checkbox" name="remember_me" id="rememberMe" />
+              <span class="check-box"><i class="fas fa-check"></i></span>
+              <span class="label">Remember me for 30 days</span>
+            </label>
+            <a href="{% url 'password_reset' %}" class="forgot-link"><i class="fas fa-key"></i> Forgot?</a>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span class="spinner"></span>
+            <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Sign in</span>
+          </button>
+        </form>
+
+        <div class="divider"><span>Or continue with</span></div>
+
+        <a href="{% url 'google_login' %}" class="btn-google">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google
+        </a>
+
+        <div class="footer-links">
+          <a href="{% url 'signup' %}"><i class="fas fa-user-plus"></i> Don't have an account? Create one</a>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-    (function() {
-      const canvas = document.getElementById('three-canvas');
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  <div class="toast-container" id="toastContainer"></div>
 
-      const count = 1200;
-      const positions = new Float32Array(count * 3);
-      const colors = new Float32Array(count * 3);
-      for (let i = 0; i < count * 3; i += 3) {
-        positions[i] = (Math.random() - 0.5) * 30;
-        positions[i+1] = (Math.random() - 0.5) * 20;
-        positions[i+2] = (Math.random() - 0.5) * 15 - 5;
-        colors[i] = 0.2 + Math.random() * 0.1;
-        colors[i+1] = 0.3 + Math.random() * 0.15;
-        colors[i+2] = 0.5 + Math.random() * 0.3;
-      }
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-      const mat = new THREE.PointsMaterial({ size: 0.04, vertexColors: true, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true });
-      const mesh = new THREE.Points(geo, mat);
-      scene.add(mesh);
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('themeBtn');
+    const icon = themeBtn.querySelector('i');
 
-      const linePositions = [];
-      for (let i = 0; i < count; i++) {
-        for (let j = i + 1; j < count; j++) {
-          const dx = positions[i*3] - positions[j*3], dy = positions[i*3+1] - positions[j*3+1], dz = positions[i*3+2] - positions[j*3+2];
-          if (Math.sqrt(dx*dx + dy*dy + dz*dz) < 1.5) {
-            linePositions.push(positions[i*3], positions[i*3+1], positions[i*3+2], positions[j*3], positions[j*3+1], positions[j*3+2]);
-          }
+    // Theme
+    const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    root.setAttribute('data-theme', saved);
+    icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    themeBtn.addEventListener('click', () => {
+      const t = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      icon.className = t === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    });
+
+    // Password toggle
+    const pwdInput = document.getElementById('id_password');
+    const pwdEye = document.getElementById('pwdEye');
+    pwdEye.addEventListener('click', () => {
+      const isPwd = pwdInput.type === 'password';
+      pwdInput.type = isPwd ? 'text' : 'password';
+      pwdEye.innerHTML = isPwd ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    });
+
+    // Real-time validation (basic)
+    document.querySelectorAll('.field input').forEach(inp => {
+      inp.addEventListener('blur', function() {
+        if (this.hasAttribute('required') && !this.value.trim()) {
+          this.classList.add('is-invalid');
+          const err = document.getElementById('err_' + this.name);
+          if (err) { err.querySelector('span').textContent = 'This field is required'; err.classList.add('show'); }
+        } else {
+          this.classList.remove('is-invalid');
+          const err = document.getElementById('err_' + this.name);
+          if (err) err.classList.remove('show');
         }
-      }
-      const lGeo = new THREE.BufferGeometry();
-      lGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-      const lMat = new THREE.LineBasicMaterial({ color: 0x4aa8ff, transparent: true, opacity: 0.04 });
-      scene.add(new THREE.LineSegments(lGeo, lMat));
-
-      camera.position.z = 8;
-      let mx = 0, my = 0;
-      document.addEventListener('mousemove', e => { mx = (e.clientX / window.innerWidth - 0.5) * 2; my = (e.clientY / window.innerHeight - 0.5) * 2; });
-      function animate() {
-        requestAnimationFrame(animate);
-        mesh.rotation.y += 0.0002;
-        camera.position.x += (mx * 0.5 - camera.position.x) * 0.02;
-        camera.position.y += (-my * 0.5 - camera.position.y) * 0.02;
-        camera.lookAt(scene.position);
-        renderer.render(scene, camera);
-      }
-      animate();
-      window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
-    })();
-    </script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Theme toggle
-      const themeToggle = document.getElementById('themeToggle');
-      const themeIcon = themeToggle.querySelector('i');
-      const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-      themeToggle.addEventListener('click', function() {
-        const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', t);
-        localStorage.setItem('theme', t);
-        themeIcon.className = t === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
       });
-
-      // Password toggle
-      const pt = document.getElementById('passwordToggle');
-      const pi = document.getElementById('id_password');
-      pt.addEventListener('click', function() {
-        if (pi.type === 'password') { pi.type = 'text'; pt.innerHTML = '<i class="fas fa-eye-slash"></i>'; }
-        else { pi.type = 'password'; pt.innerHTML = '<i class="fas fa-eye"></i>'; }
-      });
-
-      // Loading button
-      document.getElementById('loginForm').addEventListener('submit', function() {
-        document.getElementById('submitBtn').classList.add('loading');
+      inp.addEventListener('input', function() {
+        if (this.value.trim()) {
+          this.classList.remove('is-invalid');
+          const err = document.getElementById('err_' + this.name);
+          if (err) err.classList.remove('show');
+        }
       });
     });
-    </script>
+
+    // Loading
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      document.getElementById('submitBtn').classList.add('loading');
+    });
+  });
+
+  function showToast(msg, type) {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + '"></i> ' + msg;
+    c.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 4000);
+  }
+  </script>
 </body>
 </html>

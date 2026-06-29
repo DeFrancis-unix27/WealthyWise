@@ -97,6 +97,14 @@ body {
   font-weight: 700;
   white-space: nowrap;
   transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.brand img {
+  height: 32px;
+  width: auto;
+  display: block;
 }
 .sidebar.collapsed .brand { opacity: 0; width: 0; }
 .toggle-btn {

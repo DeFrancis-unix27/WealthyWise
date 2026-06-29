@@ -26,7 +26,8 @@
 
     /* ---- Nav ---- */
     .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: rgba(11, 15, 20, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
-    .nav-brand { font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+    .nav-brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+    .nav-brand img { height: 32px; width: auto; display: block; }
     .nav-brand span { color: var(--text); }
     .nav-links { display: flex; align-items: center; gap: 2rem; }
     .nav-links a { font-size: 0.85rem; color: var(--muted); font-weight: 500; transition: var(--transition); }
@@ -112,7 +113,8 @@
     /* ---- Footer ---- */
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 3rem 2rem; }
     .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; }
-    .footer-brand { font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem; }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem; }
+    .footer-brand img { height: 28px; width: auto; display: block; }
     .footer-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; max-width: 300px; }
     .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text); }
     .footer-col a { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; transition: var(--transition); }
@@ -150,7 +152,7 @@
 
   <!-- Nav -->
   <nav class="navbar">
-    <div class="nav-brand">Wealthy<span>Wise</span></div>
+    <div class="nav-brand"><img src="{% static 'images/logo.png' %}" alt="" /> Wealthy<span>Wise</span></div>
     <div class="nav-links" id="navLinks">
       <a href="#features">Features</a>
       <a href="#courses">Courses</a>
@@ -384,7 +386,7 @@
   <footer>
     <div class="footer-inner">
       <div>
-        <div class="footer-brand">WealthyWise</div>
+        <div class="footer-brand"><img src="{% static 'images/logo.png' %}" alt="" /> WealthyWise</div>
         <p class="footer-desc">AI-powered financial intelligence platform. Track, learn, and grow your wealth with personalized insights and real market data.</p>
       </div>
       <div class="footer-col">
