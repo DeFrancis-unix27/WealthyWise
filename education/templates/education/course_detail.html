@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}{{ course.title }} - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap-md">
+  <div class="page-header">
+    <h1 class="page-title">{{ course.title }}</h1>
+    <div class="meta-block">
+      <span class="badge badge-{{ course.difficulty }}">{{ course.difficulty|title }}</span>
+      <span class="text-muted text-sm" style="margin-left:0.5rem;">{{ course.estimated_hours }}h</span>
+      {% if course.is_premium %}<span class="badge badge-premium" style="margin-left:0.25rem;">Premium</span>{% endif %}
+      {% if course.instructor %}<span class="text-muted text-sm" style="margin-left:0.5rem;">by {{ course.instructor }}</span>{% endif %}
+    </div>
+  </div>
+  <div style="line-height:1.7;margin-bottom:2rem;">{{ course.description|linebreaks }}</div>
+  {% if course.concepts.exists %}
+    <h2 class="section-title">Concepts Covered</h2>
+    <p class="text-muted text-sm">{% for c in course.concepts.all %}<a href="{% url 'concept_detail' c.slug %}" class="link">{{ c.title }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+  {% endif %}
+  <h2 class="section-title">Lessons ({{ course.lessons.count }})</h2>
+  {% if course.lessons.exists %}
+    <ul class="lesson-list">
+      {% for lesson in course.lessons.all %}
+        <li class="lesson-item">
+          <a href="{% url 'lesson_detail' course.slug lesson.id %}">{{ lesson.title }}</a>
+          <span class="lesson-duration">{{ lesson.duration_minutes }} min</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">No lessons yet.</p>
+  {% endif %}
+  <div class="mt-3">
+    {% if user.is_authenticated %}
+      <a href="{% url 'enroll' 'course' course.id %}" class="btn btn-primary"><i class="fas fa-graduation-cap"></i> Enroll Now</a>
+    {% else %}
+      <a href="{% url 'login' %}" class="btn btn-primary">Log in to Enroll</a>
+    {% endif %}
+    <a href="{% url 'course_list' %}" class="link" style="margin-left:1rem;">&larr; All courses</a>
+  </div>
+</div>
+{% endblock %}

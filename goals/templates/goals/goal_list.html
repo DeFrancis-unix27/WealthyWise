@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Financial Goals - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="page-header flex">
+    <div><h1 class="page-title">Financial Goals</h1></div>
+    <a href="{% url 'goal_create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> New Goal</a>
+  </div>
+  <div class="grid-3">
+    {% for g in goals %}
+      <div class="goal-card fade-in-{{ forloop.counter }}">
+        <div class="goal-title">{{ g.title }}</div>
+        <div class="goal-category">{{ g.get_category_display }} &middot; {{ g.currency }}</div>
+        {% widthratio g.current_amount g.target_amount 100 as pct %}
+        <div class="progress-bar"><div class="progress-fill" style="width:{{ pct }}%"></div></div>
+        <div class="progress-label"><span>{{ g.currency }} {{ g.current_amount|floatformat:0 }}</span><span>{{ g.currency }} {{ g.target_amount|floatformat:0 }}</span></div>
+        <div style="margin-top:0.5rem;display:flex;justify-content:space-between;align-items:center;">
+          <span class="badge badge-{{ g.status }}">{{ g.status|title }}</span>
+          {% if g.target_date %}<span class="text-xs text-muted">by {{ g.target_date|date:"M Y" }}</span>{% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="empty-state">
+        <i class="fas fa-bullseye"></i>
+        <p>No goals yet. Set your first financial goal!</p>
+        <a href="{% url 'goal_create' %}" class="btn btn-primary btn-sm mt-1">Create Goal</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,339 @@
+{% extends 'layout.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<script>
+try { window.chartData = JSON.parse('{{ chart_data|default:"{}"|escapejs }}') || {}; }
+catch (e) { window.chartData = {}; }
+
+try { window.topCategoryData = JSON.parse('{{ top_category_json|default:"[]"|escapejs }}') || []; }
+catch (e) { window.topCategoryData = []; }
+</script>
+
+<div class="dashboard">
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">Financial Overview</h1>
+      <div class="dash-date">Today, {% now "F d, Y" %}</div>
+    </div>
+    <div class="dash-actions">
+      <button class="btn-primary">
+        <i class="fas fa-plus"></i>
+        <a href="{% url 'transaction' %}">Add Transaction</a>
+      </button>
+      <button class="btn-secondary">
+        <i class="fas fa-download"></i>
+        <a href="{% url 'export_csv' %}">Export</a>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card income">
+      <div class="stat-header">
+        <span class="stat-label">Total Income</span>
+        <div class="stat-icon"><i class="fas fa-arrow-up"></i></div>
+      </div>
+      <div class="stat-value">₦{{ monthly_income|floatformat:2|intcomma }}</div>
+      <div class="stat-change {% if income_trend > 0 %}positive{% else %}negative{% endif %}">
+        <i class="fas fa-arrow-{% if income_trend > 0 %}up{% else %}down{% endif %}"></i>
+        {{ income_trend|floatformat:1 }}% this month
+      </div>
+    </div>
+    <div class="stat-card expense">
+      <div class="stat-header">
+        <span class="stat-label">Total Expenses</span>
+        <div class="stat-icon"><i class="fas fa-arrow-down"></i></div>
+      </div>
+      <div class="stat-value">₦{{ monthly_expenses|floatformat:2|intcomma }}</div>
+      <div class="stat-change {% if expense_trend < 0 %}positive{% else %}negative{% endif %}">
+        <i class="fas fa-arrow-{% if expense_trend < 0 %}down{% else %}up{% endif %}"></i>
+        {{ expense_trend|floatformat:1 }}% this month
+      </div>
+    </div>
+    <div class="stat-card balance">
+      <div class="stat-header">
+        <span class="stat-label">Net Balance</span>
+        <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+      </div>
+      <div class="stat-value">₦{{ net_balance|floatformat:2|intcomma }}</div>
+      <div class="stat-change {% if net_balance > 0 %}positive{% else %}negative{% endif %}">
+        <i class="fas fa-arrow-{% if net_balance > 0 %}up{% else %}down{% endif %}"></i>
+        {% if net_balance > 0 %}+{% endif %}{{ net_balance|floatformat:2|intcomma }}
+      </div>
+    </div>
+    <div class="stat-card savings">
+      <div class="stat-header">
+        <span class="stat-label">Savings Progress</span>
+        <div class="stat-icon"><i class="fas fa-piggy-bank"></i></div>
+      </div>
+      <div class="stat-value">{{ savings_progress|floatformat:0 }}%</div>
+      <div class="stat-change">
+        <i class="fas fa-target"></i>
+        ₦{{ total_balance|floatformat:2|intcomma }} of ₦{{ savings_goal|floatformat:2|intcomma }}
+      </div>
+    </div>
+    </div>
+
+    <div class="feature-widgets">
+      <style>
+        .feature-widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .fw-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; transition: border-color 0.2s; }
+        .fw-card:hover { border-color: var(--accent-color); }
+        .fw-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .fw-header i { font-size: 1.25rem; width: 24px; text-align: center; color: var(--accent-color); }
+        .fw-header h3 { font-size: 0.95rem; font-weight: 600; margin: 0; }
+        .fw-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .fw-sub { font-size: 0.8rem; color: var(--text-secondary); }
+        .fw-bar { height: 6px; background: var(--border-color); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
+        .fw-bar-fill { height: 100%; border-radius: 3px; background: var(--accent-color); transition: width 0.3s; }
+        .fw-link { display: inline-block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--accent-color); text-decoration: none; }
+        .fw-link:hover { text-decoration: underline; }
+        .fw-list { list-style: none; padding: 0; margin: 0; }
+        .fw-list li { font-size: 0.85rem; padding: 0.35rem 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; }
+        .fw-list li:last-child { border-bottom: none; }
+        .fw-empty { font-size: 0.85rem; color: var(--text-secondary); padding: 0.5rem 0; }
+      </style>
+      {% comment %}Net Worth{% endcomment %}
+      <div class="fw-card">
+        <div class="fw-header">
+          <i class="fas fa-chart-line"></i>
+          <h3>Net Worth</h3>
+        </div>
+        <div class="fw-value">₦{{ net_worth|floatformat:0|intcomma }}</div>
+        <div class="fw-sub">{{ accounts|length }} account(s) · {{ linked_banks|length }} bank(s) linked</div>
+        <a href="{% url 'bank_list' %}" class="fw-link"><i class="fas fa-plus-circle"></i> Link a bank</a>
+      </div>
+
+      {% comment %}Financial Goals{% endcomment %}
+      <div class="fw-card">
+        <div class="fw-header">
+          <i class="fas fa-bullseye"></i>
+          <h3>Financial Goals</h3>
+        </div>
+        {% if goals %}
+          <ul class="fw-list">
+            {% for g in goals %}
+              <li><span>{{ g.name }}</span><span>{% widthratio g.current_amount g.target_amount 100 %}%</span></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="fw-empty">No goals set yet</div>
+        {% endif %}
+        <a href="{% url 'goal_list' %}" class="fw-link"><i class="fas fa-plus-circle"></i> Set a goal</a>
+      </div>
+
+      {% comment %}Literacy & Learning{% endcomment %}
+      <div class="fw-card">
+        <div class="fw-header">
+          <i class="fas fa-graduation-cap"></i>
+          <h3>Financial Literacy</h3>
+        </div>
+        {% if literacy %}
+          <div class="fw-value">{{ literacy.score }}/100</div>
+          <div class="fw-bar"><div class="fw-bar-fill" style="width:{{ literacy.score }}%"></div></div>
+          <div class="fw-sub">Last assessed {{ literacy.assessed_at|date }}</div>
+        {% else %}
+          <div class="fw-empty">Not yet assessed</div>
+        {% endif %}
+        {% if enrollments %}
+          <div class="fw-sub" style="margin-top:0.5rem;">{{ enrollments|length }} active course{{ enrollments|length|pluralize }}</div>
+        {% endif %}
+        <a href="{% url 'course_list' %}" class="fw-link"><i class="fas fa-book-open"></i> Browse courses</a>
+      </div>
+
+      {% comment %}Projects & Entrepreneurship{% endcomment %}
+      <div class="fw-card">
+        <div class="fw-header">
+          <i class="fas fa-lightbulb"></i>
+          <h3>Projects & Business</h3>
+        </div>
+        {% if submissions %}
+          <div class="fw-sub">{{ submissions|length }} project submission{{ submissions|length|pluralize }}</div>
+        {% else %}
+          <div class="fw-empty">No projects started</div>
+        {% endif %}
+        {% if businesses %}
+          <ul class="fw-list">
+            {% for b in businesses %}
+              <li><span>{{ b.name }}</span><span>{{ b.get_status_display }}</span></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <a href="{% url 'project_list' %}" class="fw-link"><i class="fas fa-rocket"></i> Start a project</a>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="chart-section">
+      <div class="chart-header">
+        <h2 class="chart-title">Spending Analysis</h2>
+        <div class="chart-tabs">
+          <button class="tab-btn active" data-period="week">Week</button>
+          <button class="tab-btn" data-period="month">Month</button>
+          <button class="tab-btn" data-period="year">Year</button>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="mainChart"></canvas>
+      </div>
+    </div>
+    <div class="quick-stats">
+      <h3><i class="fas fa-bolt"></i> Quick Insights</h3>
+      <div class="quick-item">
+        <span class="quick-label">Top Spending Category</span>
+        <span class="quick-value" data-stat="top-category">
+          {% if top_categories.0 %}
+            {{ top_categories.0.category|title }}: ₦{{ top_categories.0.total|floatformat:2|intcomma }}
+          {% else %}No spending data{% endif %}
+        </span>
+      </div>
+      <div class="quick-item">
+        <span class="quick-label">Accounts Balance</span>
+        <span class="quick-value">₦{{ total_balance|floatformat:2|intcomma }}</span>
+      </div>
+      <div class="quick-item">
+        <span class="quick-label">Monthly Cash Flow</span>
+        <span class="quick-value {% if net_cash_flow > 0 %}positive{% else %}negative{% endif %}">
+          {% if net_cash_flow > 0 %}+{% endif %}₦{{ net_cash_flow|floatformat:2|intcomma }}
+        </span>
+      </div>
+      <div class="quick-item">
+        <span class="quick-label">Emergency Fund</span>
+        <span class="quick-value">{{ emergency_fund_months|floatformat:1 }} months</span>
+      </div>
+      <div class="quick-item">
+        <span class="quick-label">Savings Rate</span>
+        <span class="quick-value {% if savings_rate > 0 %}positive{% else %}negative{% endif %}">
+          {{ savings_rate|floatformat:1 }}%
+        </span>
+      </div>
+      <div class="quick-item">
+        <span class="quick-label">Expenditure Rating</span>
+        <span class="quick-value" style="font-size:0.85rem;">{{ expenditure_rating }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="transactions">
+    <div class="transactions-header">
+      <h2 class="transactions-title">Recent Activity</h2>
+      <input type="text" class="search-box" placeholder="Search transactions..." id="searchBox">
+    </div>
+    <div id="transactionList">
+      {% for t in transactions %}
+      <div class="transaction-item" data-category="{{ t.category }}" data-amount="{{ t.amount }}">
+        <div class="transaction-info">
+          <div class="transaction-avatar transaction-income">{{ t.description.0|upper }}</div>
+          <div class="transaction-details">
+            <h4>{{ t.description }}</h4>
+            <p>{{ t.date|date:"M d" }} &bull; {{ t.category|title }} &bull; {{ t.account.name }}</p>
+          </div>
+        </div>
+        <div class="transaction-amount {% if t.transaction_type == 'income' %}positive{% else %}negative{% endif %}">
+          {% if t.transaction_type == 'income' %}+{% else %}-{% endif %}₦{{ t.amount|floatformat:2|intcomma }}
+        </div>
+      </div>
+      {% empty %}
+      <div class="no-transactions" style="text-align:center;padding:2rem;color:var(--muted);">
+        <i class="fas fa-receipt" style="font-size:2rem;margin-bottom:0.5rem;display:block;"></i>
+        <p>No recent transactions found.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="ai-chat">
+  <button class="chat-toggle" onclick="toggleChat()">
+    <i class="fas fa-robot" id="chatIcon"></i>
+  </button>
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header"><i class="fas fa-robot"></i> Financial Assistant</div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-message ai">Hi! I'm your AI financial assistant. I can help you analyze spending, set budgets, and answer questions about your finances. What would you like to know?</div>
+    </div>
+    <div class="user" style="margin:23px;cursor:pointer;" onclick="clearChat()"><i class="fas fa-trash"></i></div>
+    <div class="chat-input">
+      <input type="text" placeholder="Ask me anything..." id="chatInput" onkeypress="handleChatInput(event)">
+    </div>
+  </div>
+</div>
+
+{% if error %}
+<div class="error-message" style="text-align:center;padding:2rem;color:var(--danger);">
+  <i class="fas fa-exclamation-triangle"></i>
+  <p>Error loading dashboard: {{ error }}</p>
+</div>
+{% endif %}
+
+<div class="transaction-modal" id="transactionModal">
+  <div class="modal-overlay" onclick="closeModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Add Transaction</h3>
+      <button onclick="closeModal()" class="close-btn">&times;</button>
+    </div>
+    <form class="transaction-form" id="transactionForm">
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="number" name="amount" placeholder="0.00" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select name="type" required>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="description" placeholder="What was this for?" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category</label>
+          <select name="category" required>
+            <option value="">Select category</option>
+            <option value="food">Food & Dining</option>
+            <option value="transport">Transportation</option>
+            <option value="utilities">Utilities</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="shopping">Shopping</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="salary">Salary</option>
+            <option value="freelance">Freelance</option>
+            <option value="investment">Investment</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Account</label>
+          <select name="account" required>
+            {% for account in accounts %}
+            <option value="{{ account.id }}">{{ account.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" onclick="closeModal()" class="btn-cancel">Cancel</button>
+        <button type="submit" class="btn-add">Add Transaction</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

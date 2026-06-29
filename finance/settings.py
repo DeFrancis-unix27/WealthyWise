@@ -12,9 +12,6 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
 from urllib.parse import urlparse
-import pymysql
-
-pymysql.install_as_MySQLdb()
 
 # ==========================
 # Base & Environment
@@ -86,6 +83,13 @@ INSTALLED_APPS = [
     "two_factor.plugins.webauthn",
     # Local apps
     "financeapp",
+    "banking",
+    "billing",
+    "education",
+    "marketplace",
+    "ai",
+    "goals",
+    "entrepreneur",
 ]
 
 MIDDLEWARE = [
@@ -138,33 +142,34 @@ WSGI_APPLICATION = "finance.wsgi.application"
 # ==========================
 # Database
 # ==========================
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
-        "OPTIONS": {
-            "init_command":"SET sql_mode='STRICT_TRANS_TABLES'",
-            "connect_timeout": 5,
-        }
-    }
-}
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
-            engine="django.db.backends.mysql",
+            engine="django.db.backends.postgresql",
             conn_max_age=600
         )
     }
-    
+elif os.environ.get("DB_NAME"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DB_NAME"),
+            "USER": os.environ.get("DB_USER"),
+            "PASSWORD": os.environ.get("DB_PASSWORD"),
+            "HOST": os.environ.get("DB_HOST"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
+        }
+    }
 else:
-    print("Using SQLite database.")
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # ==========================
 # Password validation
@@ -234,6 +239,7 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 GOOGLE_OAUTH2_SCOPE = os.getenv("GOOGLE_OAUTH2_SCOPE")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 # ==========================
 # Fix SSL Cert Errors (Windows/Python)
 # ==========================

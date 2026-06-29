@@ -32,6 +32,12 @@ urlpatterns = [
     path(f"{settings.ADMIN_URL}", admin.site.urls),
     path("sentry-debug/", trigger_error),
     path("", include("financeapp.urls")),
+    path("banking/", include("banking.urls")),
+    path("billing/", include("billing.urls")),
+    path("education/", include("education.urls")),
+    path("goals/", include("goals.urls")),
+    path("entrepreneur/", include("entrepreneur.urls")),
+    path("marketplace/", include("marketplace.urls")),
 ]
 
 

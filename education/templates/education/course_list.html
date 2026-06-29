@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}Courses - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Courses</h1>
+    <p class="page-subtitle">Structured learning paths to master financial skills</p>
+  </div>
+  <div class="filter-bar">
+    <a href="{% url 'course_list' %}" class="filter-link {% if not request.GET.difficulty %}active{% endif %}">All</a>
+    <a href="?difficulty=beginner" class="filter-link">Beginner</a>
+    <a href="?difficulty=intermediate" class="filter-link">Intermediate</a>
+    <a href="?difficulty=advanced" class="filter-link">Advanced</a>
+  </div>
+  <div class="grid-3">
+    {% for c in courses %}
+      <a href="{% url 'course_detail' c.slug %}" class="card card-hover fade-in-{{ forloop.counter }}">
+        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ c.title }} {% if c.is_premium %}<span class="badge badge-premium">Premium</span>{% endif %}</h3>
+        <p class="text-muted text-sm" style="margin:0 0 0.75rem;">{{ c.description|truncatewords:20 }}</p>
+        <span class="badge badge-{{ c.difficulty }}">{{ c.difficulty|title }}</span>
+        <span class="text-muted text-xs" style="margin-left:0.5rem;">{{ c.estimated_hours }}h</span>
+        {% if c.instructor %}<span class="text-muted text-xs" style="margin-left:0.5rem;">by {{ c.instructor }}</span>{% endif %}
+      </a>
+    {% empty %}
+      <div class="empty-state"><i class="fas fa-graduation-cap"></i><p>No courses published yet.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

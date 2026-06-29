@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Create Goal - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap-sm">
+  <div class="form-card">
+    <h1>New Financial Goal</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Goal Title</label>
+        <input type="text" name="title" class="form-input" placeholder="e.g. Emergency Fund" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select name="category" class="form-select" required>
+          <option value="emergency_fund">Emergency Fund</option>
+          <option value="debt_payoff">Debt Payoff</option>
+          <option value="savings">Savings Goal</option>
+          <option value="investment">Investment Target</option>
+          <option value="education">Education Fund</option>
+          <option value="retirement">Retirement</option>
+          <option value="home">Home Purchase</option>
+          <option value="business">Business Capital</option>
+          <option value="travel">Travel</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Amount</label>
+        <input type="number" name="target_amount" class="form-input" step="0.01" placeholder="1000000" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Currency</label>
+        <select name="currency" class="form-select">
+          <option value="NGN">NGN</option>
+          <option value="USD">USD</option>
+          <option value="GBP">GBP</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;">
+        <button type="submit" class="btn btn-primary">Create Goal</button>
+        <a href="{% url 'goal_list' %}" class="link">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

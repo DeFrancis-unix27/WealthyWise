@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}Financial Concepts - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Financial Concepts</h1>
+    <p class="page-subtitle">Learn the building blocks of financial literacy</p>
+  </div>
+  <div class="filter-bar">
+    <a href="{% url 'concept_list' %}" class="filter-link {% if not request.GET.difficulty %}active{% endif %}">All</a>
+    <a href="?difficulty=beginner" class="filter-link {% if request.GET.difficulty == 'beginner' %}active{% endif %}">Beginner</a>
+    <a href="?difficulty=intermediate" class="filter-link {% if request.GET.difficulty == 'intermediate' %}active{% endif %}">Intermediate</a>
+    <a href="?difficulty=advanced" class="filter-link {% if request.GET.difficulty == 'advanced' %}active{% endif %}">Advanced</a>
+  </div>
+  <div class="grid-3">
+    {% for c in concepts %}
+      <a href="{% url 'concept_detail' c.slug %}" class="card card-hover fade-in-{{ forloop.counter }}">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">{{ c.icon|default:"📘" }}</div>
+        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ c.title }}</h3>
+        <p class="text-muted text-sm" style="margin:0 0 0.75rem;">{{ c.description|truncatewords:20 }}</p>
+        <span class="badge badge-{{ c.difficulty }}">{{ c.difficulty|title }}</span>
+        <span class="text-xs text-muted" style="margin-left:0.5rem;">{{ c.estimated_minutes }} min</span>
+      </a>
+    {% empty %}
+      <div class="empty-state"><i class="fas fa-book"></i><p>No concepts published yet.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

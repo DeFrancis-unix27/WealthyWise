@@ -1,0 +1,15 @@
+.env
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.sqlite3
+logs/
+media/
+staticfiles/
+.dockerignore
+docker-compose.yml
+README.md
+PROJECT-SUMMARY.md

@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: wealthywise
+      POSTGRES_USER: wealthywise
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wealthywise"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://wealthywise:${DB_PASSWORD:-changeme}@db:5432/wealthywise
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

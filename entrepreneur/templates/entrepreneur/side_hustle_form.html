@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}Add Side Hustle - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap-sm">
+  <div class="form-card">
+    <h1>New Side Hustle</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-input" placeholder="e.g. Freelance Writing" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Platform Type</label>
+        <select name="platform_type" class="form-select">
+          <option value="freelance">Freelance</option><option value="ecommerce">E-Commerce</option>
+          <option value="content">Content Creation</option><option value="gig">Gig Economy</option>
+          <option value="consulting">Consulting</option><option value="tutoring">Tutoring</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;">
+        <button type="submit" class="btn btn-primary">Add Hustle</button>
+        <a href="{% url 'side_hustle_list' %}" class="link">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

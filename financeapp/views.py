@@ -1,6 +1,5 @@
 import json
 import csv
-import requests
 from datetime import datetime, timedelta
 from collections import defaultdict
 from decimal import Decimal
@@ -39,6 +38,10 @@ from .models import (
     ContactMessage,
     Budget,
 )
+from goals.models import FinancialGoal, LiteracyAssessment
+from banking.models import LinkedBank
+from education.models import Enrollment, ProjectSubmission
+from entrepreneur.models import Business
 from .forms import (
     TransactionForm,
     AccountForm,
@@ -203,9 +206,10 @@ def rate_expenditure(total_income, total_expenses):
     # ----------------- Landing Page -----------------
 
 
-@login_required
 def landing(request):
-    """Main dashboard view with comprehensive financial analysis"""
+    """Main dashboard view for authenticated users, marketing page for anonymous"""
+    if not request.user.is_authenticated:
+        return render(request, "landing_page.html")
     user = request.user
     transactions = Transaction.objects.filter(user=user).order_by("-date")[:5]
     accounts = Account.objects.filter(user=user)
@@ -251,6 +255,15 @@ def landing(request):
             return float(obj)
         raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
 
+    goals = FinancialGoal.objects.filter(user=user).order_by("-created_at")[:3]
+    linked_banks = LinkedBank.objects.filter(user=user, is_active=True)
+    literacy = LiteracyAssessment.objects.filter(user=user).order_by("-assessed_at").first()
+    enrollments = Enrollment.objects.filter(user=user).order_by("-enrolled_at")[:3]
+    submissions = ProjectSubmission.objects.filter(user=user).order_by("-submitted_at")[:3]
+    businesses = Business.objects.filter(user=user)[:2]
+
+    net_worth = total_balance + sum(lb.balance or 0 for lb in linked_banks)
+
     context = {
         "transactions": transactions,
         "accounts": accounts,
@@ -267,15 +280,22 @@ def landing(request):
         "net_balance": net_balance,
         "savings_progress": savings_progress,
         "savings_goal": savings_goal,
-        "income_trend": calculate_trend(monthly_income, 0),  # add prev month logic
+        "income_trend": calculate_trend(monthly_income, 0),
         "expense_trend": calculate_trend(monthly_expenses, 0),
         "net_cash_flow": monthly_income - monthly_expenses,
         "emergency_fund_months": calculate_emergency_fund(monthly_expenses, total_balance),
         "savings_rate": calculate_savings_rate(monthly_income, monthly_expenses),
         "expenditure_rating": rate_expenditure(monthly_income, monthly_expenses),
         "top_categories": top_categories,
+        "goals": goals,
+        "linked_banks": linked_banks,
+        "literacy": literacy,
+        "enrollments": enrollments,
+        "submissions": submissions,
+        "businesses": businesses,
+        "net_worth": net_worth,
     }
-    return render(request, "base.html", context)
+    return render(request, "dashboard.html", context)
 
 
 # ----------------- Authentication Views -----------------
@@ -1014,29 +1034,16 @@ def home_redirect(request):
 
 @csrf_exempt
 def external_chat_view(request):
-    """Forward messages to a local LLM endpoint and return response"""
+    """Forward messages to Google Gemini with personalized user context"""
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             user_message = data.get("text", "")
 
-            response = requests.post(
-                "http://localhost:11434/api/chat",
-                json={
-                    "model": "llama3",
-                    "messages": [{"role": "user", "content": user_message}],
-                },
-                timeout=10,
-            )
+            from ai.services import get_gemini_response
+            reply = get_gemini_response(user_message, user=request.user if request.user.is_authenticated else None)
 
-            result = response.json()
-            bot_reply = (
-                result.get("message", {}).get("content")
-                if isinstance(result, dict)
-                else None
-            )
-
-            return JsonResponse({"reply": bot_reply}, status=200)
+            return JsonResponse({"reply": reply}, status=200)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)

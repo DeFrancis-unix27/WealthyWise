@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WealthyWise — Your Financial Intelligence Platform</title>
+  <meta name="description" content="WealthyWise combines AI-powered financial tracking, education, and marketplace tools to help you build real wealth." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0b0f14; --bg-alt: #0d1219; --panel: #111821; --muted: #92a2b3;
+      --text: #e8eef6; --accent: #4aa8ff; --accent-2: #7c5cff; --accent-glow: rgba(74, 168, 255, 0.15);
+      --danger: #ff6b6b; --success: #3ddc97; --warning: #fbbf24; --card: #0f141b; --border: #1a2330;
+      --radius: 16px; --radius-sm: 12px; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ---- Three.js canvas ---- */
+    #three-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+    /* ---- Nav ---- */
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: rgba(11, 15, 20, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-brand { font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+    .nav-brand span { color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a { font-size: 0.85rem; color: var(--muted); font-weight: 500; transition: var(--transition); }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { padding: 0.5rem 1.25rem; border-radius: 8px; background: var(--accent); color: #fff !important; font-weight: 600; transition: var(--transition); }
+    .nav-cta:hover { box-shadow: 0 4px 20px rgba(74, 168, 255, 0.3); transform: translateY(-1px); }
+
+    /* ---- Hero ---- */
+    .hero { position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; padding: 8rem 2rem 4rem; }
+    .hero-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 1rem; border-radius: 20px; background: var(--accent-glow); border: 1px solid rgba(74, 168, 255, 0.2); font-size: 0.8rem; color: var(--accent); margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -1px; }
+    .hero h1 .highlight { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 1.1rem; color: var(--muted); line-height: 1.7; max-width: 540px; margin-bottom: 2rem; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary { padding: 0.85rem 2rem; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-weight: 600; font-size: 1rem; border: none; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(74, 168, 255, 0.3); }
+    .btn-secondary { padding: 0.85rem 2rem; border-radius: 10px; background: transparent; color: var(--text); font-weight: 600; font-size: 1rem; border: 1px solid var(--border); cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-secondary:hover { border-color: var(--accent); background: var(--accent-glow); }
+
+    .hero-visual { position: relative; }
+    .hero-card-3d { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; transform-style: preserve-3d; perspective: 1000px; transition: transform 0.3s; }
+    .hero-card-3d:hover { transform: rotateY(-3deg) rotateX(2deg); }
+    .hero-card-3d .stat-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+    .hero-card-3d .stat-row:last-child { border-bottom: none; }
+    .hero-card-3d .stat-label { font-size: 0.8rem; color: var(--muted); }
+    .hero-card-3d .stat-value { font-weight: 700; }
+    .hero-card-3d .stat-value.up { color: var(--success); }
+    .hero-card-3d .stat-value.down { color: var(--danger); }
+    .hero-card-3d .chart-bar { height: 4px; border-radius: 2px; margin-top: 0.5rem; background: var(--border); overflow: hidden; }
+    .hero-card-3d .chart-bar-fill { height: 100%; border-radius: 2px; background: var(--accent); width: 67%; }
+
+    /* ---- Section Common ---- */
+    section { position: relative; z-index: 1; padding: 6rem 2rem; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-label { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 6px; background: var(--accent-glow); color: var(--accent); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+    .section-title { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; margin-bottom: 1rem; letter-spacing: -0.5px; }
+    .section-subtitle { font-size: 1rem; color: var(--muted); max-width: 600px; line-height: 1.7; }
+
+    /* ---- Features Grid 3D ---- */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .feature-3d { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; transition: transform 0.3s, border-color 0.3s; transform-style: preserve-3d; perspective: 800px; }
+    .feature-3d:hover { transform: translateY(-8px) rotateX(2deg); border-color: var(--accent); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .feature-3d .icon { width: 48px; height: 48px; border-radius: 12px; background: var(--accent-glow); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 1.25rem; color: var(--accent); }
+    .feature-3d h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .feature-3d p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+    /* ---- Market Ticker ---- */
+    .market-scroll { overflow: hidden; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 0; margin: 2rem 0; }
+    .market-track { display: flex; gap: 2rem; animation: scroll 30s linear infinite; width: max-content; }
+    .market-item { display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; font-size: 0.85rem; padding: 0 1rem; border-right: 1px solid var(--border); }
+    .market-item .sym { font-weight: 600; }
+    .market-item .price { color: var(--muted); }
+    .market-item .chg.up { color: var(--success); }
+    .market-item .chg.down { color: var(--danger); }
+    @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    /* ---- TradingView Widget Container ---- */
+    .tv-container { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 2rem; }
+    .tv-container .tv-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .tv-container .tv-header h3 { font-size: 1rem; font-weight: 600; }
+
+    /* ---- Curated Resources ---- */
+    .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .resource-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: all 0.3s; }
+    .resource-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+    .resource-card .tag { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; }
+    .resource-card .tag.course { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .resource-card .tag.tool { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+    .resource-card .tag.media { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+    .resource-card .tag.market { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+    .resource-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .resource-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem; }
+    .resource-card .link { color: var(--accent); font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .resource-card .link:hover { gap: 0.6rem; }
+
+    /* ---- CTA ---- */
+    .cta-section { text-align: center; position: relative; }
+    .cta-card { background: linear-gradient(135deg, rgba(74, 168, 255, 0.05), rgba(124, 92, 255, 0.05)); border: 1px solid rgba(74, 168, 255, 0.2); border-radius: 24px; padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
+    .cta-card h2 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
+    .cta-card p { color: var(--muted); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+    /* ---- Footer ---- */
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 3rem 2rem; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; }
+    .footer-brand { font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem; }
+    .footer-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; max-width: 300px; }
+    .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text); }
+    .footer-col a { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; transition: var(--transition); }
+    .footer-col a:hover { color: var(--accent); }
+    .footer-bottom { max-width: 1200px; margin: 2rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .hero { padding: 6rem 1.5rem 3rem; }
+      .nav-links { display: none; }
+      .nav-links.mobile-open { display: flex; flex-direction: column; position: fixed; top: 70px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); padding: 1rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .cta-card { padding: 3rem 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .footer-inner { grid-template-columns: 1fr; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn-primary, .hero-actions .btn-secondary { width: 100%; justify-content: center; }
+    }
+
+    /* ---- Mobile menu toggle ---- */
+    .mobile-menu-btn { display: none; background: none; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.75rem; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+    @media (max-width: 768px) { .mobile-menu-btn { display: flex; align-items: center; gap: 0.5rem; } }
+
+    /* ---- Scrollbar ---- */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <canvas id="three-canvas"></canvas>
+
+  <!-- Nav -->
+  <nav class="navbar">
+    <div class="nav-brand">Wealthy<span>Wise</span></div>
+    <div class="nav-links" id="navLinks">
+      <a href="#features">Features</a>
+      <a href="#courses">Courses</a>
+      <a href="#tools">Tools</a>
+      <a href="#market">Markets</a>
+      <a href="{% url 'login' %}" class="nav-cta">Get Started</a>
+    </div>
+    <button class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('mobile-open')"><i class="fas fa-bars"></i></button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge"><i class="fas fa-sparkles"></i> AI-Powered Financial Intelligence</div>
+        <h1>Your Money,<br><span class="highlight">Smarter & Stronger</span></h1>
+        <p>Track spending, learn financial concepts, set goals, and grow your business — all in one platform powered by AI and real market data.</p>
+        <div class="hero-actions">
+          <a href="{% url 'signup' %}" class="btn-primary"><i class="fas fa-rocket"></i> Start Free</a>
+          <a href="#features" class="btn-secondary"><i class="fas fa-play-circle"></i> See How It Works</a>
+        </div>
+        <div style="display:flex;gap:2rem;margin-top:2.5rem;">
+          <div><div style="font-size:1.5rem;font-weight:700;">50K+</div><div style="font-size:0.8rem;color:var(--muted);">Active Users</div></div>
+          <div><div style="font-size:1.5rem;font-weight:700;">$2M+</div><div style="font-size:0.8rem;color:var(--muted);">Tracked Monthly</div></div>
+          <div><div style="font-size:1.5rem;font-weight:700;">4.9★</div><div style="font-size:0.8rem;color:var(--muted);">User Rating</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card-3d" id="heroCard3d">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+            <span style="font-weight:600;">Portfolio Overview</span>
+            <span style="color:var(--success);font-weight:700;">+12.4%</span>
+          </div>
+          <div class="stat-row"><span class="stat-label">Total Balance</span><span class="stat-value up">$247,890</span></div>
+          <div class="stat-row"><span class="stat-label">Monthly Income</span><span class="stat-value up">$12,450</span></div>
+          <div class="stat-row"><span class="stat-label">Monthly Expenses</span><span class="stat-value down">$6,230</span></div>
+          <div class="stat-row"><span class="stat-label">Investments</span><span class="stat-value up">$89,200</span></div>
+          <div class="stat-row"><span class="stat-label">Savings Rate</span><span class="stat-value up">48%</span></div>
+          <div style="margin-top:1rem;">
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--muted);margin-bottom:0.25rem;"><span>Portfolio Growth</span><span>+18.3%</span></div>
+            <div class="chart-bar"><div class="chart-bar-fill" style="width:78%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="section-inner">
+      <div style="text-align:center;">
+        <span class="section-label">Features</span>
+        <h2 class="section-title">Everything You Need to <span style="background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Build Wealth</span></h2>
+        <p class="section-subtitle" style="margin:0 auto 2rem;">From AI-powered insights to hands-on courses, we've built the complete fintech learning ecosystem.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-3d" style="transition-delay:0.1s;">
+          <div class="icon"><i class="fas fa-robot"></i></div>
+          <h3>AI Financial Assistant</h3>
+          <p>Get personalized advice based on your actual transactions, budgets, and goals. Our Gemini-powered AI understands your unique financial situation.</p>
+        </div>
+        <div class="feature-3d" style="transition-delay:0.2s;">
+          <div class="icon"><i class="fas fa-university"></i></div>
+          <h3>Real Bank Sync</h3>
+          <p>Connect your bank accounts via Mono (Nigeria), Plaid (US/CA), or Truelayer (UK/EU). Auto-sync transactions daily with encrypted connections.</p>
+        </div>
+        <div class="feature-3d" style="transition-delay:0.3s;">
+          <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+          <h3>Financial Education</h3>
+          <p>Learn through structured courses, hands-on projects, live workshops, and interactive concepts — from beginner to advanced levels.</p>
+        </div>
+        <div class="feature-3d" style="transition-delay:0.4s;">
+          <div class="icon"><i class="fas fa-bullseye"></i></div>
+          <h3>Smart Goal Tracking</h3>
+          <p>Set financial goals — emergency fund, debt payoff, investment targets — and track progress with milestone breakdowns and AI nudges.</p>
+        </div>
+        <div class="feature-3d" style="transition-delay:0.5s;">
+          <div class="icon"><i class="fas fa-store"></i></div>
+          <h3>Marketplace & Affiliates</h3>
+          <p>Access curated financial tools, templates, and partner services. Earn commissions through our affiliate program by referring quality products.</p>
+        </div>
+        <div class="feature-3d" style="transition-delay:0.6s;">
+          <div class="icon"><i class="fas fa-chart-line"></i></div>
+          <h3>Real Market Data</h3>
+          <p>Live stock prices, forex rates, and crypto tracking powered by TradingView. Make informed investment decisions with real-time data.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marketing Ticker -->
+  <section style="padding:2rem;">
+    <div class="section-inner">
+      <div class="market-scroll">
+        <div class="market-track" id="marketTrack">
+          <div class="market-item"><span class="sym">S&P 500</span><span class="price">5,478.23</span><span class="chg up"><i class="fas fa-caret-up"></i> +0.87%</span></div>
+          <div class="market-item"><span class="sym">NASDAQ</span><span class="price">17,689.45</span><span class="chg up"><i class="fas fa-caret-up"></i> +1.12%</span></div>
+          <div class="market-item"><span class="sym">BTC/USD</span><span class="price">67,432.10</span><span class="chg up"><i class="fas fa-caret-up"></i> +2.45%</span></div>
+          <div class="market-item"><span class="sym">ETH/USD</span><span class="price">3,521.80</span><span class="chg down"><i class="fas fa-caret-down"></i> -0.32%</span></div>
+          <div class="market-item"><span class="sym">EUR/USD</span><span class="price">1.0845</span><span class="chg up"><i class="fas fa-caret-up"></i> +0.15%</span></div>
+          <div class="market-item"><span class="sym">GBP/USD</span><span class="price">1.2734</span><span class="chg down"><i class="fas fa-caret-down"></i> -0.08%</span></div>
+          <div class="market-item"><span class="sym">NGN/USD</span><span class="price">1,482.50</span><span class="chg up"><i class="fas fa-caret-up"></i> +0.52%</span></div>
+          <div class="market-item"><span class="sym">AAPL</span><span class="price">198.34</span><span class="chg up"><i class="fas fa-caret-up"></i> +1.03%</span></div>
+          <div class="market-item"><span class="sym">GOOGL</span><span class="price">186.72</span><span class="chg up"><i class="fas fa-caret-up"></i> +0.67%</span></div>
+          <div class="market-item"><span class="sym">GOLD</span><span class="price">2,358.60</span><span class="chg down"><i class="fas fa-caret-down"></i> -0.21%</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real-Time Market Chart (TradingView Widget) -->
+  <section id="market">
+    <div class="section-inner">
+      <div style="text-align:center;">
+        <span class="section-label">Live Markets</span>
+        <h2 class="section-title">Real-Time <span style="color:var(--accent);">Market Data</span></h2>
+        <p class="section-subtitle" style="margin:0 auto 2rem;">Track global markets, stocks, forex, and crypto with real-time data powered by TradingView.</p>
+      </div>
+      <div class="tv-container">
+        <div class="tv-header">
+          <h3><i class="fas fa-chart-simple" style="color:var(--accent);margin-right:0.5rem;"></i> S&P 500 &mdash; Real-Time Chart</h3>
+          <span style="font-size:0.75rem;color:var(--muted);">Data by TradingView</span>
+        </div>
+        <div style="height:400px;">
+          <div class="tradingview-widget-container" style="height:100%;width:100%;">
+            <div id="tv-chart" style="height:100%;width:100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Curated Resources -->
+  <section id="courses">
+    <div class="section-inner">
+      <div style="text-align:center;">
+        <span class="section-label">Curated Resources</span>
+        <h2 class="section-title">Best <span style="background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Learning & Tools</span></h2>
+        <p class="section-subtitle" style="margin:0 auto 2rem;">We've curated the best courses, media, and financial tools from around the web to accelerate your journey.</p>
+      </div>
+      <div class="resources-grid">
+        <div class="resource-card">
+          <span class="tag course">Course</span>
+          <h3>Financial Markets (Yale)</h3>
+          <p>Nobel laureate Robert Shiller teaches the fundamentals of financial markets, risk management, and behavioral finance. Free on Coursera.</p>
+          <a href="https://www.coursera.org/learn/financial-markets-global" target="_blank" rel="noopener" class="link">Explore Course <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag course">Course</span>
+          <h3>Harvard Business Review</h3>
+          <p>World's top business publication with case studies, management insights, and leadership strategies from Harvard Business School.</p>
+          <a href="https://hbr.org/" target="_blank" rel="noopener" class="link">Read HBR <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag course">Course</span>
+          <h3>Financial Literacy by Khan Academy</h3>
+          <p>Free, world-class education on personal finance: budgeting, investing, credit, retirement, and more. Perfect for beginners.</p>
+          <a href="https://www.khanacademy.org/college-careers-more/personal-finance" target="_blank" rel="noopener" class="link">Start Learning <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag tool">Tool</span>
+          <h3>TradingView</h3>
+          <p>Professional-grade charting platform with real-time data, technical indicators, and community-driven analysis for global markets.</p>
+          <a href="https://www.tradingview.com/" target="_blank" rel="noopener" class="link">Use TradingView <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag tool">Tool</span>
+          <h3>Bloomberg Terminal</h3>
+          <p>The gold standard for financial data and analytics. Used by top investors, analysts, and institutions worldwide for market intelligence.</p>
+          <a href="https://www.bloomberg.com/professional/" target="_blank" rel="noopener" class="link">Learn More <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag media">Media</span>
+          <h3>Bloomberg Markets</h3>
+          <p>Real-time financial news, market data, and analysis covering global economies, stocks, bonds, commodities, and crypto.</p>
+          <a href="https://www.bloomberg.com/markets" target="_blank" rel="noopener" class="link">Follow Markets <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag media">Media</span>
+          <h3>Financial Times</h3>
+          <p>In-depth global business news, financial analysis, and market commentary from one of the world's most trusted financial newspapers.</p>
+          <a href="https://www.ft.com/" target="_blank" rel="noopener" class="link">Read FT <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag market">Market Data</span>
+          <h3>Yahoo Finance</h3>
+          <p>Free stock quotes, market news, portfolio tracking, and financial data for global markets. The most accessible market data platform.</p>
+          <a href="https://finance.yahoo.com/" target="_blank" rel="noopener" class="link">View Markets <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag market">Market Data</span>
+          <h3>Investopedia</h3>
+          <p>Comprehensive financial dictionary, investing tutorials, market analysis, and simulator for learning trading strategies risk-free.</p>
+          <a href="https://www.investopedia.com/" target="_blank" rel="noopener" class="link">Explore <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag course">Course</span>
+          <h3>MIT OpenCourseWare: Finance</h3>
+          <p>Free MIT-level finance courses covering corporate finance, investment theory, derivatives, and quantitative analysis.</p>
+          <a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener" class="link">Browse MIT Courses <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag tool">Tool</span>
+          <h3>CoinMarketCap</h3>
+          <p>Real-time cryptocurrency prices, market caps, trading volumes, and portfolio tracking for thousands of crypto assets.</p>
+          <a href="https://coinmarketcap.com/" target="_blank" rel="noopener" class="link">Track Crypto <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="resource-card">
+          <span class="tag media">Media</span>
+          <h3>Wall Street Journal</h3>
+          <p>Premier financial journalism covering business news, markets, tech, politics, and economic trends worldwide.</p>
+          <a href="https://www.wsj.com/" target="_blank" rel="noopener" class="link">Read WSJ <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="section-inner">
+      <div class="cta-card">
+        <h2>Ready to Transform Your Financial Future?</h2>
+        <p>Join 50,000+ users who are already tracking, learning, and growing with WealthyWise. Start free — no credit card needed.</p>
+        <a href="{% url 'signup' %}" class="btn-primary" style="font-size:1.1rem;padding:1rem 2.5rem;"><i class="fas fa-rocket"></i> Get Started Free</a>
+        <p style="margin-top:1rem;font-size:0.8rem;color:var(--muted);">No credit card required &middot; Cancel anytime</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">WealthyWise</div>
+        <p class="footer-desc">AI-powered financial intelligence platform. Track, learn, and grow your wealth with personalized insights and real market data.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="#features">Features</a>
+        <a href="#courses">Courses</a>
+        <a href="#market">Markets</a>
+        <a href="{% url 'pricing' %}">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="{% url 'faq' %}">FAQ</a>
+        <a href="{% url 'contact' %}">Contact</a>
+        <a href="{% url 'privacy' %}">Privacy</a>
+        <a href="{% url 'terms' %}">Terms</a>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+        <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+        <a href="#"><i class="fab fa-github"></i> GitHub</a>
+        <a href="#"><i class="fab fa-youtube"></i> YouTube</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; {% now "Y" %} WealthyWise. All rights reserved.</span>
+      <span>Built with <i class="fas fa-heart" style="color:var(--danger);"></i> for financial freedom</span>
+    </div>
+  </footer>
+
+  <!-- Three.js Background -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+  (function() {
+    const canvas = document.getElementById('three-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Particles
+    const particlesGeo = new THREE.BufferGeometry();
+    const count = 2000;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
+
+    for (let i = 0; i < count * 3; i += 3) {
+      positions[i] = (Math.random() - 0.5) * 30;
+      positions[i+1] = (Math.random() - 0.5) * 20;
+      positions[i+2] = (Math.random() - 0.5) * 15 - 5;
+      const c = 0.2 + Math.random() * 0.3;
+      colors[i] = 0.2 + Math.random() * 0.1;     // R
+      colors[i+1] = 0.3 + Math.random() * 0.15;   // G
+      colors[i+2] = 0.5 + Math.random() * 0.3;    // B
+      sizes[Math.floor(i/3)] = Math.random() * 2 + 0.5;
+    }
+
+    particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particlesGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    particlesGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    const particlesMat = new THREE.PointsMaterial({
+      size: 0.04,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.6,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true,
+    });
+
+    const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
+    scene.add(particlesMesh);
+
+    // Connecting lines
+    const lineGeo = new THREE.BufferGeometry();
+    const linePositions = [];
+    const posArr = particlesGeo.attributes.position.array;
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+      for (let j = i + 1; j < count; j++) {
+        const j3 = j * 3;
+        const dx = posArr[i3] - posArr[j3];
+        const dy = posArr[i3+1] - posArr[j3+1];
+        const dz = posArr[i3+2] - posArr[j3+2];
+        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        if (dist < 1.5) {
+          linePositions.push(posArr[i3], posArr[i3+1], posArr[i3+2]);
+          linePositions.push(posArr[j3], posArr[j3+1], posArr[j3+2]);
+        }
+      }
+    }
+
+    lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x4aa8ff, transparent: true, opacity: 0.05 });
+    const lineMesh = new THREE.LineSegments(lineGeo, lineMat);
+    scene.add(lineMesh);
+
+    camera.position.z = 8;
+    camera.position.y = 1;
+
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      particlesMesh.rotation.y += 0.0003;
+      particlesMesh.rotation.x += Math.sin(Date.now() * 0.0001) * 0.0001;
+      lineMesh.rotation.y = particlesMesh.rotation.y;
+      lineMesh.rotation.x = particlesMesh.rotation.x;
+
+      camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.02;
+      camera.position.y += (-mouseY * 0.5 - camera.position.y) * 0.02;
+      camera.lookAt(scene.position);
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  })();
+  </script>
+
+  <!-- 3D Card Tilt Effect -->
+  <script>
+  document.querySelectorAll('.hero-card-3d, .feature-3d').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      el.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)';
+    });
+  });
+  </script>
+
+  <!-- TradingView Widget -->
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <script>
+  setTimeout(function() {
+    if (typeof TradingView !== 'undefined') {
+      new TradingView.widget({
+        container_id: 'tv-chart',
+        width: '100%',
+        height: '100%',
+        symbol: 'SPY',
+        interval: 'D',
+        timezone: 'Etc/UTC',
+        theme: 'dark',
+        style: '1',
+        locale: 'en',
+        toolbar_bg: '#0f141b',
+        enable_publishing: false,
+        allow_symbol_change: true,
+        hide_top_toolbar: false,
+        save_image: false,
+        studies: ['RSI@tv-basicstudies', 'MACD@tv-basicstudies'],
+        backgroundColor: '#0f141b',
+        gridColor: '#1a2330',
+      });
+    }
+  }, 500);
+  </script>
+
+  <!-- Smooth scroll -->
+  <script>
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href');
+      if (id === '#') return;
+      e.preventDefault();
+      document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  </script>
+</body>
+</html>

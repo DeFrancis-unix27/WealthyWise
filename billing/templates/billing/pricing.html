@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block title %}Pricing - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap-md">
+  <div class="page-header text-center">
+    <h1 class="page-title">Choose your plan</h1>
+    <p class="page-subtitle">Unlock premium features, personalized AI guidance, and advanced financial tools</p>
+  </div>
+  <div class="grid-3">
+    {% for plan in plans %}
+      <div class="plan-card {% if plan.tier == 'premium' %}featured{% endif %} fade-in-{{ forloop.counter }}">
+        <div class="plan-name">{{ plan.name }}</div>
+        <div class="plan-price">{{ plan.currency }} {{ plan.price|floatformat:0 }} <span>/{{ plan.duration }}</span></div>
+        <div class="plan-duration">{{ plan.get_tier_display }} plan</div>
+        <div class="plan-features">
+          {% if plan.tier == "free" %}
+            <div class="plan-feature"><i class="fas fa-check"></i> Basic transaction tracking</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Manual account management</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Basic budgeting</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 1 financial concept</div>
+            <div class="plan-feature"><i class="fas fa-times"></i> Bank sync</div>
+            <div class="plan-feature"><i class="fas fa-times"></i> AI personalization</div>
+            <div class="plan-feature"><i class="fas fa-times"></i> Premium courses</div>
+          {% elif plan.tier == "premium" %}
+            <div class="plan-feature"><i class="fas fa-check"></i> Everything in Free</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Auto bank sync</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> AI personalized guidance</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Full course & project library</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Advanced financial tools</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Workshop & webinar access</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Goal tracking & milestones</div>
+          {% elif plan.tier == "business" %}
+            <div class="plan-feature"><i class="fas fa-check"></i> Everything in Premium</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Business/venture tracking</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Entrepreneurship paths</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Marketplace seller access</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Multi-user support</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Priority support</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Affiliate program access</div>
+          {% endif %}
+        </div>
+        {% if user_subscription and user_subscription.plan.tier == plan.tier %}
+          <span class="current-badge">Current Plan</span>
+        {% elif plan.tier == "free" %}
+          <a href="{% url 'landing' %}" class="btn btn-secondary btn-block">Get Started Free</a>
+        {% else %}
+          <a href="{% url 'subscribe' plan.id %}" class="btn btn-primary btn-block">Upgrade to {{ plan.name }}</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

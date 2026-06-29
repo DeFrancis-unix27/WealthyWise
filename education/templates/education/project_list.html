@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block title %}Projects - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Hands-On Projects</h1>
+    <p class="page-subtitle">Apply your knowledge with real-world financial projects</p>
+  </div>
+  <div class="filter-bar">
+    <a href="{% url 'project_list' %}" class="filter-link {% if not request.GET.difficulty %}active{% endif %}">All</a>
+    <a href="?difficulty=beginner" class="filter-link">Beginner</a>
+    <a href="?difficulty=intermediate" class="filter-link">Intermediate</a>
+    <a href="?difficulty=advanced" class="filter-link">Advanced</a>
+  </div>
+  <div class="grid-3">
+    {% for p in projects %}
+      <a href="{% url 'project_detail' p.slug %}" class="card card-hover fade-in-{{ forloop.counter }}">
+        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ p.title }} {% if p.is_premium %}<span class="badge badge-premium">Premium</span>{% endif %}</h3>
+        <p class="text-muted text-sm" style="margin:0 0 0.75rem;">{{ p.description|truncatewords:20 }}</p>
+        <span class="badge badge-{{ p.difficulty }}">{{ p.difficulty|title }}</span>
+        <span class="text-muted text-xs" style="margin-left:0.5rem;">{{ p.estimated_minutes }} min</span>
+      </a>
+    {% empty %}
+      <div class="empty-state"><i class="fas fa-rocket"></i><p>No projects published yet.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

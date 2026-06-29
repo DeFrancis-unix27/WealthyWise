@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+{% block content %}
+<div class="page-wrap-md">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="{% url 'course_detail' course.slug %}">{{ course.title }}</a> / {{ lesson.title }}</div>
+    <h1 class="page-title">{{ lesson.title }}</h1>
+    <span class="text-muted text-sm">{{ lesson.duration_minutes }} min</span>
+  </div>
+  <div style="line-height:1.7;">{{ lesson.content|linebreaks }}</div>
+  {% if lesson.video_url %}
+    <a href="{{ lesson.video_url }}" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-video"></i> Watch Video</a>
+  {% endif %}
+  <div class="nav-prev-next">
+    {% if prev_lesson %}<a href="{% url 'lesson_detail' course.slug prev_lesson.id %}">&larr; {{ prev_lesson.title }}</a>{% else %}<span class="disabled">&larr; Previous</span>{% endif %}
+    {% if next_lesson %}<a href="{% url 'lesson_detail' course.slug next_lesson.id %}">{{ next_lesson.title }} &rarr;</a>{% else %}<span class="disabled">Next &rarr;</span>{% endif %}
+  </div>
+</div>
+{% endblock %}

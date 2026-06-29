@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Add Business - WealthyWise{% endblock %}
+{% block content %}
+<div class="page-wrap-sm">
+  <div class="form-card">
+    <h1>New Business</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Business Name</label>
+        <input type="text" name="name" class="form-input" placeholder="e.g. My Startup" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Business Type</label>
+        <select name="business_type" class="form-select">
+          <option value="sole_proprietorship">Sole Proprietorship</option>
+          <option value="llc">LLC</option><option value="partnership">Partnership</option>
+          <option value="corporation">Corporation</option><option value="nonprofit">Non-Profit</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Currency</label>
+        <select name="currency" class="form-select">
+          <option value="NGN">NGN</option><option value="USD">USD</option><option value="GBP">GBP</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;">
+        <button type="submit" class="btn btn-primary">Create Business</button>
+        <a href="{% url 'business_list' %}" class="link">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

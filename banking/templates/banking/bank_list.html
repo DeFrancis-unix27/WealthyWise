@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Linked Banks - WealthyWise{% endblock %}
+
+{% block content %}
+<style>
+  .bank-container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+  .bank-header { margin-bottom: 2rem; }
+  .bank-header h1 { font-size: 1.75rem; font-weight: 700; margin: 0; }
+  .bank-header p { color: var(--text-secondary); margin: 0.25rem 0 0 0; }
+  .provider-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .provider-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .provider-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
+  .provider-card .icon { font-size: 2rem; margin-bottom: 0.75rem; }
+  .provider-card h3 { font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem 0; }
+  .provider-card p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+  .bank-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .bank-info h3 { font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem 0; }
+  .bank-info p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+  .bank-status { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+  .bank-status.active { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+  .bank-status.revoked { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+  .bank-status.expired { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+  .bank-actions { display: flex; gap: 0.5rem; align-items: center; }
+  .btn-bank { padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary); cursor: pointer; transition: all 0.2s; font-size: 0.85rem; text-decoration: none; }
+  .btn-bank:hover { border-color: var(--accent-color); }
+  .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
+  .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+</style>
+
+<div class="bank-container">
+  <div class="bank-header">
+    <h1>Linked Banks</h1>
+    <p>Connect your bank accounts to automatically sync transactions</p>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if providers %}
+    <h2 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Connect a new bank</h2>
+    <div class="provider-grid">
+      {% for provider in providers %}
+        <a href="{% url 'link_bank' provider=provider.provider %}" class="provider-card" style="text-decoration: none; color: inherit;">
+          <div class="icon">
+            {% if provider.provider == "mono" %}
+              <i class="fas fa-university"></i>
+            {% elif provider.provider == "plaid" %}
+              <i class="fas fa-building-columns"></i>
+            {% elif provider.provider == "truelayer" %}
+              <i class="fas fa-globe"></i>
+            {% endif %}
+          </div>
+          <h3>{{ provider.get_provider_display }}</h3>
+          <p>{{ provider.environment|title }} environment</p>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <h2 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Your linked banks</h2>
+
+  {% if linked_banks %}
+    {% for bank in linked_banks %}
+      <div class="bank-card">
+        <div class="bank-info">
+          <h3>{{ bank.institution_name|default:"Bank Account" }}</h3>
+          <p>{{ bank.account_name }} · {{ bank.account_number }} · {{ bank.currency }}</p>
+          <p style="margin-top: 0.25rem;">
+            <span class="bank-status {{ bank.status }}">{{ bank.status }}</span>
+            {% if bank.last_sync_at %}
+              <span style="margin-left: 0.5rem;">Last sync: {{ bank.last_sync_at|timesince }} ago</span>
+            {% endif %}
+          </p>
+        </div>
+        <div class="bank-actions">
+          {% if bank.status == "active" %}
+            <form method="post" action="{% url 'sync_bank' bank.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-bank"><i class="fas fa-sync"></i> Sync</button>
+            </form>
+            <form method="post" action="{% url 'unlink_bank' bank.id %}" style="display:inline;" onsubmit="return confirm('Unlink this bank?')">
+              {% csrf_token %}
+              <button type="submit" class="btn-bank" style="color: #ef4444;"><i class="fas fa-unlink"></i> Unlink</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <i class="fas fa-building-columns"></i>
+      <p>No banks linked yet. Connect a bank above to start auto-syncing transactions.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
