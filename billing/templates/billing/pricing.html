@@ -1,15 +1,14 @@
 {% extends "layout.html" %}
-{% load static %}
 {% block title %}Pricing - WealthPoint{% endblock %}
 {% block content %}
-<div class="page-wrap">
+<div class="page-wrap-md">
   <div class="page-header text-center">
     <h1 class="page-title">Choose your plan</h1>
     <p class="page-subtitle">Unlock premium features, personalized AI guidance, and advanced financial tools</p>
   </div>
   <div class="grid-3">
     {% for plan in plans %}
-      <div class="glass-card {% if plan.tier == 'premium' %}featured{% endif %} fade-in delay-{{ forloop.counter }}" data-tilt>
+      <div class="plan-card {% if plan.tier == 'premium' %}featured{% endif %} fade-in-{{ forloop.counter }}">
         <div class="plan-name">{{ plan.name }}</div>
         <div class="plan-price">{{ plan.currency }} {{ plan.price|floatformat:0 }} <span>/{{ plan.duration }}</span></div>
         <div class="plan-duration">{{ plan.get_tier_display }} plan</div>
@@ -43,9 +42,9 @@
         {% if user_subscription and user_subscription.plan.tier == plan.tier %}
           <span class="current-badge">Current Plan</span>
         {% elif plan.tier == "free" %}
-          <a href="{% url 'landing' %}" class="btn-glass" style="width:100%;text-align:center;">Get Started Free</a>
+          <a href="{% url 'landing' %}" class="btn btn-secondary btn-block">Get Started Free</a>
         {% else %}
-          <a href="{% url 'subscribe' plan.id %}" class="btn-gradient" style="width:100%;text-align:center;">Upgrade to {{ plan.name }}</a>
+          <a href="{% url 'subscribe' plan.id %}" class="btn btn-primary btn-block">Upgrade to {{ plan.name }}</a>
         {% endif %}
       </div>
     {% endfor %}

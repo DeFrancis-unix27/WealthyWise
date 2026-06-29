@@ -1,24 +1,24 @@
-{% extends "layout.html" %}{% load static %}
+{% extends "layout.html" %}
 {% block title %}Side Hustles - WealthPoint{% endblock %}
 {% block content %}
 <div class="page-wrap">
   <div class="page-header flex">
     <div><h1 class="page-title">Side Hustles</h1></div>
-    <a href="{% url 'side_hustle_create' %}" class="btn-gradient"><i class="fas fa-plus"></i> Add Hustle</a>
+    <a href="{% url 'side_hustle_create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Hustle</a>
   </div>
   <div class="grid-3">
     {% for h in hustles %}
-      <div class="glass-card fade-in delay-{{ forloop.counter }}" data-tilt>
-        <h3>{{ h.name }}</h3>
+      <div class="card fade-in-{{ forloop.counter }}">
+        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ h.name }}</h3>
         <div class="text-xs text-muted">{{ h.get_platform_type_display }}</div>
-        {% if h.is_active %}<span class="badge badge-active mt-1">Active</span>{% endif %}
+        {% if h.is_active %}<span class="active-indicator mt-1">Active</span>{% endif %}
         {% if h.description %}<p class="text-muted text-sm mt-1">{{ h.description|truncatewords:20 }}</p>{% endif %}
       </div>
     {% empty %}
       <div class="empty-state">
         <i class="fas fa-hand-holding-usd"></i>
         <p>No side hustles yet.</p>
-        <a href="{% url 'side_hustle_create' %}" class="btn-glass">Add one</a>
+        <a href="{% url 'side_hustle_create' %}" class="link">Add one</a>
       </div>
     {% endfor %}
   </div>

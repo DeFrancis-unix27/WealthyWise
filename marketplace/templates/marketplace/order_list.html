@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% load static %}
 {% block title %}My Orders - WealthPoint{% endblock %}
 {% block content %}
 <div class="page-wrap">
@@ -7,7 +6,7 @@
     <h1 class="page-title">My Orders</h1>
   </div>
   {% for order in orders %}
-    <div class="glass-card fade-in delay-{{ forloop.counter }}" data-tilt>
+    <div class="order-card fade-in-{{ forloop.counter }}">
       <div class="order-top">
         <span class="order-id">Order #{{ order.id }}</span>
         <span class="badge badge-{{ order.status }}">{{ order.status|title }}</span>

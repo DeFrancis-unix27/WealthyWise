@@ -3,9 +3,717 @@
 {% load widget_tweaks %}
 {% load humanize %}
 {% load static %}
-<div class="page-wrap">
+<style>
+    /* Account Dashboard Specific Styles */
+  .dashboard-container {
+    padding: 2rem;
+    max-width: 100%;
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem 2rem;
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(20px);
+  }
+
+  .dashboard-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .add-account-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(var(--accent-rgb, 74, 168, 255), 0.3);
+  }
+
+  .add-account-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(var(--accent-rgb, 74, 168, 255), 0.4);
+    filter: brightness(1.1);
+  }
+
+  .stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-card:hover::before {
+    opacity: 1;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .account-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .account-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--account-gradient);
+    transition: var(--transition);
+  }
+
+  .account-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .account-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .account-type-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+    background: var(--account-gradient);
+  }
+
+     .account-menu {
+        position: relative;
+    }
+
+    .account-menu-btn {
+        background: none;
+        border: none;
+        color: #64748b;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .account-menu-btn:hover {
+        background: #f8fafc;
+        color: #3b82f6;
+    }
+
+    .account-menu-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        padding: 8px 0;
+        min-width: 150px;
+        z-index: 100;
+        display: none;
+    }
+
+    .account-menu-dropdown.show {
+        display: block;
+        animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .account-menu-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+     .edit-account-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .edit-account-modal.show {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .modal-header {
+        margin-bottom: 25px;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #64748b;
+        transition: color 0.2s ease;
+    }
+
+    .modal-close:hover {
+        color: #ef4444;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: white;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background: #d1d5db;
+    }
+
+    /* Toast notification */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1100;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .toast.show {
+        transform: translateX(0);
+    }
+
+    .toast-success {
+        border-left: 4px solid #10b981;
+    }
+
+    .toast-error {
+        border-left: 4px solid #ef4444;
+    }
+
+    .toast-icon {
+        font-size: 1.2rem;
+    }
+
+    .toast-success .toast-icon {
+        color: #10b981;
+    }
+
+    .toast-error .toast-icon {
+        color: #ef4444;
+    }
+
+    .toast-message {
+        font-weight: 500;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .accounts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-content {
+            width: 95%;
+            padding: 20px;
+        }
+
+        .modal-footer {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+    .account-menu-item:hover {
+        background: #737577;
+    }
+
+    .account-menu-item.edit {
+        color: #3b82f6;
+    }
+
+    .account-menu-item.delete {
+        color: #ef4444;
+    }
+
+  .account-info h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .account-number {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-family: 'Monaco', 'Menlo', monospace;
+    letter-spacing: 1px;
+  }
+
+  .account-balance {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .balance-label {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .balance-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success);
+  }
+
+  .account-meta {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  /* Account Type Colors */
+  .account-card[data-type="savings"] {
+    --account-gradient: linear-gradient(135deg, #007bff, #0056b3);
+  }
+
+  .account-card[data-type="current"] {
+    --account-gradient: linear-gradient(135deg, #ff9800, #f57c00);
+  }
+
+  .account-card[data-type="wallet"] {
+    --account-gradient: linear-gradient(135deg, #4caf50, #388e3c);
+  }
+
+  .account-card[data-type="investment"] {
+    --account-gradient: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  }
+
+  .account-card[data-type="credit"] {
+    --account-gradient: linear-gradient(135deg, #f44336, #d32f2f);
+  }
+
+  /* Enhanced Modal Styles */
+  .modal-content {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: white;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .modal-title {
+    font-weight: 600;
+  }
+
+  .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+  }
+
+  .modal-body {
+    padding: 2rem;
+    color: var(--text);
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control, .form-select {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 0.75rem;
+    transition: var(--transition);
+  }
+
+  .form-control:focus, .form-select:focus {
+    background: var(--card);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 74, 168, 255), 0.1);
+    color: var(--text);
+  }
+
+  .form-control::placeholder {
+    color: var(--muted);
+  }
+
+  .modal-footer {
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+
+  .btn-secondary {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border: none;
+    color: white;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 2rem 0;
+  }
+  .empty-state-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+  }
+
+  .empty-state h3 {
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state p {
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+
+    .dashboard-header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .account-menu-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 24px;
+        background: rgb(39, 32, 32);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        padding: 8px 0;
+        min-width: 150px;
+        z-index: 100;
+        display: none;
+    }
+
+    .dashboard-title {
+      font-size: 1.5rem;
+    }
+
+    .accounts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-overview {
+      grid-template-columns: 1fr;
+    }
+
+    .account-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .account-card {
+    animation: slideUp 0.4s ease-out;
+    animation-fill-mode: both;
+  }
+
+  .account-card:nth-child(1) { animation-delay: 0.1s; }
+  .account-card:nth-child(2) { animation-delay: 0.2s; }
+  .account-card:nth-child(3) { animation-delay: 0.3s; }
+  .account-card:nth-child(4) { animation-delay: 0.4s; }
+  .account-card:nth-child(5) { animation-delay: 0.5s; }
+  .account-card:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Error handling */
+  .alert {
+    border-radius: var(--radius);
+    border: none;
+    margin-bottom: 1rem;
+  }
+
+  .alert-danger {
+    background: linear-gradient(135deg, #ff6b6b, #ff5252);
+    color: white;
+  }
+
+  .is-invalid {
+    border-color: var(--danger) !important;
+  }
+
+  .invalid-feedback {
+    color: var(--danger);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+
+</style>
+<div class="dashboard-container">
+  <!-- Error Display -->
   {% if form.errors %}
-  <div class="alert alert-error">
+  <div class="alert alert-danger">
     <i class="fas fa-exclamation-circle me-2"></i>
     <strong>Please correct the following errors:</strong>
     {% for field in form %}
@@ -19,158 +727,205 @@
   </div>
   {% endif %}
 
-  <div class="page-header">
-    <h1 class="page-title"><i class="fas fa-university me-2"></i>Accounts Dashboard</h1>
-    <p class="page-subtitle">Manage your financial accounts</p>
-  </div>
-
-  <div class="mb-3">
-    <button type="button" class="btn-gradient" data-bs-toggle="modal" data-bs-target="#addAccountModal">
-      <i class="fas fa-plus"></i> Add Account
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">
+      <i class="fas fa-university me-2"></i>
+      Accounts Dashboard
+    </h1>
+    <button
+      type="button"
+      class="add-account-btn"
+      data-bs-toggle="modal"
+      data-bs-target="#addAccountModal"
+    >
+      <i class="fas fa-plus"></i>
+      Add Account
     </button>
   </div>
 
-  <div class="grid-4 mb-3">
-    <div class="glass-card" data-tilt style="text-align:center;">
-      <div style="width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:white;background:linear-gradient(135deg,#007bff,#0056b3);">
+  <!-- Statistics Overview -->
+  <div class="stats-overview">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #007bff, #0056b3);">
         <i class="fas fa-credit-card"></i>
       </div>
-      <div style="font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:0.5rem;">{{ accounts|length }}</div>
-      <div style="font-size:0.9rem;color:var(--muted);font-weight:500;">Total Accounts</div>
+      <div class="stat-value">{{ accounts|length }}</div>
+      <div class="stat-label">Total Accounts</div>
     </div>
     
-    <div class="glass-card" data-tilt style="text-align:center;">
-      <div style="width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:white;background:linear-gradient(135deg,#28a745,#20c997);">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
         <i class="fas fa-wallet"></i>
       </div>
-      <div style="font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:0.5rem;">
-        {% if accounts %}₦{{ total_balance|intcomma }}{% else %}$0.00{% endif %}
+      <div class="stat-value">
+        {% if accounts %}
+         ₦{{ total_balance|intcomma }}
+        {% else %}
+          $0.00
+        {% endif %}
       </div>
-      <div style="font-size:0.9rem;color:var(--muted);font-weight:500;">Total Balance</div>
+      <div class="stat-label">Total Balance</div>
     </div>
     
-    <div class="glass-card" data-tilt style="text-align:center;">
-      <div style="width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:white;background:linear-gradient(135deg,#ffc107,#ff9800);">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #ff9800);">
         <i class="fas fa-chart-line"></i>
       </div>
-      <div style="font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:0.5rem;">
-        {% if accounts %}{{ accounts|length }}{% else %}0{% endif %}
+      <div class="stat-value">
+        {% if accounts %}
+          {{ accounts|length }}
+        {% else %}
+          0
+        {% endif %}
       </div>
-      <div style="font-size:0.9rem;color:var(--muted);font-weight:500;">Active Accounts</div>
+      <div class="stat-label">Active Accounts</div>
     </div>
     
-    <div class="glass-card" data-tilt style="text-align:center;">
-      <div style="width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:white;background:linear-gradient(135deg,#6f42c1,#e83e8c);">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #6f42c1, #e83e8c);">
         <i class="fas fa-history"></i>
       </div>
-      <div style="font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:0.5rem;">
-        {% if accounts %}{{ accounts.0.last_transaction_date|naturaltime }}{% else %}N/A{% endif %}
+      <div class="stat-value">
+        {% if accounts %}
+          {{ accounts.0.last_transaction_date |naturaltime }}
+        {% else %}
+          N/A
+        {% endif %}
       </div>
-      <div style="font-size:0.9rem;color:var(--muted);font-weight:500;">Last Transaction</div>
+      <div class="stat-label">Last Transaction</div>
     </div>
   </div>
 
+  <!-- Accounts Grid -->
   {% if accounts %}
-  <div class="grid-2">
+<div class="accounts-grid">
     {% for account in accounts %}
-    <div class="glass-card" data-tilt data-type="{{ account.account_type|lower }}" data-balance="{{ account.balance }}" data-currency="{{ account.currency }}" style="--account-gradient:{% if account.account_type|lower == 'savings' %}linear-gradient(135deg,#007bff,#0056b3){% elif account.account_type|lower == 'current' %}linear-gradient(135deg,#ff9800,#f57c00){% elif account.account_type|lower == 'wallet' %}linear-gradient(135deg,#4caf50,#388e3c){% elif account.account_type|lower == 'investment' %}linear-gradient(135deg,#9c27b0,#7b1fa2){% elif account.account_type|lower == 'credit' %}linear-gradient(135deg,#f44336,#d32f2f){% else %}linear-gradient(135deg,var(--accent),var(--accent-2)){% endif %};position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--account-gradient);"></div>
-      <div class="flex-between mb-2">
-        <span style="padding:0.4rem 0.8rem;border-radius:20px;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:white;background:var(--account-gradient);">
-          <i class="fas fa-{{ account.account_type|lower|default:'wallet' }} me-1"></i>
-          {{ account.account_type }}
-        </span>
-        <div class="account-menu" style="position:relative;">
-          <button class="account-menu-btn" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:5px;border-radius:4px;" onclick="toggleMenu(this)">
-            <i class="fas fa-ellipsis-v"></i>
-          </button>
-          <div class="account-menu-dropdown" style="position:absolute;top:100%;right:0;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 0;min-width:150px;z-index:100;display:none;backdrop-filter:blur(12px);">
-            <div class="account-menu-item edit" style="padding:10px 15px;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--accent);" onclick="openEditModal(this.dataset.id)" data-id="{{ account.id }}">
-              <i class="fas fa-edit"></i> Edit Account
+    <div class="account-card" data-type="{{ account.account_type|lower }}" data-id="{{ account.id}}">
+        <div class="account-header">
+            <span class="account-type-badge">
+                <i class="fas fa-{{ account.account_type|lower|default:'wallet' }} me-1"></i>
+                {{ account.account_type }}
+            </span>
+            <div class="account-menu">
+                <button class="account-menu-btn" onclick="toggleMenu(this)">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="account-menu-dropdown">
+                    <div class="account-menu-item edit" onclick="openEditModal(this.dataset.id)" data-id="{{ account.id }}">
+                        <i class="fas fa-edit"></i>
+                        Edit Account
+                    </div>
+                    <div class="account-menu-item delete delete-account-btn" onclick="confirmDelete(this.dataset.id)" data-id="{{ account.id }}">
+                        <i class="fas fa-trash"></i>
+                       <a href="#" style="text-decoration: none;" onclick="return false;">Delete Account</a>
+                    </div>
+                </div>
             </div>
-            <div class="account-menu-item delete" style="padding:10px 15px;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--danger);" onclick="confirmDelete(this.dataset.id)" data-id="{{ account.id }}">
-              <i class="fas fa-trash"></i> Delete Account
-            </div>
-          </div>
         </div>
-      </div>
 
-      <h3 style="font-size:1.25rem;font-weight:600;color:var(--text);margin:0 0 0.5rem 0;">{{ account.name }}</h3>
-      <div style="font-size:0.9rem;color:var(--muted);font-family:monospace;letter-spacing:1px;">
-        <i class="fas fa-hashtag me-1"></i>
-        {{ account.account_number }}
-      </div>
+        <div class="account-info">
+            <h3>{{ account.name }}</h3>
+            <div class="account-number">
+                <i class="fas fa-hashtag me-1"></i>
+                {{ account.account_number }}
+            </div>
+        </div>
 
-      <div class="flex-between mt-2" style="padding-top:1rem;border-top:1px solid var(--border);">
-        <span style="font-size:0.9rem;color:var(--muted);font-weight:500;">
-          <i class="fas fa-coins me-1"></i> Available Balance
-        </span>
-        <span style="font-size:1.5rem;font-weight:700;color:var(--success);">
-          {{ account.currency }} {{ account.balance|intcomma }}
-        </span>
-      </div>
+        <div class="account-balance">
+            <span class="balance-label">
+                <i class="fas fa-coins me-1"></i>
+                Available Balance
+            </span>
+            <span class="balance-amount">
+                {{ account.currency }} {{ account.balance|intcomma }}
+            </span>
+        </div>
 
-      <div class="flex-between mt-2" style="font-size:0.8rem;color:var(--muted);">
-        <span><i class="fas fa-clock me-1"></i>Last Txn: {{ account.last_transaction_date|date:"M d, Y" }}</span>
-        <span><i class="fas fa-sync-alt me-1"></i>Updated: {{ account.last_updated|date:"M d, H:i" }}</span>
-      </div>
+        <div class="account-meta">
+            <span>
+                <i class="fas fa-clock me-1"></i>
+                Last Txn: {{ account.last_transaction_date|date:"M d, Y" }}
+            </span>
+            <span>
+                <i class="fas fa-sync-alt me-1"></i>
+                Updated: {{ account.last_updated|date:"M d, H:i" }}
+            </span>
+        </div>
+    </div>
 {{ accounts_json|json_script:"account-data-"|safe }}
-    </div>
     {% endfor %}
-  </div>
+</div>
 
-  <!-- Edit Account Modal -->
-  <div class="modal" id="editAccountModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px);">
-    <div class="modal-content" style="max-width:500px;">
-      <button class="modal-close" style="position:absolute;top:20px;right:20px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);" onclick="closeEditModal()">&times;</button>
-      <div class="modal-header">
-        <h2 class="modal-title">Edit Account</h2>
-      </div>
-      <form id="editAccountForm">
-        {% csrf_token %}
-        <input type="hidden" id="accountId" name="account_id">
-        <div class="form-group">
-          <label for="accountName" class="form-label">Account Name</label>
-          <input type="text" id="accountName" name="account_name" class="form-input" required>
+<!-- Edit Account Modal -->
+<div class="edit-account-modal" id="editAccountModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeEditModal()">&times;</button>
+        
+        <div class="modal-header">
+            <h2 class="modal-title">Edit Account</h2>
         </div>
-        <div class="form-group">
-          <label for="accountType" class="form-label">Account Type</label>
-          <select id="accountType" name="account_type" class="form-select" required>
-            <option value="savings">Savings Account</option>
-            <option value="checking">Checking Account</option>
-            <option value="business">Business Account</option>
-            <option value="cash">Cash Wallet</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="accountBalance" class="form-label">Balance</label>
-          <input type="number" id="accountBalance" name="account_balance" class="form-input" step="0.01" min="0" required>
-        </div>
-        <div class="form-group">
-          <label for="accountCurrency" class="form-label">Currency</label>
-          <select id="accountCurrency" name="account_currency" class="form-select" required>
-            <option value="NGN">Naira (NGN)</option>
-            <option value="USD">US Dollar (USD)</option>
-            <option value="EUR">Euro (EUR)</option>
-            <option value="GBP">British Pound (GBP)</option>
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-glass" onclick="closeEditModal()">Cancel</button>
-          <button type="submit" class="btn-gradient">Save Changes</button>
-        </div>
-      </form>
+        
+        <form id="editAccountForm">
+            {% csrf_token %}
+            <input type="hidden" id="accountId" name="account_id">
+            
+            <div class="form-group">
+                <label for="accountName" class="form-label">Account Name</label>
+                <input type="text" id="accountName" name="account_name" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="accountType" class="form-label">Account Type</label>
+                <select id="accountType" name="account_type" class="form-select" required>
+                    <option value="savings">Savings Account</option>
+                    <option value="checking">Checking Account</option>
+                    <option value="business">Business Account</option>
+                    <option value="cash">Cash Wallet</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="accountBalance" class="form-label">Balance</label>
+                <input type="number" id="accountBalance" name="account_balance" class="form-control" step="0.01" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="accountCurrency" class="form-label">Currency</label>
+                <select id="accountCurrency" name="account_currency" class="form-select" required>
+                    <option value="NGN">Naira (NGN)</option>
+                    <option value="USD">US Dollar (USD)</option>
+                    <option value="EUR">Euro (EUR)</option>
+                    <option value="GBP">British Pound (GBP)</option>
+                </select>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
     </div>
-  </div>
+</div>
 
-  <div class="toast-container" id="toastContainer"></div>
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
   {% else %}
+  <!-- Empty State -->
   <div class="empty-state">
-    <i class="fas fa-university"></i>
-    <h5>No Accounts Yet</h5>
+    <div class="empty-state-icon">
+      <i class="fas fa-university"></i>
+    </div>
+    <h3>No Accounts Yet</h3>
     <p>Start by adding your first account to track your finances effectively.</p>
-    <button type="button" class="btn-gradient" data-bs-toggle="modal" data-bs-target="#addAccountModal">
-      <i class="fas fa-plus me-2"></i> Create Your First Account
+    <button
+      type="button"
+      class="add-account-btn"
+      data-bs-toggle="modal"
+      data-bs-target="#addAccountModal"
+    >
+      <i class="fas fa-plus me-2"></i>
+      Create Your First Account
     </button>
   </div>
   {% endif %}
@@ -193,6 +948,7 @@
           {% csrf_token %}
           
           <div class="row">
+            <!-- Account Type -->
             <div class="col-md-6 mb-3">
               <label for="{{ form.account_type.id_for_label }}" class="form-label">
                 <i class="fas fa-tags me-1"></i>
@@ -204,6 +960,7 @@
               {% endfor %}
             </div>
 
+            <!-- Currency -->
             <div class="col-md-6 mb-3">
               <label for="{{ form.currency.id_for_label }}" class="form-label">
                 <i class="fas fa-dollar-sign me-1"></i>
@@ -216,35 +973,38 @@
             </div>
           </div>
 
+          <!-- Account Name -->
           <div class="mb-3">
             <label for="{{ form.name.id_for_label }}" class="form-label">
               <i class="fas fa-signature me-1"></i>
               {{ form.name.label }}
             </label>
-            {{ form.name|add_class:"form-input"|attr:"placeholder:(e.g. Main Checking)" }}
+            {{ form.name|add_class:"form-control"|attr:"placeholder:(e.g. Main Checking)" }}
             {% for error in form.name.errors %}
               <div class="invalid-feedback d-block">{{ error }}</div>
             {% endfor %}
           </div>
 
           <div class="row">
+            <!-- Account Number -->
             <div class="col-md-6 mb-3">
               <label for="{{ form.account_number.id_for_label }}" class="form-label">
                 <i class="fas fa-hashtag me-1"></i>
                 {{ form.account_number.label }}
               </label>
-              {{ form.account_number|add_class:"form-input"|attr:"placeholder:Enter account number" }}
+              {{ form.account_number|add_class:"form-control"|attr:"placeholder:Enter account number" }}
               {% for error in form.account_number.errors %}
                 <div class="invalid-feedback d-block">{{ error }}</div>
               {% endfor %}
             </div>
 
+            <!-- Balance -->
             <div class="col-md-6 mb-3">
               <label for="{{ form.balance.id_for_label }}" class="form-label">
                 <i class="fas fa-wallet me-1"></i>
                 {{ form.balance.label }}
               </label>
-              {{ form.balance|add_class:"form-input"|attr:"placeholder:0.00" }}
+              {{ form.balance|add_class:"form-control"|attr:"placeholder:0.00" }}
               {% for error in form.balance.errors %}
                 <div class="invalid-feedback d-block">{{ error }}</div>
               {% endfor %}
@@ -252,23 +1012,25 @@
           </div>
 
           <div class="row">
+            <!-- Last Transaction Date -->
             <div class="col-md-6 mb-3">
               <label for="{{ form.last_transaction_date.id_for_label }}" class="form-label">
                 <i class="fas fa-calendar-alt me-1"></i>
                 {{ form.last_transaction_date.label }}
               </label>
-              {{ form.last_transaction_date|add_class:"form-input" }}
+              {{ form.last_transaction_date|add_class:"form-control" }}
               {% for error in form.last_transaction_date.errors %}
                 <div class="invalid-feedback d-block">{{ error }}</div>
               {% endfor %}
             </div>
 
+            <!-- Last Updated -->
             <div class="col-md-6 mb-3">
               <label for="{{ form.last_updated.id_for_label }}" class="form-label">
                 <i class="fas fa-sync-alt me-1"></i>
                 {{ form.last_updated.label }}
               </label>
-              {{ form.last_updated|add_class:"form-input" }}
+              {{ form.last_updated|add_class:"form-control" }}
               {% for error in form.last_updated.errors %}
                 <div class="invalid-feedback d-block">{{ error }}</div>
               {% endfor %}
@@ -277,11 +1039,11 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn-glass" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             <i class="fas fa-times me-1"></i>
             Cancel
           </button>
-          <button type="submit" class="btn-gradient">
+          <button type="submit" class="btn btn-primary">
             <i class="fas fa-save me-1"></i>
             Save Account
           </button>
@@ -327,14 +1089,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    const accountCards = document.querySelectorAll('.glass-card[data-tilt]');
+    // Account card interactions
+    const accountCards = document.querySelectorAll('.account-card');
     accountCards.forEach(card => {
         card.addEventListener('click', function() {
+            // Add click animation
             this.style.transform = 'scale(0.98)';
-            setTimeout(() => { this.style.transform = ''; }, 150);
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
         });
     });
 
+    // Theme-aware date picker
     const dateInputs = document.querySelectorAll('input[type="date"], input[type="datetime-local"]');
     dateInputs.forEach(input => {
         const theme = document.documentElement.getAttribute('data-theme');
@@ -343,7 +1110,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const accountCardsWithId = document.querySelectorAll('.glass-card[data-tilt]');
+    // Add account ID data attribute to all account cards
+    const accountCardsWithId = document.querySelectorAll('.account-card');
     accountCardsWithId.forEach((card, index) => {
         card.setAttribute('data-account-id', index + 1);
     });
@@ -434,15 +1202,14 @@ function openEditModal(accountId) {
         menu.classList.remove('show');
     });
 
+    // Get account data from data attributes or make API call
     const accountElement = document.querySelector(`[data-account-id="${accountId}"]`);
     if (accountElement) {
-        const nameEl = accountElement.querySelector('h3');
-        const balanceEl = accountElement.querySelector('.flex-between span:last-child');
         const accountData = {
             id: accountId,
-            name: nameEl ? nameEl.textContent : '',
+            name: accountElement.dataset.name || '',
             account_type: accountElement.dataset.type || '',
-            balance: balanceEl ? balanceEl.textContent.replace(/[^0-9.]/g, '') : '',
+            balance: accountElement.dataset.balance || '',
             currency: accountElement.dataset.currency || ''
         };
 
@@ -617,6 +1384,17 @@ function createToastContainer() {
     return container;
 }
 
+// Utility function to get account data (for demo purposes)
+function getAccountData(accountId) {
+    // This would typically come from an API call
+    return {
+        id: accountId,
+        name: `Account ${accountId}`,
+        account_type: 'checking',
+        balance: '1000.00',
+        currency: 'USD'
+    };
+}
  </script>
 
 {% endblock %}

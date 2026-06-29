@@ -1,23 +1,23 @@
-{% extends "layout.html" %}{% load static %}
+{% extends "layout.html" %}
 {% block title %}Businesses - WealthPoint{% endblock %}
 {% block content %}
 <div class="page-wrap">
   <div class="page-header flex">
     <div><h1 class="page-title">My Businesses</h1></div>
-    <a href="{% url 'business_create' %}" class="btn-gradient"><i class="fas fa-plus"></i> New Business</a>
+    <a href="{% url 'business_create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> New Business</a>
   </div>
   <div class="grid-3">
     {% for b in businesses %}
-      <a href="{% url 'business_detail' b.id %}" class="glass-card fade-in delay-{{ forloop.counter }}" data-tilt>
-        <h3>{{ b.name }}</h3>
+      <a href="{% url 'business_detail' b.id %}" class="card card-hover fade-in-{{ forloop.counter }}" style="text-decoration:none;color:inherit;display:block;">
+        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ b.name }}</h3>
         <div class="text-xs text-muted">{{ b.get_business_type_display }} &middot; {{ b.currency }}</div>
-        <span class="badge mt-1">{{ b.get_stage_display }}</span>
+        <span class="stage-badge mt-1">{{ b.get_stage_display }}</span>
       </a>
     {% empty %}
       <div class="empty-state">
         <i class="fas fa-briefcase"></i>
         <p>No businesses yet.</p>
-        <a href="{% url 'business_create' %}" class="btn-glass">Add one</a>
+        <a href="{% url 'business_create' %}" class="link">Add one</a>
       </div>
     {% endfor %}
   </div>

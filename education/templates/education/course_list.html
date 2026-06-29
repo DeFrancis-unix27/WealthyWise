@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% load static %}
 {% block title %}Courses - WealthPoint{% endblock %}
 {% block content %}
 <div class="page-wrap">
@@ -15,12 +14,12 @@
   </div>
   <div class="grid-3">
     {% for c in courses %}
-      <a href="{% url 'course_detail' c.slug %}" class="glass-card fade-in delay-{{ forloop.counter }}" data-tilt>
-        <h3>{{ c.title }} {% if c.is_premium %}<span class="badge badge-premium">Premium</span>{% endif %}</h3>
-        <p class="text-muted text-sm">{{ c.description|truncatewords:20 }}</p>
+      <a href="{% url 'course_detail' c.slug %}" class="card card-hover fade-in-{{ forloop.counter }}">
+        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ c.title }} {% if c.is_premium %}<span class="badge badge-premium">Premium</span>{% endif %}</h3>
+        <p class="text-muted text-sm" style="margin:0 0 0.75rem;">{{ c.description|truncatewords:20 }}</p>
         <span class="badge badge-{{ c.difficulty }}">{{ c.difficulty|title }}</span>
-        <span class="text-muted text-xs">{{ c.estimated_hours }}h</span>
-        {% if c.instructor %}<span class="text-muted text-xs">by {{ c.instructor }}</span>{% endif %}
+        <span class="text-muted text-xs" style="margin-left:0.5rem;">{{ c.estimated_hours }}h</span>
+        {% if c.instructor %}<span class="text-muted text-xs" style="margin-left:0.5rem;">by {{ c.instructor }}</span>{% endif %}
       </a>
     {% empty %}
       <div class="empty-state"><i class="fas fa-graduation-cap"></i><p>No courses published yet.</p></div>

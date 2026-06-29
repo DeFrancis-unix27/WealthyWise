@@ -1,130 +1,490 @@
 {% extends "layout.html" %}
 {% block content %}
 {% load widget_tweaks %}
-<div class="page-wrap">
-  <div class="page-header">
-    <h1 class="page-title">Edit Your Profile</h1>
-    <p class="page-subtitle">{{ user.profile.get_account_type_display }} Member</p>
-  </div>
-  <div class="glass-card" data-tilt>
+<style>
+    .profile-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    #ff6b6b,
+    #4ecdc4,
+    #45b7d1,
+    #96ceb4,
+    #feca57
+  );
+  background-size: 400% 100%;
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.avatar-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  color: white;
+  font-weight: 700;
+  position: relative;
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 0 20px 45px rgba(102, 126, 234, 0.6);
+}
+
+.avatar-edit {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: var(--primary);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.avatar-edit:hover {
+  transform: scale(1.1);
+}
+
+.username {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.user-role {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-section {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px var(--shadow);
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.text-danger {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.form-text {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* Fix for dark mode form controls */
+.form-control {
+  background-color: var(--card-bg);
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.form-control:focus {
+  background-color: var(--card-bg);
+  color: var(--text);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.25rem rgba(74, 108, 247, 0.25);
+}
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  background: var(--panel);
+  color: #e5e7eb;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.25rem rgba(74, 108, 247, 0.25);
+}
+
+.profile-btn {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.profile-btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.profile-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.profile-btn-outline {
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.profile-btn-outline:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.alert {
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.debug-info {
+  background-color: #f8f9fa;
+  border-left: 4px solid #6c757d;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.debug-title {
+  font-weight: bold;
+  color: #495057;
+  margin-bottom: 10px;
+}
+
+.debug-data {
+  color: #6c757d;
+}
+
+/* Image preview styling */
+.image-preview {
+  width: 100%;
+  max-width: 200px;
+  margin: 15px auto;
+  display: none;
+}
+
+.image-preview img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.d-flex {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-container {
+    margin: 20px;
+    padding: 25px 20px;
+    border-radius: 20px;
+  }
+
+  .username {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 20px 15px;
+    margin: 10px;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    font-size: 2.4rem;
+  }
+}
+
+</style>
+
+<div class="profile-container">
+    <!-- Messages -->
     <div id="message-container">
-      {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-          {{ message }}
-          <button type="button" class="btn-glass" data-bs-dismiss="alert" style="margin-left:auto;padding:0.25rem 0.5rem;">&times;</button>
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-      </div>
-      {% endif %}
+        {% endif %}
     </div>
 
-    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:2rem;">
-      <div style="position:relative;margin-bottom:1rem;">
-        <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:white;font-weight:700;position:relative;overflow:hidden;">
-          {% if user.profile.avatar %}
-          <img id="avatar-image" src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" style="width:100%;height:100%;object-fit:cover;">
-          {% else %}
-          {{ user.profile.get_initials }}
-          {% endif %}
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="avatar-wrapper">
+            <div class="avatar">
+                {% if user.profile.avatar %}
+                    <img id="avatar-image" src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {{ user.profile.get_initials }}
+                    </div>
+                {% endif %}
+                <div class="avatar-edit" onclick="document.getElementById('id_avatar').click()">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
         </div>
-        <div onclick="document.getElementById('id_avatar').click()" style="position:absolute;bottom:5px;right:5px;background:var(--accent);color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-          <i class="fas fa-camera"></i>
-        </div>
-      </div>
-      <h2 style="font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;">Edit Your Profile</h2>
+        <div class="username">Edit Your Profile</div>
+        <div class="user-role">{{ user.profile.get_account_type_display }} Member</div>
     </div>
 
-    <div class="glass-inset" style="margin-bottom:1.5rem;">
-      <strong>Edit Information:</strong>
-      <div id="debug-data" class="text-sm text-muted">Form will submit via AJAX. Check browser console for details.</div>
+    <!-- Debug Information -->
+    <div class="debug-info">
+        <div class="debug-title">Edit Information:</div>
+        <div class="debug-data" id="debug-data">
+            Form will submit via AJAX. Check browser console for details.
+        </div>
     </div>
 
+    <!-- Edit Profile Form -->
     <form id="profile-form" method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="file" id="id_avatar" name="avatar" accept="image/*" style="display:none;">
-      <div class="image-preview" id="image-preview" style="display:none;max-width:200px;margin:0 auto 1rem;">
-        <img id="preview-img" src="#" alt="Image Preview" style="width:100%;border-radius:10px;">
-      </div>
+        {% csrf_token %}
+        
+        <!-- Avatar Upload Field (hidden) -->
+        <input type="file" id="id_avatar" name="avatar" accept="image/*" style="display: none;">
+        
+        <!-- Image Preview -->
+        <div class="image-preview" id="image-preview" style="display: none;">
+            <img id="preview-img" src="#" alt="Image Preview">
+        </div>
 
-      <div class="glass-card-sm mb-2">
-        <h3 class="section-title"><i class="fas fa-user"></i>Personal Information</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="{{ user_form.first_name.id_for_label }}" class="form-label">{{ user_form.first_name.label }}</label>
-            {{ user_form.first_name|add_class:"form-input"|attr:"placeholder:Enter first name (e.g., John)" }}
-            {% if user_form.first_name.errors %}<div class="text-danger text-sm mt-1">{{ user_form.first_name.errors }}</div>{% endif %}
-          </div>
-          <div class="form-group">
-            <label for="{{ user_form.last_name.id_for_label }}" class="form-label">{{ user_form.last_name.label }}</label>
-            {{ user_form.last_name|add_class:"form-input"|attr:"placeholder:Enter last name (e.g., Doe)" }}
-            {% if user_form.last_name.errors %}<div class="text-danger text-sm mt-1">{{ user_form.last_name.errors }}</div>{% endif %}
-          </div>
+        <!-- Personal Information Section -->
+        <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-user me-2"></i>Personal Information</h3>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ user_form.first_name.id_for_label }}" class="form-label">
+                        {{ user_form.first_name.label }}
+                    </label>
+                    {{ user_form.first_name|add_class:"form-control"|attr:"placeholder:Enter first name (e.g., John)" }}
+                    {% if user_form.first_name.errors %}
+                        <div class="text-danger">{{ user_form.first_name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="{{ user_form.last_name.id_for_label }}" class="form-label">
+                        {{ user_form.last_name.label }}
+                    </label>
+                    {{ user_form.last_name|add_class:"form-control"|attr:"placeholder:Enter last name (e.g., Doe)" }}
+                    {% if user_form.last_name.errors %}
+                        <div class="text-danger">{{ user_form.last_name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_email" class="form-label">{{ user_form.email.label }}</label>
+                    {{ user_form.email|add_class:"form-control"|attr:"placeholder:Enter email address" }}
+                    {% if user_form.email.errors %}
+                        <div class="text-danger">{{ user_form.email.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="id_phone" class="form-label">{{ profile_form.phone_number.label }}</label>
+                    {{ profile_form.phone_number|add_class:"form-control"|attr:"placeholder:Enter phone number" }}
+                    {% if profile_form.phone_number.errors %}
+                        <div class="text-danger">{{ profile_form.phone_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="id_email" class="form-label">{{ user_form.email.label }}</label>
-            {{ user_form.email|add_class:"form-input"|attr:"placeholder:Enter email address" }}
-            {% if user_form.email.errors %}<div class="text-danger text-sm mt-1">{{ user_form.email.errors }}</div>{% endif %}
-          </div>
-          <div class="form-group">
-            <label for="id_phone" class="form-label">{{ profile_form.phone_number.label }}</label>
-            {{ profile_form.phone_number|add_class:"form-input"|attr:"placeholder:Enter phone number" }}
-            {% if profile_form.phone_number.errors %}<div class="text-danger text-sm mt-1">{{ profile_form.phone_number.errors }}</div>{% endif %}
-          </div>
-        </div>
-      </div>
 
-      <div class="glass-card-sm mb-2">
-        <h3 class="section-title"><i class="fas fa-cog"></i>Account Settings</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="id_username" class="form-label">{{ user_form.username.label }}</label>
-            {{ user_form.username|add_class:"form-input"|attr:"placeholder:Enter username" }}
-            {% if user_form.username.errors %}<div class="text-danger text-sm mt-1">{{ user_form.username.errors }}</div>{% endif %}
-          </div>
-          <div class="form-group">
-            <label for="id_account_type" class="form-label">{{ profile_form.account_type.label }}</label>
-            {{ profile_form.account_type|add_class:"form-select" }}
-            {% if profile_form.account_type.errors %}<div class="text-danger text-sm mt-1">{{ profile_form.account_type.errors }}</div>{% endif %}
-          </div>
+        <!-- Account Settings Section -->
+        <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-cog me-2"></i>Account Settings</h3>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_username" class="form-label">{{ user_form.username.label }}</label>
+                    {{ user_form.username|add_class:"form-control"|attr:"placeholder:Enter username" }}
+                    {% if user_form.username.errors %}
+                        <div class="text-danger">{{ user_form.username.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="id_account_type" class="form-label">{{ profile_form.account_type.label }}</label>
+                    {{ profile_form.account_type|add_class:"form-control" }}
+                    {% if profile_form.account_type.errors %}
+                        <div class="text-danger">{{ profile_form.account_type.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+                {{ profile_form.email_alerts_enabled|add_class:"form-check-input" }}
+                <label class="form-check-label" for="{{ profile_form.email_alerts_enabled.id_for_label }}">
+                    {{ profile_form.email_alerts_enabled.label }}
+                </label>
+            </div>
         </div>
-        <div class="form-group flex-center gap-2">
-          {{ profile_form.email_alerts_enabled|add_class:"form-check-input" }}
-          <label class="form-label mb-0" for="{{ profile_form.email_alerts_enabled.id_for_label }}">{{ profile_form.email_alerts_enabled.label }}</label>
-        </div>
-      </div>
 
-      <div class="glass-card-sm mb-2">
-        <h3 class="section-title"><i class="fas fa-shield-alt"></i>Security</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="id_current_password" class="form-label">{{ profile_form.current_password.label }}</label>
-            {{ profile_form.current_password|add_class:"form-input"|attr:"placeholder:Enter current password"|attr:"type:password" }}
-            {% if profile_form.current_password.errors %}<div class="text-danger text-sm mt-1">{{ profile_form.current_password.errors }}</div>{% endif %}
-          </div>
-          <div class="form-group">
-            <label for="id_new_password" class="form-label">{{ profile_form.new_password.label }}</label>
-            {{ profile_form.new_password|add_class:"form-input"|attr:"placeholder:Enter new password"|attr:"type:password" }}
-            {% if profile_form.new_password.errors %}<div class="text-danger text-sm mt-1">{{ profile_form.new_password.errors }}</div>{% endif %}
-          </div>
+        <!-- Security Section -->
+        <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-shield-alt me-2"></i>Security</h3>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_current_password" class="form-label">{{ profile_form.current_password.label }}</label>
+                    {{ profile_form.current_password|add_class:"form-control"|attr:"placeholder:Enter current password"|attr:"type:password" }}
+                    {% if profile_form.current_password.errors %}
+                        <div class="text-danger">{{ profile_form.current_password.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="id_new_password" class="form-label">{{ profile_form.new_password.label }}</label>
+                    {{ profile_form.new_password|add_class:"form-control"|attr:"placeholder:Enter new password"|attr:"type:password" }}
+                    {% if profile_form.new_password.errors %}
+                        <div class="text-danger">{{ profile_form.new_password.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_confirm_password" class="form-label">{{ profile_form.confirm_password.label }}</label>
+                    {{ profile_form.confirm_password|add_class:"form-control"|attr:"placeholder:Confirm new password"|attr:"type:password" }}
+                    {% if profile_form.confirm_password.errors %}
+                        <div class="text-danger">{{ profile_form.confirm_password.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="id_confirm_password" class="form-label">{{ profile_form.confirm_password.label }}</label>
-            {{ profile_form.confirm_password|add_class:"form-input"|attr:"placeholder:Confirm new password"|attr:"type:password" }}
-            {% if profile_form.confirm_password.errors %}<div class="text-danger text-sm mt-1">{{ profile_form.confirm_password.errors }}</div>{% endif %}
-          </div>
-        </div>
-      </div>
 
-      <div class="form-actions">
-        <a href="{% url 'profile' %}" class="btn-glass"><i class="fas fa-arrow-left"></i>Back to Profile</a>
-        <button type="submit" class="btn-gradient"><i class="fas fa-save"></i>Save Changes</button>
-      </div>
+        <!-- Form Actions -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <a href="{% url 'profile' %}" class="profile-btn profile-btn-outline">
+                <i class="fas fa-arrow-left me-2"></i>Back to Profile
+            </a>
+            
+            <button type="submit" class="profile-btn profile-btn-primary">
+                <i class="fas fa-save me-2"></i>Save Changes
+            </button>
+        </div>
     </form>
-  </div>
 </div>
 
  <script>
