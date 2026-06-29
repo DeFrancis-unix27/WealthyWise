@@ -247,7 +247,7 @@ def landing(request):
     linked_banks = LinkedBank.objects.filter(user=user, status="active")
     literacy = LiteracyAssessment.objects.filter(user=user).order_by("-taken_at").first()
     enrollments = Enrollment.objects.filter(user=user).order_by("-started_at")[:3]
-    submissions = ProjectSubmission.objects.filter(user=user).order_by("-submitted_at")[:3]
+    submissions = ProjectSubmission.objects.filter(enrollment__user=user).order_by("-submitted_at")[:3]
     businesses = Business.objects.filter(user=user)[:2]
 
     net_worth = total_balance
@@ -1076,7 +1076,7 @@ def contact_view(request):
                 Name: {contact_message.name}
                 Email: {contact_message.email}
                 Subject: {contact_message.subject}
-                Message: {contact_message.message}
+                Message: {contact_message.description}
                 """
                 from_email = getattr(
                     settings, "DEFAULT_FROM_EMAIL", "noreply@WealthPoint.com"
