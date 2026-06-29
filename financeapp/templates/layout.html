@@ -14,6 +14,7 @@
     <title>{% block title %}{% firstof app_settings.site_name "WealthPoint" %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">
     <link rel="stylesheet" href="{% static 'css/features.css' %}">
+    <link rel="stylesheet" href="{% static 'css/inner-pages.css' %}">
     {% block extra_css %}{% endblock %}
   </head>
   <body>
@@ -234,6 +235,22 @@
     </script>
 
     <script src="{% static 'js/main.js' %}"></script>
+    <script>
+    // ─── 3D Card Tilt ───
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-tilt]').forEach(el => {
+        el.addEventListener('mousemove', e => {
+          const r = el.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - 0.5;
+          const y = (e.clientY - r.top) / r.height - 0.5;
+          el.style.transform = `perspective(800px) rotateY(${x*6}deg) rotateX(${-y*6}deg)`;
+        });
+        el.addEventListener('mouseleave', () => {
+          el.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)';
+        });
+      });
+    });
+    </script>
     <script>
     // ─── Sidebar state ───
     function toggleSidebar() {
