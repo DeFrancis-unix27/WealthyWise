@@ -283,6 +283,8 @@ TWO_FACTOR_WEBAUTHN_ORIGIN = os.environ.get("TWO_FACTOR_WEBAUTHN_ORIGIN", None)
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 REDIS_URL = os.environ.get("REDIS_URL")
 if REDIS_URL:
+    if "://" not in REDIS_URL:
+        REDIS_URL = "redis://" + REDIS_URL
     use_ssl = "redns.redis-cloud.com" in REDIS_URL
     CACHES["default"] = {
         "BACKEND": "django_redis.cache.RedisCache",
