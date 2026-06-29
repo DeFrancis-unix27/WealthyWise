@@ -5,11 +5,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: wealthywise
-      POSTGRES_USER: wealthywise
+      POSTGRES_DB: wealthpoint
+      POSTGRES_USER: wealthpoint
       POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U wealthywise"]
+      test: ["CMD-SHELL", "pg_isready -U wealthpoint"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -31,7 +31,7 @@ services:
       redis: { condition: service_healthy }
     env_file: .env
     environment:
-      DATABASE_URL: postgres://wealthywise:${DB_PASSWORD:-changeme}@db:5432/wealthywise
+      DATABASE_URL: postgres://wealthpoint:${DB_PASSWORD:-changeme}@db:5432/wealthpoint
       REDIS_URL: redis://redis:6379/0
     ports:
       - "8000:8000"

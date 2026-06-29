@@ -394,7 +394,7 @@ class UserSetting(models.Model):
 
 class AppSettings(models.Model):
     """Global application settings"""
-    site_name = models.CharField(max_length=100, default='WealthyWise')
+    site_name = models.CharField(max_length=100, default='WealthPoint')
     currency = models.CharField(max_length=3, default='NGN')
     default_theme = models.CharField(max_length=20, default='dark')
     enable_notifications = models.BooleanField(default=True)

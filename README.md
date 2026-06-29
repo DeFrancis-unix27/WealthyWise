@@ -1,4 +1,4 @@
-# WealthyWise
+# WealthPoint
 
 AI-powered financial intelligence platform. Track spending, learn financial concepts, set goals, and grow your business — all in one place.
 
@@ -27,8 +27,8 @@ AI-powered financial intelligence platform. Track spending, learn financial conc
 ## Quick Start
 
 ```bash
-git clone https://github.com/DeFrancis-unix27/WealthyWise.git
-cd WealthyWise
+git clone https://github.com/DeFrancis-unix27/WealthPoint.git
+cd WealthPoint
 
 cp .env.example .env
 # Edit .env with your secrets
@@ -63,7 +63,7 @@ See `.env.example` for the full list. Key ones:
 ## Project Structure
 
 ```
-WealthyWise/
+WealthPoint/
 ├── finance/              # Django project config
 │   ├── settings.py
 │   └── urls.py

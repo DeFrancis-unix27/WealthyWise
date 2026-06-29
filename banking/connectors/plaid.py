@@ -35,7 +35,7 @@ class PlaidConnector(BankConnector):
     def get_auth_url(self, redirect_uri: str, state: str) -> str:
         data = self._post("link/token/create", {
             "user": {"client_user_id": state},
-            "client_name": "WealthyWise",
+            "client_name": "WealthPoint",
             "products": ["transactions"],
             "country_codes": ["US", "CA"],
             "language": "en",

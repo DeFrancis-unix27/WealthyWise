@@ -149,7 +149,7 @@ class ContextAssembler:
         budgets = self._summarize_budgets()
         goals = self._summarize_goals()
 
-        return f"""You are WealthyWise AI, a personal financial assistant. You help users understand their finances, set goals, improve financial literacy, and make better money decisions.
+        return f"""You are WealthPoint AI, a personal financial assistant. You help users understand their finances, set goals, improve financial literacy, and make better money decisions.
 
 ## User Profile
 - Name: {profile['name']}
@@ -207,7 +207,7 @@ def get_gemini_response(user_message: str, user=None) -> str:
         assembler = ContextAssembler(user)
         prompt = assembler.build_personalized_message(user_message)
     else:
-        prompt = f"""You are WealthyWise AI, a personal financial assistant. Help users understand personal finance, investing, budgeting, and building wealth. Be concise and practical.
+        prompt = f"""You are WealthPoint AI, a personal financial assistant. Help users understand personal finance, investing, budgeting, and building wealth. Be concise and practical.
 
 User question: {user_message}"""
 

@@ -76,8 +76,8 @@ def user_settings(request):
 
 def site_settings(request):
     return {
-        "SITE_NAME": getattr(settings, "SITE_NAME", "WealthyWise"),
-        "DOMAIN": getattr(settings, "DOMAIN", "wealthywise.com"),
+        "SITE_NAME": getattr(settings, "SITE_NAME", "WealthPoint"),
+        "DOMAIN": getattr(settings, "DOMAIN", "WealthPoint.com"),
     }
 
 

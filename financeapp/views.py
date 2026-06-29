@@ -63,18 +63,6 @@ class DecimalEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-# Example of caching usage in a view
-@login_required
-def my_view(request):
-    data = cache.get("my_cached_key")
-    if data is None:
-        # Data not in cache, fetch from database or perform computation
-        data = "Some data fetched from the database"
-        cache.set("my_cached_key", data, timeout=300)  # Cache for 5 minutes
-
-    return HttpResponse(data)
-
-
 # ----------------- Helper Functions -----------------
 def calculate_trend(current, previous):
     """Calculate percentage trend between current and previous values"""
@@ -326,10 +314,10 @@ def signup_view(request):
             # Send welcome email
             try:
                 send_mail(
-                    subject="Welcome to WealthyWise!",
+                    subject="Welcome to WealthPoint!",
                     message="Signup successful ✅ You can now log in and start exploring all the features waiting for you!",
                     from_email=getattr(
-                        settings, "DEFAULT_FROM_EMAIL", "noreply@wealthywise.com"
+                        settings, "DEFAULT_FROM_EMAIL", "noreply@WealthPoint.com"
                     ),
                     recipient_list=[user.email],
                     fail_silently=True,
@@ -1091,7 +1079,7 @@ def contact_view(request):
                 Message: {contact_message.message}
                 """
                 from_email = getattr(
-                    settings, "DEFAULT_FROM_EMAIL", "noreply@wealthywise.com"
+                    settings, "DEFAULT_FROM_EMAIL", "noreply@WealthPoint.com"
                 )
                 to_email = getattr(settings, "CONTACT_EMAIL", from_email)
 

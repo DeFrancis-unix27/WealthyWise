@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='AppSettings',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('site_name', models.CharField(default='WealthyWise', max_length=100)),
+                ('site_name', models.CharField(default='WealthPoint', max_length=100)),
                 ('currency', models.CharField(default='NGN', max_length=3)),
                 ('default_theme', models.CharField(default='dark', max_length=20)),
                 ('enable_notifications', models.BooleanField(default=True)),

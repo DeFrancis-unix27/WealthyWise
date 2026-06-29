@@ -31,7 +31,7 @@ urlpatterns = [
     path("profile/", views.profile_view, name="profile"),
     path("edit-profile/", views.edit_profile, name="edit_profile"),
     path("delete-account/", views.delete_user_account, name="delete_user_account"),
-    path("delete-account/", views.delete_account, name="delete_account"),
+    path("api/delete-account/", views.delete_account, name="delete_account"),
     path("load-settings/", views.load_settings, name="load_settings"),
     path("save-setting/", views.save_setting, name="save_setting"),
     # Budgets

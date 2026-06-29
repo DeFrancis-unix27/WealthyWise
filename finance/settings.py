@@ -133,8 +133,8 @@ TEMPLATES = [
 ]
 
 
-SITE_NAME = "WealthyWise"
-DOMAIN = "wealthywise.com"
+SITE_NAME = "WealthPoint"
+DOMAIN = "WealthPoint.com"
 
 
 WSGI_APPLICATION = "finance.wsgi.application"
@@ -269,7 +269,7 @@ LOGOUT_REDIRECT_URL = "login"
 # WebAuthn (Passkeys, Security Keys)
 # ==========================
 TWO_FACTOR_WEBAUTHN_RP_NAME = os.environ.get(
-    "TWO_FACTOR_WEBAUTHN_RP_NAME", "WealthyWise"
+    "TWO_FACTOR_WEBAUTHN_RP_NAME", "WealthPoint"
 )
 TWO_FACTOR_WEBAUTHN_RP_ID = os.environ.get("TWO_FACTOR_WEBAUTHN_RP_ID", None)
 TWO_FACTOR_WEBAUTHN_ORIGIN = os.environ.get("TWO_FACTOR_WEBAUTHN_ORIGIN", None)
@@ -378,7 +378,7 @@ MESSAGE_TAGS = {
 # App defaults
 # ==========================
 APP_SETTINGS = {
-    "site_name": "WealthyWise",
+    "site_name": "WealthPoint",
     "currency": "NGN",
     "default_theme": "dark",
     "enable_notifications": True,
