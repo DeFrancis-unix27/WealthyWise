@@ -4,13 +4,194 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+.dashboard { max-width: 1400px; margin: 0 auto; }
+.dash-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 2rem; padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.dash-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.3px; }
+.dash-date { font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem; }
+.dash-actions { display: flex; gap: 0.75rem; }
+.dash-actions .btn-primary, .dash-actions .btn-secondary {
+  padding: 0.6rem 1.25rem; border-radius: 10px; font-size: 0.85rem;
+  font-weight: 600; font-family: inherit; display: flex; align-items: center; gap: 0.5rem;
+  cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none; border: none;
+}
+.dash-actions .btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+}
+.dash-actions .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59,158,255,0.3); }
+.dash-actions .btn-primary a { color: #fff; text-decoration: none; }
+.dash-actions .btn-secondary {
+  background: var(--card); border: 1px solid var(--border); color: var(--text);
+}
+.dash-actions .btn-secondary:hover { border-color: var(--accent); transform: translateY(-2px); }
+.dash-actions .btn-secondary a { color: var(--text); text-decoration: none; }
+
+/* Stats Grid - 3D Cards */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: var(--card); backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.5rem;
+  transform-style: preserve-3d;
+  transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+  opacity: 0; transform: translateY(20px);
+  position: relative; overflow: hidden;
+}
+.stat-card.visible { opacity: 1; transform: translateY(0); }
+.stat-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(59,158,255,0.03));
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.stat-card:hover::before { opacity: 1; }
+.stat-card:hover { transform: translateY(-4px); border-color: rgba(59,158,255,0.2); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.stat-label { font-size: 0.8rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.stat-card.income .stat-icon { background: rgba(46, 213, 115, 0.15); color: var(--success); }
+.stat-card.expense .stat-icon { background: rgba(255, 71, 87, 0.15); color: var(--danger); }
+.stat-card.balance .stat-icon { background: var(--accent-glow); color: var(--accent); }
+.stat-card.savings .stat-icon { background: var(--accent-glow-2); color: var(--accent-2); }
+.stat-value { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.35rem; }
+.stat-change { font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; }
+.stat-change.positive { color: var(--success); }
+.stat-change.negative { color: var(--danger); }
+
+/* Feature Widgets */
+.feature-widgets {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem; margin-bottom: 2rem;
+}
+.fw-card {
+  background: var(--card); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0; transform: translateY(15px);
+}
+.fw-card.visible { opacity: 1; transform: translateY(0); }
+.fw-card:hover { border-color: rgba(59,158,255,0.2); transform: translateY(-3px); }
+.fw-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.fw-header i { font-size: 1.2rem; width: 24px; text-align: center; color: var(--accent); }
+.fw-header h3 { font-size: 0.9rem; font-weight: 600; margin: 0; }
+.fw-value { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.25rem; }
+.fw-sub { font-size: 0.8rem; color: var(--muted); }
+.fw-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
+.fw-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 1s ease; }
+.fw-link { display: inline-block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--accent); text-decoration: none; transition: gap 0.3s ease; display: inline-flex; align-items: center; gap: 0.35rem; }
+.fw-link:hover { gap: 0.6rem; }
+.fw-list { list-style: none; padding: 0; margin: 0; }
+.fw-list li { font-size: 0.85rem; padding: 0.35rem 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+.fw-list li:last-child { border-bottom: none; }
+.fw-empty { font-size: 0.85rem; color: var(--muted); padding: 0.5rem 0; }
+
+/* Content Grid */
+.content-grid {
+  display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.chart-section {
+  background: var(--card); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.5rem;
+}
+.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.chart-title { font-size: 1.1rem; font-weight: 600; }
+.chart-tabs { display: flex; gap: 0.35rem; }
+.tab-btn {
+  padding: 0.35rem 0.85rem; border-radius: 6px; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); font-size: 0.75rem;
+  font-family: inherit; cursor: pointer; transition: all 0.25s ease;
+}
+.tab-btn:hover, .tab-btn.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+.chart-container { height: 280px; position: relative; }
+
+/* Quick Stats */
+.quick-stats {
+  background: var(--card); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.5rem;
+}
+.quick-stats h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.quick-stats h3 i { color: var(--accent); }
+.quick-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+}
+.quick-item:last-child { border-bottom: none; }
+.quick-label { font-size: 0.85rem; color: var(--muted); }
+.quick-value { font-weight: 600; font-size: 0.9rem; }
+.quick-value.positive { color: var(--success); }
+.quick-value.negative { color: var(--danger); }
+
+/* Transactions */
+.transactions {
+  background: var(--card); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.5rem;
+}
+.transactions-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.transactions-title { font-size: 1.1rem; font-weight: 600; }
+.search-box {
+  padding: 0.5rem 1rem; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); font-size: 0.8rem; font-family: inherit;
+  width: 220px; outline: none; transition: border 0.25s ease;
+}
+.search-box:focus { border-color: var(--accent); }
+.search-box::placeholder { color: var(--muted); }
+.transaction-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.85rem 0; border-bottom: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+.transaction-item:last-child { border-bottom: none; }
+.transaction-item:hover { padding-left: 0.5rem; }
+.transaction-info { display: flex; align-items: center; gap: 0.85rem; }
+.transaction-avatar {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.9rem;
+}
+.transaction-income { background: rgba(46, 213, 115, 0.15); color: var(--success); }
+.transaction-expense { background: rgba(255, 71, 87, 0.15); color: var(--danger); }
+.transaction-details h4 { font-size: 0.9rem; font-weight: 500; }
+.transaction-details p { font-size: 0.75rem; color: var(--muted); margin: 0; }
+.transaction-amount { font-weight: 700; font-size: 0.95rem; }
+.transaction-amount.positive { color: var(--success); }
+.transaction-amount.negative { color: var(--danger); }
+.no-transactions { text-align: center; padding: 2rem; color: var(--muted); }
+
+@media (max-width: 992px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .content-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .dash-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .dash-actions { width: 100%; }
+  .dash-actions .btn-primary, .dash-actions .btn-secondary { flex: 1; justify-content: center; }
+}
+</style>
 {% endblock %}
 
 {% block content %}
 <script>
 try { window.chartData = JSON.parse('{{ chart_data|default:"{}"|escapejs }}') || {}; }
 catch (e) { window.chartData = {}; }
-
 try { window.topCategoryData = JSON.parse('{{ top_category_json|default:"[]"|escapejs }}') || []; }
 catch (e) { window.topCategoryData = []; }
 </script>
@@ -33,8 +214,8 @@ catch (e) { window.topCategoryData = []; }
     </div>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card income">
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card income" data-delay="0">
       <div class="stat-header">
         <span class="stat-label">Total Income</span>
         <div class="stat-icon"><i class="fas fa-arrow-up"></i></div>
@@ -45,7 +226,7 @@ catch (e) { window.topCategoryData = []; }
         {{ income_trend|floatformat:1 }}% this month
       </div>
     </div>
-    <div class="stat-card expense">
+    <div class="stat-card expense" data-delay="100">
       <div class="stat-header">
         <span class="stat-label">Total Expenses</span>
         <div class="stat-icon"><i class="fas fa-arrow-down"></i></div>
@@ -56,7 +237,7 @@ catch (e) { window.topCategoryData = []; }
         {{ expense_trend|floatformat:1 }}% this month
       </div>
     </div>
-    <div class="stat-card balance">
+    <div class="stat-card balance" data-delay="200">
       <div class="stat-header">
         <span class="stat-label">Net Balance</span>
         <div class="stat-icon"><i class="fas fa-wallet"></i></div>
@@ -67,7 +248,7 @@ catch (e) { window.topCategoryData = []; }
         {% if net_balance > 0 %}+{% endif %}{{ net_balance|floatformat:2|intcomma }}
       </div>
     </div>
-    <div class="stat-card savings">
+    <div class="stat-card savings" data-delay="300">
       <div class="stat-header">
         <span class="stat-label">Savings Progress</span>
         <div class="stat-icon"><i class="fas fa-piggy-bank"></i></div>
@@ -78,99 +259,74 @@ catch (e) { window.topCategoryData = []; }
         ₦{{ total_balance|floatformat:2|intcomma }} of ₦{{ savings_goal|floatformat:2|intcomma }}
       </div>
     </div>
+  </div>
+
+  <div class="feature-widgets" id="fwGrid">
+    <div class="fw-card" data-delay="0">
+      <div class="fw-header">
+        <i class="fas fa-chart-line"></i>
+        <h3>Net Worth</h3>
+      </div>
+      <div class="fw-value">₦{{ net_worth|floatformat:0|intcomma }}</div>
+      <div class="fw-sub">{{ accounts|length }} account(s) · {{ linked_banks|length }} bank(s) linked</div>
+      <a href="{% url 'bank_list' %}" class="fw-link"><i class="fas fa-plus-circle"></i> Link a bank</a>
     </div>
-
-    <div class="feature-widgets">
-      <style>
-        .feature-widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .fw-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; transition: border-color 0.2s; }
-        .fw-card:hover { border-color: var(--accent-color); }
-        .fw-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
-        .fw-header i { font-size: 1.25rem; width: 24px; text-align: center; color: var(--accent-color); }
-        .fw-header h3 { font-size: 0.95rem; font-weight: 600; margin: 0; }
-        .fw-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .fw-sub { font-size: 0.8rem; color: var(--text-secondary); }
-        .fw-bar { height: 6px; background: var(--border-color); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
-        .fw-bar-fill { height: 100%; border-radius: 3px; background: var(--accent-color); transition: width 0.3s; }
-        .fw-link { display: inline-block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--accent-color); text-decoration: none; }
-        .fw-link:hover { text-decoration: underline; }
-        .fw-list { list-style: none; padding: 0; margin: 0; }
-        .fw-list li { font-size: 0.85rem; padding: 0.35rem 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; }
-        .fw-list li:last-child { border-bottom: none; }
-        .fw-empty { font-size: 0.85rem; color: var(--text-secondary); padding: 0.5rem 0; }
-      </style>
-      {% comment %}Net Worth{% endcomment %}
-      <div class="fw-card">
-        <div class="fw-header">
-          <i class="fas fa-chart-line"></i>
-          <h3>Net Worth</h3>
-        </div>
-        <div class="fw-value">₦{{ net_worth|floatformat:0|intcomma }}</div>
-        <div class="fw-sub">{{ accounts|length }} account(s) · {{ linked_banks|length }} bank(s) linked</div>
-        <a href="{% url 'bank_list' %}" class="fw-link"><i class="fas fa-plus-circle"></i> Link a bank</a>
+    <div class="fw-card" data-delay="100">
+      <div class="fw-header">
+        <i class="fas fa-bullseye"></i>
+        <h3>Financial Goals</h3>
       </div>
-
-      {% comment %}Financial Goals{% endcomment %}
-      <div class="fw-card">
-        <div class="fw-header">
-          <i class="fas fa-bullseye"></i>
-          <h3>Financial Goals</h3>
-        </div>
-        {% if goals %}
-          <ul class="fw-list">
-            {% for g in goals %}
-              <li><span>{{ g.name }}</span><span>{% widthratio g.current_amount g.target_amount 100 %}%</span></li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <div class="fw-empty">No goals set yet</div>
-        {% endif %}
-        <a href="{% url 'goal_list' %}" class="fw-link"><i class="fas fa-plus-circle"></i> Set a goal</a>
-      </div>
-
-      {% comment %}Literacy & Learning{% endcomment %}
-      <div class="fw-card">
-        <div class="fw-header">
-          <i class="fas fa-graduation-cap"></i>
-          <h3>Financial Literacy</h3>
-        </div>
-        {% if literacy %}
-          <div class="fw-value">{{ literacy.score }}/100</div>
-          <div class="fw-bar"><div class="fw-bar-fill" style="width:{{ literacy.score }}%"></div></div>
-          <div class="fw-sub">Last assessed {{ literacy.assessed_at|date }}</div>
-        {% else %}
-          <div class="fw-empty">Not yet assessed</div>
-        {% endif %}
-        {% if enrollments %}
-          <div class="fw-sub" style="margin-top:0.5rem;">{{ enrollments|length }} active course{{ enrollments|length|pluralize }}</div>
-        {% endif %}
-        <a href="{% url 'course_list' %}" class="fw-link"><i class="fas fa-book-open"></i> Browse courses</a>
-      </div>
-
-      {% comment %}Projects & Entrepreneurship{% endcomment %}
-      <div class="fw-card">
-        <div class="fw-header">
-          <i class="fas fa-lightbulb"></i>
-          <h3>Projects & Business</h3>
-        </div>
-        {% if submissions %}
-          <div class="fw-sub">{{ submissions|length }} project submission{{ submissions|length|pluralize }}</div>
-        {% else %}
-          <div class="fw-empty">No projects started</div>
-        {% endif %}
-        {% if businesses %}
-          <ul class="fw-list">
-            {% for b in businesses %}
-              <li><span>{{ b.name }}</span><span>{{ b.get_status_display }}</span></li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-        <a href="{% url 'project_list' %}" class="fw-link"><i class="fas fa-rocket"></i> Start a project</a>
-      </div>
+      {% if goals %}
+        <ul class="fw-list">
+          {% for g in goals %}
+            <li><span>{{ g.name }}</span><span>{% widthratio g.current_amount g.target_amount 100 %}%</span></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="fw-empty">No goals set yet</div>
+      {% endif %}
+      <a href="{% url 'goal_list' %}" class="fw-link"><i class="fas fa-plus-circle"></i> Set a goal</a>
     </div>
+    <div class="fw-card" data-delay="200">
+      <div class="fw-header">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>Financial Literacy</h3>
+      </div>
+      {% if literacy %}
+        <div class="fw-value">{{ literacy.score }}/100</div>
+        <div class="fw-bar"><div class="fw-bar-fill" style="width:{{ literacy.score }}%"></div></div>
+        <div class="fw-sub" style="margin-top:0.5rem;">Last assessed {{ literacy.taken_at|date }}</div>
+      {% else %}
+        <div class="fw-empty">Not yet assessed</div>
+      {% endif %}
+      {% if enrollments %}
+        <div class="fw-sub" style="margin-top:0.5rem;">{{ enrollments|length }} active course{{ enrollments|length|pluralize }}</div>
+      {% endif %}
+      <a href="{% url 'course_list' %}" class="fw-link"><i class="fas fa-book-open"></i> Browse courses</a>
+    </div>
+    <div class="fw-card" data-delay="300">
+      <div class="fw-header">
+        <i class="fas fa-lightbulb"></i>
+        <h3>Projects & Business</h3>
+      </div>
+      {% if submissions %}
+        <div class="fw-sub">{{ submissions|length }} project submission{{ submissions|length|pluralize }}</div>
+      {% else %}
+        <div class="fw-empty">No projects started</div>
+      {% endif %}
+      {% if businesses %}
+        <ul class="fw-list">
+          {% for b in businesses %}
+            <li><span>{{ b.name }}</span><span>{{ b.get_status_display }}</span></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <a href="{% url 'project_list' %}" class="fw-link"><i class="fas fa-rocket"></i> Start a project</a>
+    </div>
+  </div>
 
-    <div class="content-grid">
-      <div class="chart-section">
+  <div class="content-grid">
+    <div class="chart-section">
       <div class="chart-header">
         <h2 class="chart-title">Spending Analysis</h2>
         <div class="chart-tabs">
@@ -229,7 +385,7 @@ catch (e) { window.topCategoryData = []; }
       {% for t in transactions %}
       <div class="transaction-item" data-category="{{ t.category }}" data-amount="{{ t.amount }}">
         <div class="transaction-info">
-          <div class="transaction-avatar transaction-income">{{ t.description.0|upper }}</div>
+          <div class="transaction-avatar {% if t.transaction_type == 'income' %}transaction-income{% else %}transaction-expense{% endif %}">{{ t.description.0|upper }}</div>
           <div class="transaction-details">
             <h4>{{ t.description }}</h4>
             <p>{{ t.date|date:"M d" }} &bull; {{ t.category|title }} &bull; {{ t.account.name }}</p>
@@ -240,7 +396,7 @@ catch (e) { window.topCategoryData = []; }
         </div>
       </div>
       {% empty %}
-      <div class="no-transactions" style="text-align:center;padding:2rem;color:var(--muted);">
+      <div class="no-transactions">
         <i class="fas fa-receipt" style="font-size:2rem;margin-bottom:0.5rem;display:block;"></i>
         <p>No recent transactions found.</p>
       </div>
@@ -249,30 +405,13 @@ catch (e) { window.topCategoryData = []; }
   </div>
 </div>
 
-<div class="ai-chat">
-  <button class="chat-toggle" onclick="toggleChat()">
-    <i class="fas fa-robot" id="chatIcon"></i>
-  </button>
-  <div class="chat-window" id="chatWindow">
-    <div class="chat-header"><i class="fas fa-robot"></i> Financial Assistant</div>
-    <div class="chat-messages" id="chatMessages">
-      <div class="chat-message ai">Hi! I'm your AI financial assistant. I can help you analyze spending, set budgets, and answer questions about your finances. What would you like to know?</div>
-    </div>
-    <div class="user" style="margin:23px;cursor:pointer;" onclick="clearChat()"><i class="fas fa-trash"></i></div>
-    <div class="chat-input">
-      <input type="text" placeholder="Ask me anything..." id="chatInput" onkeypress="handleChatInput(event)">
-    </div>
-  </div>
-</div>
-
 {% if error %}
-<div class="error-message" style="text-align:center;padding:2rem;color:var(--danger);">
-  <i class="fas fa-exclamation-triangle"></i>
-  <p>Error loading dashboard: {{ error }}</p>
+<div class="alert alert-danger" style="margin-top:1rem;">
+  <i class="fas fa-exclamation-triangle"></i> Error loading dashboard: {{ error }}
 </div>
 {% endif %}
 
-<div class="transaction-modal" id="transactionModal">
+<div class="transaction-modal" id="transactionModal" style="display:none;">
   <div class="modal-overlay" onclick="closeModal()"></div>
   <div class="modal-content">
     <div class="modal-header">
@@ -331,6 +470,35 @@ catch (e) { window.topCategoryData = []; }
     </form>
   </div>
 </div>
+
+<script>
+// ─── 3D Card Tilt on Stat Cards ───
+document.querySelectorAll('.stat-card').forEach(el => {
+  el.addEventListener('mousemove', (e) => {
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `translateY(-4px) perspective(800px) rotateY(${x * 3}deg) rotateX(${-y * 3}deg)`;
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.transform = '';
+  });
+});
+
+// ─── Scroll Animation ───
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = parseInt(entry.target.dataset.delay) || 0;
+        setTimeout(() => entry.target.classList.add('visible'), delay);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.stat-card, .fw-card').forEach(el => observer.observe(el));
+})();
+</script>
 {% endblock %}
 
 {% block extra_js %}

@@ -306,9 +306,7 @@ def signup_view(request):
     if request.method == "POST":
         form = CustomSignupForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(request.POST.get("password"))
-            user.save()
+            user = form.save()
             login(request, user)
 
             # Send welcome email

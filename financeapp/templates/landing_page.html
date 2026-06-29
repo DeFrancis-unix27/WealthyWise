@@ -8,92 +8,227 @@
   <meta name="description" content="WealthPoint combines AI-powered financial tracking, education, and marketplace tools to help you build real wealth." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --bg: #0b0f14; --bg-alt: #0d1219; --panel: #111821; --muted: #92a2b3;
-      --text: #e8eef6; --accent: #4aa8ff; --accent-2: #7c5cff; --accent-glow: rgba(74, 168, 255, 0.15);
-      --danger: #ff6b6b; --success: #3ddc97; --warning: #fbbf24; --card: #0f141b; --border: #1a2330;
-      --radius: 16px; --radius-sm: 12px; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --bg: #070b10; --bg-alt: #0a0f16; --panel: rgba(15, 20, 27, 0.85);
+      --muted: #8899aa; --text: #e2eaf3; --accent: #3b9eff; --accent-2: #7c5cff;
+      --accent-glow: rgba(59, 158, 255, 0.12); --accent-glow-2: rgba(124, 92, 255, 0.15);
+      --danger: #ff4757; --success: #2ed573; --warning: #ffa502;
+      --card: rgba(15, 20, 27, 0.7); --border: rgba(255,255,255,0.06);
+      --radius: 20px; --radius-sm: 12px;
     }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text); overflow-x: hidden;
+      perspective: 1200px;
+    }
     a { text-decoration: none; color: inherit; }
 
-    /* ---- Three.js canvas ---- */
+    /* Scroll Progress */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      z-index: 9999; width: 0%; transition: width 0.1s;
+    }
+
+    /* Three.js canvas */
     #three-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
-    /* ---- Nav ---- */
-    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: rgba(11, 15, 20, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
-    .nav-brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+    /* Gradient mesh overlay */
+    .mesh-overlay {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(59,158,255,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(124,92,255,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(59,158,255,0.04) 0%, transparent 50%);
+    }
+
+    /* Nav */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 2.5rem;
+      background: rgba(7, 11, 16, 0.7); backdrop-filter: blur(16px) saturate(1.8);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    .navbar.scrolled { background: rgba(7, 11, 16, 0.92); }
+    .nav-brand { display: flex; align-items: center; gap: 0.6rem; font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; transform: translateZ(10px); }
     .nav-brand img { height: 32px; width: auto; display: block; }
-    .nav-brand span { color: var(--text); }
+    .nav-brand span { color: var(--text); font-weight: 300; }
     .nav-links { display: flex; align-items: center; gap: 2rem; }
-    .nav-links a { font-size: 0.85rem; color: var(--muted); font-weight: 500; transition: var(--transition); }
+    .nav-links a { font-size: 0.85rem; color: var(--muted); font-weight: 500; transition: all 0.3s ease; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1.5px; background: var(--accent); transition: width 0.3s ease; }
     .nav-links a:hover { color: var(--text); }
-    .nav-cta { padding: 0.5rem 1.25rem; border-radius: 8px; background: var(--accent); color: #fff !important; font-weight: 600; transition: var(--transition); }
-    .nav-cta:hover { box-shadow: 0 4px 20px rgba(74, 168, 255, 0.3); transform: translateY(-1px); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      padding: 0.55rem 1.35rem; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff !important; font-weight: 600; transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .nav-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      transform: translateX(-100%); transition: transform 0.6s ease;
+    }
+    .nav-cta:hover::before { transform: translateX(100%); }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59, 158, 255, 0.35); }
+    .mobile-menu-btn { display: none; background: none; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.75rem; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
 
-    /* ---- Hero ---- */
-    .hero { position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; padding: 8rem 2rem 4rem; }
-    .hero-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-    .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 1rem; border-radius: 20px; background: var(--accent-glow); border: 1px solid rgba(74, 168, 255, 0.2); font-size: 0.8rem; color: var(--accent); margin-bottom: 1.5rem; }
-    .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -1px; }
+    /* Hero */
+    .hero { position: relative; z-index: 2; min-height: 100vh; display: flex; align-items: center; padding: 8rem 2.5rem 4rem; }
+    .hero-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; transform-style: preserve-3d; }
+    .hero-content { transform-style: preserve-3d; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.1rem; border-radius: 20px;
+      background: var(--accent-glow); border: 1px solid rgba(59,158,255,0.15);
+      font-size: 0.8rem; color: var(--accent); margin-bottom: 1.5rem; transform: translateZ(15px);
+      animation: badgePulse 3s ease-in-out infinite;
+    }
+    @keyframes badgePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; line-height: 1.05; margin-bottom: 1.5rem; letter-spacing: -1px; transform: translateZ(20px); }
     .hero h1 .highlight { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { font-size: 1.1rem; color: var(--muted); line-height: 1.7; max-width: 540px; margin-bottom: 2rem; }
-    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .btn-primary { padding: 0.85rem 2rem; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-weight: 600; font-size: 1rem; border: none; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 0.5rem; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(74, 168, 255, 0.3); }
-    .btn-secondary { padding: 0.85rem 2rem; border-radius: 10px; background: transparent; color: var(--text); font-weight: 600; font-size: 1rem; border: 1px solid var(--border); cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 0.5rem; }
-    .btn-secondary:hover { border-color: var(--accent); background: var(--accent-glow); }
+    .hero p { font-size: 1.05rem; color: var(--muted); line-height: 1.7; max-width: 520px; margin-bottom: 2rem; transform: translateZ(10px); }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; transform: translateZ(25px); }
+    .btn-primary {
+      padding: 0.85rem 2rem; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff; font-weight: 600; font-size: 1rem; border: none; cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex; align-items: center; gap: 0.5rem; position: relative; overflow: hidden;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      transform: translateX(-100%); transition: transform 0.6s ease;
+    }
+    .btn-primary:hover::before { transform: translateX(100%); }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(59,158,255,0.3); }
+    .btn-secondary {
+      padding: 0.85rem 2rem; border-radius: 12px;
+      background: transparent; color: var(--text); font-weight: 600; font-size: 1rem;
+      border: 1px solid var(--border); cursor: pointer; transition: all 0.3s ease;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-secondary:hover { border-color: var(--accent); background: var(--accent-glow); transform: translateY(-2px); }
 
-    .hero-visual { position: relative; }
-    .hero-card-3d { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; transform-style: preserve-3d; perspective: 1000px; transition: transform 0.3s; }
-    .hero-card-3d:hover { transform: rotateY(-3deg) rotateX(2deg); }
-    .hero-card-3d .stat-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
-    .hero-card-3d .stat-row:last-child { border-bottom: none; }
-    .hero-card-3d .stat-label { font-size: 0.8rem; color: var(--muted); }
-    .hero-card-3d .stat-value { font-weight: 700; }
-    .hero-card-3d .stat-value.up { color: var(--success); }
-    .hero-card-3d .stat-value.down { color: var(--danger); }
-    .hero-card-3d .chart-bar { height: 4px; border-radius: 2px; margin-top: 0.5rem; background: var(--border); overflow: hidden; }
-    .hero-card-3d .chart-bar-fill { height: 100%; border-radius: 2px; background: var(--accent); width: 67%; }
+    .hero-stats { display: flex; gap: 2.5rem; margin-top: 2rem; transform: translateZ(30px); }
+    .hero-stat { position: relative; }
+    .hero-stat .num { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, var(--text), var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-stat .label { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .hero-stat:not(:last-child)::after { content: ''; position: absolute; right: -1.25rem; top: 10%; height: 80%; width: 1px; background: var(--border); }
 
-    /* ---- Section Common ---- */
-    section { position: relative; z-index: 1; padding: 6rem 2rem; }
+    /* Hero Visual - 3D Card */
+    .hero-visual { position: relative; transform-style: preserve-3d; }
+    .hero-card {
+      background: var(--card); backdrop-filter: blur(20px) saturate(1.5);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 2rem; transform-style: preserve-3d; perspective: 1000px;
+      transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
+      animation: cardFloat 4s ease-in-out infinite;
+    }
+    @keyframes cardFloat { 0%, 100% { transform: translateY(0) rotateY(-2deg); } 50% { transform: translateY(-8px) rotateY(-2deg); } }
+    .hero-card .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; transform: translateZ(30px); }
+    .hero-card .card-header h3 { font-size: 1rem; font-weight: 600; }
+    .hero-card .card-header .change { color: var(--success); font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 0.25rem; }
+    .hero-card .stat-row { display: flex; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid var(--border); transform: translateZ(20px); }
+    .hero-card .stat-row:last-of-type { border-bottom: none; }
+    .hero-card .stat-label { font-size: 0.8rem; color: var(--muted); }
+    .hero-card .stat-value { font-weight: 700; }
+    .hero-card .stat-value.up { color: var(--success); }
+    .hero-card .stat-value.down { color: var(--danger); }
+    .hero-card .chart-section { margin-top: 1rem; transform: translateZ(25px); }
+    .hero-card .chart-bar { height: 4px; border-radius: 3px; background: var(--border); overflow: hidden; margin-top: 0.5rem; }
+    .hero-card .chart-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); width: 78%; transition: width 1s ease; }
+
+    /* Floating elements around hero card */
+    .float-badge {
+      position: absolute; padding: 0.5rem 1rem; border-radius: 12px;
+      background: var(--card); backdrop-filter: blur(12px); border: 1px solid var(--border);
+      font-size: 0.75rem; display: flex; align-items: center; gap: 0.4rem;
+      animation: floatBadge 5s ease-in-out infinite; z-index: 2;
+    }
+    .float-badge:nth-child(2) { top: -10px; right: -20px; animation-delay: 0.5s; color: var(--success); }
+    .float-badge:nth-child(3) { bottom: 30px; left: -30px; animation-delay: 1.5s; color: var(--warning); }
+    @keyframes floatBadge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--muted); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+    .scroll-indicator i { font-size: 0.85rem; }
+    @keyframes scrollBounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+
+    /* Section common */
+    section { position: relative; z-index: 2; padding: 6rem 2.5rem; }
     .section-inner { max-width: 1200px; margin: 0 auto; }
-    .section-label { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 6px; background: var(--accent-glow); color: var(--accent); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+    .section-label {
+      display: inline-block; padding: 0.35rem 0.9rem; border-radius: 6px;
+      background: var(--accent-glow); color: var(--accent);
+      font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;
+    }
     .section-title { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; margin-bottom: 1rem; letter-spacing: -0.5px; }
     .section-subtitle { font-size: 1rem; color: var(--muted); max-width: 600px; line-height: 1.7; }
 
-    /* ---- Features Grid 3D ---- */
+    /* Features Grid */
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
-    .feature-3d { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; transition: transform 0.3s, border-color 0.3s; transform-style: preserve-3d; perspective: 800px; }
-    .feature-3d:hover { transform: translateY(-8px) rotateX(2deg); border-color: var(--accent); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-    .feature-3d .icon { width: 48px; height: 48px; border-radius: 12px; background: var(--accent-glow); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 1.25rem; color: var(--accent); }
-    .feature-3d h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .feature-3d p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+    .feature-card {
+      background: var(--card); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 2rem; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d; perspective: 800px;
+      opacity: 0; transform: translateY(30px);
+    }
+    .feature-card.visible { opacity: 1; transform: translateY(0); }
+    .feature-card:hover {
+      transform: translateY(-8px) rotateX(2deg);
+      border-color: rgba(59,158,255,0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .feature-card .icon {
+      width: 50px; height: 50px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent-glow), var(--accent-glow-2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 1.25rem; color: var(--accent);
+      transition: all 0.4s ease; transform: translateZ(20px);
+    }
+    .feature-card:hover .icon { transform: translateZ(30px) scale(1.1); }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; transform: translateZ(15px); }
+    .feature-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; transform: translateZ(10px); }
 
-    /* ---- Market Ticker ---- */
-    .market-scroll { overflow: hidden; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 0; margin: 2rem 0; }
-    .market-track { display: flex; gap: 2rem; animation: scroll 30s linear infinite; width: max-content; }
-    .market-item { display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; font-size: 0.85rem; padding: 0 1rem; border-right: 1px solid var(--border); }
+    /* Market Ticker */
+    .market-scroll { overflow: hidden; background: var(--card); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.8rem 0; margin: 2rem 0; }
+    .market-track { display: flex; gap: 2rem; animation: scroll 40s linear infinite; width: max-content; }
+    .market-track:hover { animation-play-state: paused; }
+    .market-item { display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; font-size: 0.85rem; padding: 0 1.5rem; border-right: 1px solid var(--border); }
     .market-item .sym { font-weight: 600; }
     .market-item .price { color: var(--muted); }
     .market-item .chg.up { color: var(--success); }
     .market-item .chg.down { color: var(--danger); }
     @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-    /* ---- TradingView Widget Container ---- */
-    .tv-container { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 2rem; }
-    .tv-container .tv-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
-    .tv-container .tv-header h3 { font-size: 1rem; font-weight: 600; }
+    /* TradingView Widget */
+    .tv-container { background: var(--card); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 2rem; }
+    .tv-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .tv-header h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+    .tv-header h3 i { color: var(--accent); }
 
-    /* ---- Curated Resources ---- */
+    /* Resources */
     .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
-    .resource-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: all 0.3s; }
-    .resource-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+    .resource-card {
+      background: var(--card); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.5rem; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0; transform: translateY(20px);
+    }
+    .resource-card.visible { opacity: 1; transform: translateY(0); }
+    .resource-card:hover { border-color: rgba(59,158,255,0.25); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
     .resource-card .tag { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; }
     .resource-card .tag.course { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
     .resource-card .tag.tool { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
@@ -101,58 +236,72 @@
     .resource-card .tag.market { background: rgba(234, 179, 8, 0.15); color: #eab308; }
     .resource-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
     .resource-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem; }
-    .resource-card .link { color: var(--accent); font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .resource-card .link { color: var(--accent); font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.35rem; transition: gap 0.3s ease; }
     .resource-card .link:hover { gap: 0.6rem; }
 
-    /* ---- CTA ---- */
-    .cta-section { text-align: center; position: relative; }
-    .cta-card { background: linear-gradient(135deg, rgba(74, 168, 255, 0.05), rgba(124, 92, 255, 0.05)); border: 1px solid rgba(74, 168, 255, 0.2); border-radius: 24px; padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
+    /* CTA */
+    .cta-section { text-align: center; }
+    .cta-card {
+      background: linear-gradient(135deg, rgba(59,158,255,0.08), rgba(124,92,255,0.08));
+      border: 1px solid rgba(59,158,255,0.15); border-radius: 24px;
+      padding: 4rem 2rem; max-width: 800px; margin: 0 auto;
+      position: relative; overflow: hidden;
+    }
+    .cta-card::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(59,158,255,0.05), transparent 50%);
+      animation: ctaGlow 6s ease-in-out infinite;
+    }
+    @keyframes ctaGlow { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-5%, 5%); } }
+    .cta-card * { position: relative; z-index: 1; }
     .cta-card h2 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
-    .cta-card p { color: var(--muted); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta-card p { color: var(--muted); margin-bottom: 2rem; max-width: 500px; margin-inline: auto; }
 
-    /* ---- Footer ---- */
-    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 3rem 2rem; }
+    /* Footer */
+    footer { position: relative; z-index: 2; border-top: 1px solid var(--border); padding: 4rem 2.5rem 2rem; }
     .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; }
     .footer-brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem; }
     .footer-brand img { height: 28px; width: auto; display: block; }
     .footer-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; max-width: 300px; }
-    .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text); }
-    .footer-col a { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; transition: var(--transition); }
-    .footer-col a:hover { color: var(--accent); }
+    .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .footer-col a { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; transition: all 0.3s ease; }
+    .footer-col a:hover { color: var(--accent); transform: translateX(4px); }
     .footer-bottom { max-width: 1200px; margin: 2rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); }
 
-    /* ---- Responsive ---- */
+    /* Responsive */
     @media (max-width: 768px) {
       .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
       .hero { padding: 6rem 1.5rem 3rem; }
       .nav-links { display: none; }
       .nav-links.mobile-open { display: flex; flex-direction: column; position: fixed; top: 70px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); padding: 1rem; }
+      .mobile-menu-btn { display: flex; align-items: center; gap: 0.5rem; }
       .features-grid { grid-template-columns: 1fr; }
       .footer-inner { grid-template-columns: 1fr 1fr; }
       .cta-card { padding: 3rem 1.5rem; }
+      .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+      .hero-stat:not(:last-child)::after { display: none; }
     }
     @media (max-width: 480px) {
       .footer-inner { grid-template-columns: 1fr; }
       .hero-actions { flex-direction: column; }
       .hero-actions .btn-primary, .hero-actions .btn-secondary { width: 100%; justify-content: center; }
+      .float-badge { display: none; }
     }
 
-    /* ---- Mobile menu toggle ---- */
-    .mobile-menu-btn { display: none; background: none; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.75rem; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
-    @media (max-width: 768px) { .mobile-menu-btn { display: flex; align-items: center; gap: 0.5rem; } }
-
-    /* ---- Scrollbar ---- */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </style>
 </head>
 <body>
+  <div id="scroll-progress"></div>
   <canvas id="three-canvas"></canvas>
+  <div class="mesh-overlay"></div>
 
   <!-- Nav -->
-  <nav class="navbar">
-    <div class="nav-brand"><img src="{% static 'images/logo.png' %}" alt="" /> WealthPoint</div>
+  <nav class="navbar" id="navbar">
+    <a href="/" class="nav-brand"><img src="{% static 'images/logo.png' %}" alt="" /> Wealth<span>Point</span></a>
     <div class="nav-links" id="navLinks">
       <a href="#features">Features</a>
       <a href="#courses">Courses</a>
@@ -166,7 +315,7 @@
   <!-- Hero -->
   <section class="hero">
     <div class="hero-inner">
-      <div>
+      <div class="hero-content">
         <div class="hero-badge"><i class="fas fa-sparkles"></i> AI-Powered Financial Intelligence</div>
         <h1>Your Money,<br><span class="highlight">Smarter & Stronger</span></h1>
         <p>Track spending, learn financial concepts, set goals, and grow your business — all in one platform powered by AI and real market data.</p>
@@ -174,29 +323,35 @@
           <a href="{% url 'signup' %}" class="btn-primary"><i class="fas fa-rocket"></i> Start Free</a>
           <a href="#features" class="btn-secondary"><i class="fas fa-play-circle"></i> See How It Works</a>
         </div>
-        <div style="display:flex;gap:2rem;margin-top:2.5rem;">
-          <div><div style="font-size:1.5rem;font-weight:700;">50K+</div><div style="font-size:0.8rem;color:var(--muted);">Active Users</div></div>
-          <div><div style="font-size:1.5rem;font-weight:700;">$2M+</div><div style="font-size:0.8rem;color:var(--muted);">Tracked Monthly</div></div>
-          <div><div style="font-size:1.5rem;font-weight:700;">4.9★</div><div style="font-size:0.8rem;color:var(--muted);">User Rating</div></div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num" data-count="50000">0</div><div class="label">Active Users</div></div>
+          <div class="hero-stat"><div class="num" data-count="2000000">$0</div><div class="label">Tracked / mo</div></div>
+          <div class="hero-stat"><div class="num" data-count="49">4.9★</div><div class="label">User Rating</div></div>
         </div>
       </div>
       <div class="hero-visual">
-        <div class="hero-card-3d" id="heroCard3d">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
-            <span style="font-weight:600;">Portfolio Overview</span>
-            <span style="color:var(--success);font-weight:700;">+12.4%</span>
+        <div class="hero-card" id="heroCard">
+          <div class="card-header">
+            <h3>Portfolio Overview</h3>
+            <span class="change"><i class="fas fa-chart-line"></i> +12.4%</span>
           </div>
-          <div class="stat-row"><span class="stat-label">Total Balance</span><span class="stat-value up">$247,890</span></div>
-          <div class="stat-row"><span class="stat-label">Monthly Income</span><span class="stat-value up">$12,450</span></div>
-          <div class="stat-row"><span class="stat-label">Monthly Expenses</span><span class="stat-value down">$6,230</span></div>
-          <div class="stat-row"><span class="stat-label">Investments</span><span class="stat-value up">$89,200</span></div>
-          <div class="stat-row"><span class="stat-label">Savings Rate</span><span class="stat-value up">48%</span></div>
-          <div style="margin-top:1rem;">
+          <div class="stat-row" style="transform:translateZ(25px)"><span class="stat-label">Total Balance</span><span class="stat-value up">$247,890</span></div>
+          <div class="stat-row" style="transform:translateZ(20px)"><span class="stat-label">Monthly Income</span><span class="stat-value up">$12,450</span></div>
+          <div class="stat-row" style="transform:translateZ(15px)"><span class="stat-label">Monthly Expenses</span><span class="stat-value down">$6,230</span></div>
+          <div class="stat-row" style="transform:translateZ(10px)"><span class="stat-label">Investments</span><span class="stat-value up">$89,200</span></div>
+          <div class="stat-row" style="transform:translateZ(5px)"><span class="stat-label">Savings Rate</span><span class="stat-value up">48%</span></div>
+          <div class="chart-section">
             <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--muted);margin-bottom:0.25rem;"><span>Portfolio Growth</span><span>+18.3%</span></div>
-            <div class="chart-bar"><div class="chart-bar-fill" style="width:78%;"></div></div>
+            <div class="chart-bar"><div class="chart-fill" id="chartFill"></div></div>
           </div>
         </div>
+        <div class="float-badge" style="top:-10px;right:-20px;"><i class="fas fa-arrow-up"></i> +18.3% YTD</div>
+        <div class="float-badge" style="bottom:30px;left:-30px;"><i class="fas fa-bolt"></i> AI Active</div>
       </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <i class="fas fa-chevron-down"></i>
     </div>
   </section>
 
@@ -208,33 +363,33 @@
         <h2 class="section-title">Everything You Need to <span style="background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Build Wealth</span></h2>
         <p class="section-subtitle" style="margin:0 auto 2rem;">From AI-powered insights to hands-on courses, we've built the complete fintech learning ecosystem.</p>
       </div>
-      <div class="features-grid">
-        <div class="feature-3d" style="transition-delay:0.1s;">
+      <div class="features-grid" id="featuresGrid">
+        <div class="feature-card" data-delay="0">
           <div class="icon"><i class="fas fa-robot"></i></div>
           <h3>AI Financial Assistant</h3>
           <p>Get personalized advice based on your actual transactions, budgets, and goals. Our Gemini-powered AI understands your unique financial situation.</p>
         </div>
-        <div class="feature-3d" style="transition-delay:0.2s;">
+        <div class="feature-card" data-delay="100">
           <div class="icon"><i class="fas fa-university"></i></div>
           <h3>Real Bank Sync</h3>
           <p>Connect your bank accounts via Mono (Nigeria), Plaid (US/CA), or Truelayer (UK/EU). Auto-sync transactions daily with encrypted connections.</p>
         </div>
-        <div class="feature-3d" style="transition-delay:0.3s;">
+        <div class="feature-card" data-delay="200">
           <div class="icon"><i class="fas fa-graduation-cap"></i></div>
           <h3>Financial Education</h3>
           <p>Learn through structured courses, hands-on projects, live workshops, and interactive concepts — from beginner to advanced levels.</p>
         </div>
-        <div class="feature-3d" style="transition-delay:0.4s;">
+        <div class="feature-card" data-delay="300">
           <div class="icon"><i class="fas fa-bullseye"></i></div>
           <h3>Smart Goal Tracking</h3>
           <p>Set financial goals — emergency fund, debt payoff, investment targets — and track progress with milestone breakdowns and AI nudges.</p>
         </div>
-        <div class="feature-3d" style="transition-delay:0.5s;">
+        <div class="feature-card" data-delay="400">
           <div class="icon"><i class="fas fa-store"></i></div>
           <h3>Marketplace & Affiliates</h3>
           <p>Access curated financial tools, templates, and partner services. Earn commissions through our affiliate program by referring quality products.</p>
         </div>
-        <div class="feature-3d" style="transition-delay:0.6s;">
+        <div class="feature-card" data-delay="500">
           <div class="icon"><i class="fas fa-chart-line"></i></div>
           <h3>Real Market Data</h3>
           <p>Live stock prices, forex rates, and crypto tracking powered by TradingView. Make informed investment decisions with real-time data.</p>
@@ -243,8 +398,8 @@
     </div>
   </section>
 
-  <!-- Marketing Ticker -->
-  <section style="padding:2rem;">
+  <!-- Ticker -->
+  <section style="padding:2rem 2.5rem;">
     <div class="section-inner">
       <div class="market-scroll">
         <div class="market-track" id="marketTrack">
@@ -263,7 +418,7 @@
     </div>
   </section>
 
-  <!-- Real-Time Market Chart (TradingView Widget) -->
+  <!-- Market Chart -->
   <section id="market">
     <div class="section-inner">
       <div style="text-align:center;">
@@ -273,10 +428,10 @@
       </div>
       <div class="tv-container">
         <div class="tv-header">
-          <h3><i class="fas fa-chart-simple" style="color:var(--accent);margin-right:0.5rem;"></i> S&P 500 &mdash; Real-Time Chart</h3>
+          <h3><i class="fas fa-chart-simple"></i> S&P 500 — Real-Time Chart</h3>
           <span style="font-size:0.75rem;color:var(--muted);">Data by TradingView</span>
         </div>
-        <div style="height:400px;">
+        <div style="height:420px;">
           <div class="tradingview-widget-container" style="height:100%;width:100%;">
             <div id="tv-chart" style="height:100%;width:100%;"></div>
           </div>
@@ -285,7 +440,7 @@
     </div>
   </section>
 
-  <!-- Curated Resources -->
+  <!-- Resources -->
   <section id="courses">
     <div class="section-inner">
       <div style="text-align:center;">
@@ -293,79 +448,19 @@
         <h2 class="section-title">Best <span style="background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Learning & Tools</span></h2>
         <p class="section-subtitle" style="margin:0 auto 2rem;">We've curated the best courses, media, and financial tools from around the web to accelerate your journey.</p>
       </div>
-      <div class="resources-grid">
-        <div class="resource-card">
-          <span class="tag course">Course</span>
-          <h3>Financial Markets (Yale)</h3>
-          <p>Nobel laureate Robert Shiller teaches the fundamentals of financial markets, risk management, and behavioral finance. Free on Coursera.</p>
-          <a href="https://www.coursera.org/learn/financial-markets-global" target="_blank" rel="noopener" class="link">Explore Course <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag course">Course</span>
-          <h3>Harvard Business Review</h3>
-          <p>World's top business publication with case studies, management insights, and leadership strategies from Harvard Business School.</p>
-          <a href="https://hbr.org/" target="_blank" rel="noopener" class="link">Read HBR <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag course">Course</span>
-          <h3>Financial Literacy by Khan Academy</h3>
-          <p>Free, world-class education on personal finance: budgeting, investing, credit, retirement, and more. Perfect for beginners.</p>
-          <a href="https://www.khanacademy.org/college-careers-more/personal-finance" target="_blank" rel="noopener" class="link">Start Learning <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag tool">Tool</span>
-          <h3>TradingView</h3>
-          <p>Professional-grade charting platform with real-time data, technical indicators, and community-driven analysis for global markets.</p>
-          <a href="https://www.tradingview.com/" target="_blank" rel="noopener" class="link">Use TradingView <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag tool">Tool</span>
-          <h3>Bloomberg Terminal</h3>
-          <p>The gold standard for financial data and analytics. Used by top investors, analysts, and institutions worldwide for market intelligence.</p>
-          <a href="https://www.bloomberg.com/professional/" target="_blank" rel="noopener" class="link">Learn More <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag media">Media</span>
-          <h3>Bloomberg Markets</h3>
-          <p>Real-time financial news, market data, and analysis covering global economies, stocks, bonds, commodities, and crypto.</p>
-          <a href="https://www.bloomberg.com/markets" target="_blank" rel="noopener" class="link">Follow Markets <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag media">Media</span>
-          <h3>Financial Times</h3>
-          <p>In-depth global business news, financial analysis, and market commentary from one of the world's most trusted financial newspapers.</p>
-          <a href="https://www.ft.com/" target="_blank" rel="noopener" class="link">Read FT <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag market">Market Data</span>
-          <h3>Yahoo Finance</h3>
-          <p>Free stock quotes, market news, portfolio tracking, and financial data for global markets. The most accessible market data platform.</p>
-          <a href="https://finance.yahoo.com/" target="_blank" rel="noopener" class="link">View Markets <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag market">Market Data</span>
-          <h3>Investopedia</h3>
-          <p>Comprehensive financial dictionary, investing tutorials, market analysis, and simulator for learning trading strategies risk-free.</p>
-          <a href="https://www.investopedia.com/" target="_blank" rel="noopener" class="link">Explore <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag course">Course</span>
-          <h3>MIT OpenCourseWare: Finance</h3>
-          <p>Free MIT-level finance courses covering corporate finance, investment theory, derivatives, and quantitative analysis.</p>
-          <a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener" class="link">Browse MIT Courses <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag tool">Tool</span>
-          <h3>CoinMarketCap</h3>
-          <p>Real-time cryptocurrency prices, market caps, trading volumes, and portfolio tracking for thousands of crypto assets.</p>
-          <a href="https://coinmarketcap.com/" target="_blank" rel="noopener" class="link">Track Crypto <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="resource-card">
-          <span class="tag media">Media</span>
-          <h3>Wall Street Journal</h3>
-          <p>Premier financial journalism covering business news, markets, tech, politics, and economic trends worldwide.</p>
-          <a href="https://www.wsj.com/" target="_blank" rel="noopener" class="link">Read WSJ <i class="fas fa-arrow-right"></i></a>
-        </div>
+      <div class="resources-grid" id="resourcesGrid">
+        <div class="resource-card"><span class="tag course">Course</span><h3>Financial Markets (Yale)</h3><p>Nobel laureate Robert Shiller teaches the fundamentals of financial markets, risk management, and behavioral finance.</p><a href="https://www.coursera.org/learn/financial-markets-global" target="_blank" rel="noopener" class="link">Explore Course <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag course">Course</span><h3>Harvard Business Review</h3><p>World's top business publication with case studies, management insights, and leadership strategies from Harvard Business School.</p><a href="https://hbr.org/" target="_blank" rel="noopener" class="link">Read HBR <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag course">Course</span><h3>Financial Literacy by Khan Academy</h3><p>Free, world-class education on personal finance: budgeting, investing, credit, retirement, and more. Perfect for beginners.</p><a href="https://www.khanacademy.org/college-careers-more/personal-finance" target="_blank" rel="noopener" class="link">Start Learning <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag tool">Tool</span><h3>TradingView</h3><p>Professional-grade charting platform with real-time data, technical indicators, and community-driven analysis for global markets.</p><a href="https://www.tradingview.com/" target="_blank" rel="noopener" class="link">Use TradingView <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag tool">Tool</span><h3>Bloomberg Terminal</h3><p>The gold standard for financial data and analytics. Used by top investors, analysts, and institutions worldwide for market intelligence.</p><a href="https://www.bloomberg.com/professional/" target="_blank" rel="noopener" class="link">Learn More <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag media">Media</span><h3>Bloomberg Markets</h3><p>Real-time financial news, market data, and analysis covering global economies, stocks, bonds, commodities, and crypto.</p><a href="https://www.bloomberg.com/markets" target="_blank" rel="noopener" class="link">Follow Markets <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag media">Media</span><h3>Financial Times</h3><p>In-depth global business news, financial analysis, and market commentary from one of the world's most trusted financial newspapers.</p><a href="https://www.ft.com/" target="_blank" rel="noopener" class="link">Read FT <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag market">Market Data</span><h3>Yahoo Finance</h3><p>Free stock quotes, market news, portfolio tracking, and financial data for global markets. The most accessible market data platform.</p><a href="https://finance.yahoo.com/" target="_blank" rel="noopener" class="link">View Markets <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag market">Market Data</span><h3>Investopedia</h3><p>Comprehensive financial dictionary, investing tutorials, market analysis, and simulator for learning trading strategies risk-free.</p><a href="https://www.investopedia.com/" target="_blank" rel="noopener" class="link">Explore <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag course">Course</span><h3>MIT OCW: Finance</h3><p>Free MIT-level finance courses covering corporate finance, investment theory, derivatives, and quantitative analysis.</p><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener" class="link">Browse MIT Courses <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag tool">Tool</span><h3>CoinMarketCap</h3><p>Real-time cryptocurrency prices, market caps, trading volumes, and portfolio tracking for thousands of crypto assets.</p><a href="https://coinmarketcap.com/" target="_blank" rel="noopener" class="link">Track Crypto <i class="fas fa-arrow-right"></i></a></div>
+        <div class="resource-card"><span class="tag media">Media</span><h3>Wall Street Journal</h3><p>Premier financial journalism covering business news, markets, tech, politics, and economic trends worldwide.</p><a href="https://www.wsj.com/" target="_blank" rel="noopener" class="link">Read WSJ <i class="fas fa-arrow-right"></i></a></div>
       </div>
     </div>
   </section>
@@ -377,7 +472,7 @@
         <h2>Ready to Transform Your Financial Future?</h2>
         <p>Join 50,000+ users who are already tracking, learning, and growing with WealthPoint. Start free — no credit card needed.</p>
         <a href="{% url 'signup' %}" class="btn-primary" style="font-size:1.1rem;padding:1rem 2.5rem;"><i class="fas fa-rocket"></i> Get Started Free</a>
-        <p style="margin-top:1rem;font-size:0.8rem;color:var(--muted);">No credit card required &middot; Cancel anytime</p>
+        <p style="margin-top:1rem;font-size:0.8rem;color:var(--muted);">No credit card required · Cancel anytime</p>
       </div>
     </div>
   </section>
@@ -417,9 +512,9 @@
     </div>
   </footer>
 
-  <!-- Three.js Background -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
+  // ─── Three.js Enhanced Background ───
   (function() {
     const canvas = document.getElementById('three-canvas');
     const scene = new THREE.Scene();
@@ -429,67 +524,98 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     // Particles
-    const particlesGeo = new THREE.BufferGeometry();
-    const count = 2000;
+    const count = 2500;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
-
-    for (let i = 0; i < count * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 30;
-      positions[i+1] = (Math.random() - 0.5) * 20;
-      positions[i+2] = (Math.random() - 0.5) * 15 - 5;
-      const c = 0.2 + Math.random() * 0.3;
-      colors[i] = 0.2 + Math.random() * 0.1;     // R
-      colors[i+1] = 0.3 + Math.random() * 0.15;   // G
-      colors[i+2] = 0.5 + Math.random() * 0.3;    // B
-      sizes[Math.floor(i/3)] = Math.random() * 2 + 0.5;
-    }
-
-    particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particlesGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    particlesGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-    const particlesMat = new THREE.PointsMaterial({
-      size: 0.04,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.6,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      sizeAttenuation: true,
-    });
-
-    const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
-    scene.add(particlesMesh);
-
-    // Connecting lines
-    const lineGeo = new THREE.BufferGeometry();
-    const linePositions = [];
-    const posArr = particlesGeo.attributes.position.array;
+    const velocities = [];
 
     for (let i = 0; i < count; i++) {
-      const i3 = i * 3;
-      for (let j = i + 1; j < count; j++) {
-        const j3 = j * 3;
-        const dx = posArr[i3] - posArr[j3];
-        const dy = posArr[i3+1] - posArr[j3+1];
-        const dz = posArr[i3+2] - posArr[j3+2];
-        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        if (dist < 1.5) {
-          linePositions.push(posArr[i3], posArr[i3+1], posArr[i3+2]);
-          linePositions.push(posArr[j3], posArr[j3+1], posArr[j3+2]);
+      positions[i*3] = (Math.random() - 0.5) * 40;
+      positions[i*3+1] = (Math.random() - 0.5) * 30;
+      positions[i*3+2] = (Math.random() - 0.5) * 20 - 5;
+      const c = 0.15 + Math.random() * 0.25;
+      colors[i*3] = 0.15 + c * 0.4;
+      colors[i*3+1] = 0.25 + c * 0.4;
+      colors[i*3+2] = 0.5 + c * 0.5;
+      sizes[i] = 0.02 + Math.random() * 0.08;
+      velocities.push({
+        x: (Math.random() - 0.5) * 0.002,
+        y: (Math.random() - 0.5) * 0.002,
+        z: (Math.random() - 0.5) * 0.001,
+      });
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    const mat = new THREE.PointsMaterial({
+      size: 0.045, vertexColors: true, transparent: true, opacity: 0.55,
+      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    });
+    const particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+
+    // Connection lines
+    const linePairs = [];
+    for (let i = 0; i < count; i += 4) {
+      for (let j = i + 1; j < count; j += 4) {
+        const dx = positions[i*3] - positions[j*3];
+        const dy = positions[i*3+1] - positions[j*3+1];
+        const dz = positions[i*3+2] - positions[j*3+2];
+        if (dx*dx + dy*dy + dz*dz < 3.5) {
+          linePairs.push(positions[i*3], positions[i*3+1], positions[i*3+2],
+                         positions[j*3], positions[j*3+1], positions[j*3+2]);
         }
       }
     }
+    const lGeo = new THREE.BufferGeometry();
+    lGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePairs, 3));
+    const lMat = new THREE.LineBasicMaterial({ color: 0x4aa8ff, transparent: true, opacity: 0.04 });
+    const lines = new THREE.LineSegments(lGeo, lMat);
+    scene.add(lines);
 
-    lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x4aa8ff, transparent: true, opacity: 0.05 });
-    const lineMesh = new THREE.LineSegments(lineGeo, lineMat);
-    scene.add(lineMesh);
+    // Floating symbols as sprites
+    const symbols = ['$', '₿', '📈', '€', '₦', '★', '⬆', '⬇'];
+    const spriteTextures = [];
+    symbols.forEach((sym, idx) => {
+      const canvas2d = document.createElement('canvas');
+      canvas2d.width = 64; canvas2d.height = 64;
+      const ctx = canvas2d.getContext('2d');
+      ctx.fillStyle = 'rgba(59, 158, 255, 0.15)';
+      ctx.font = '32px Inter, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(sym, 32, 34);
+      const tex = new THREE.CanvasTexture(canvas2d);
+      spriteTextures.push(tex);
+    });
 
-    camera.position.z = 8;
-    camera.position.y = 1;
+    const spriteMat = new THREE.SpriteMaterial({
+      map: spriteTextures[0],
+      transparent: true,
+      opacity: 0.2,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const sprites = [];
+    for (let i = 0; i < 12; i++) {
+      const s = new THREE.Sprite(spriteMat.clone());
+      s.material.map = spriteTextures[i % spriteTextures.length];
+      s.position.set(
+        (Math.random() - 0.5) * 25,
+        (Math.random() - 0.5) * 18,
+        (Math.random() - 0.5) * 10 - 3
+      );
+      s.scale.set(0.3 + Math.random() * 0.4, 0.3 + Math.random() * 0.4, 1);
+      s.userData = { speed: 0.0005 + Math.random() * 0.001, phase: Math.random() * Math.PI * 2 };
+      scene.add(s);
+      sprites.push(s);
+    }
+
+    camera.position.z = 9;
+    camera.position.y = 0.5;
 
     let mouseX = 0, mouseY = 0;
     document.addEventListener('mousemove', (e) => {
@@ -497,15 +623,24 @@
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     });
 
+    const clock = new THREE.Clock();
     function animate() {
+      const time = clock.getElapsedTime();
       requestAnimationFrame(animate);
-      particlesMesh.rotation.y += 0.0003;
-      particlesMesh.rotation.x += Math.sin(Date.now() * 0.0001) * 0.0001;
-      lineMesh.rotation.y = particlesMesh.rotation.y;
-      lineMesh.rotation.x = particlesMesh.rotation.x;
 
-      camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.02;
-      camera.position.y += (-mouseY * 0.5 - camera.position.y) * 0.02;
+      particles.rotation.y += 0.0002;
+      particles.rotation.x = Math.sin(time * 0.05) * 0.01;
+      lines.rotation.y = particles.rotation.y;
+      lines.rotation.x = particles.rotation.x;
+
+      // Animate sprites
+      sprites.forEach((s, i) => {
+        s.position.y += Math.sin(time * s.userData.speed * 10 + i) * 0.001;
+        s.material.opacity = 0.12 + Math.sin(time * s.userData.speed * 5 + s.userData.phase) * 0.08;
+      });
+
+      camera.position.x += (mouseX * 0.4 - camera.position.x) * 0.02;
+      camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.02;
       camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
@@ -520,59 +655,124 @@
   })();
   </script>
 
-  <!-- 3D Card Tilt Effect -->
   <script>
-  document.querySelectorAll('.hero-card-3d, .feature-3d').forEach(el => {
-    el.addEventListener('mousemove', (e) => {
-      const rect = el.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-      el.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
-    });
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)';
-    });
-  });
-  </script>
-
-  <!-- TradingView Widget -->
-  <script src="https://s3.tradingview.com/tv.js"></script>
-  <script>
-  setTimeout(function() {
-    if (typeof TradingView !== 'undefined') {
-      new TradingView.widget({
-        container_id: 'tv-chart',
-        width: '100%',
-        height: '100%',
-        symbol: 'SPY',
-        interval: 'D',
-        timezone: 'Etc/UTC',
-        theme: 'dark',
-        style: '1',
-        locale: 'en',
-        toolbar_bg: '#0f141b',
-        enable_publishing: false,
-        allow_symbol_change: true,
-        hide_top_toolbar: false,
-        save_image: false,
-        studies: ['RSI@tv-basicstudies', 'MACD@tv-basicstudies'],
-        backgroundColor: '#0f141b',
-        gridColor: '#1a2330',
+  // ─── 3D Card Tilt ───
+  (function() {
+    const card = document.getElementById('heroCard');
+    if (card) {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(1000px) rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
+        card.style.animation = 'none';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+        card.style.animation = 'cardFloat 4s ease-in-out infinite';
       });
     }
-  }, 500);
-  </script>
 
-  <!-- Smooth scroll -->
-  <script>
+    // Feature cards tilt
+    document.querySelectorAll('.feature-card').forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        el.style.transform = `translateY(-8px) perspective(800px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = '';
+      });
+    });
+  })();
+
+  // ─── Scroll Progress ───
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    document.getElementById('scroll-progress').style.width = progress + '%';
+
+    // Navbar scroll effect
+    document.getElementById('navbar').classList.toggle('scrolled', scrollTop > 50);
+  });
+
+  // ─── Scroll Animation (Intersection Observer) ───
+  (function() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = parseInt(entry.target.dataset.delay) || 0;
+          setTimeout(() => entry.target.classList.add('visible'), delay);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.feature-card, .resource-card').forEach(el => observer.observe(el));
+  })();
+
+  // ─── Counter Animation ───
+  (function() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.dataset.count);
+          const isCurrency = el.textContent.includes('$');
+          const isRating = el.textContent.includes('★');
+          let current = 0;
+          const step = Math.ceil(target / 60);
+          const interval = setInterval(() => {
+            current += step;
+            if (current >= target) {
+              current = target;
+              clearInterval(interval);
+            }
+            if (isRating) {
+              el.textContent = (current / 10).toFixed(1) + '★';
+            } else if (isCurrency) {
+              el.textContent = '$' + current.toLocaleString();
+            } else {
+              el.textContent = current.toLocaleString() + '+';
+            }
+          }, 20);
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.hero-stat .num').forEach(el => observer.observe(el));
+  })();
+
+  // ─── Smooth Scroll ───
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const id = a.getAttribute('href');
       if (id === '#') return;
       e.preventDefault();
-      document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const target = document.querySelector(id);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+
+  // ─── TradingView Widget ───
+  setTimeout(function() {
+    if (typeof TradingView !== 'undefined') {
+      new TradingView.widget({
+        container_id: 'tv-chart',
+        width: '100%', height: '100%',
+        symbol: 'SPY', interval: 'D', timezone: 'Etc/UTC',
+        theme: 'dark', style: '1', locale: 'en',
+        toolbar_bg: '#0f141b',
+        enable_publishing: false, allow_symbol_change: true,
+        hide_top_toolbar: false, save_image: false,
+        studies: ['RSI@tv-basicstudies', 'MACD@tv-basicstudies'],
+        backgroundColor: '#0f141b', gridColor: '#1a2330',
+      });
+    }
+  }, 500);
   </script>
+  <script src="https://s3.tradingview.com/tv.js"></script>
 </body>
 </html>
