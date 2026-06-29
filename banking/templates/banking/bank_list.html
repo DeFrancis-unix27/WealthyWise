@@ -45,7 +45,7 @@
     <h2 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Connect a new bank</h2>
     <div class="provider-grid">
       {% for provider in providers %}
-        <a href="{% url 'link_bank' provider=provider.provider %}" class="provider-card" style="text-decoration: none; color: inherit;">
+        <a href="{% url 'link_bank' provider=provider.provider %}" class="provider-card" style="text-decoration: none; color: inherit;" data-tilt>
           <div class="icon">
             {% if provider.provider == "mono" %}
               <i class="fas fa-university"></i>
@@ -66,7 +66,7 @@
 
   {% if linked_banks %}
     {% for bank in linked_banks %}
-      <div class="bank-card">
+      <div class="bank-card" data-tilt>
         <div class="bank-info">
           <h3>{{ bank.institution_name|default:"Bank Account" }}</h3>
           <p>{{ bank.account_name }} · {{ bank.account_number }} · {{ bank.currency }}</p>

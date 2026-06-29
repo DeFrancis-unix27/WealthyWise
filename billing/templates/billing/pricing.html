@@ -8,7 +8,7 @@
   </div>
   <div class="grid-3">
     {% for plan in plans %}
-      <div class="plan-card {% if plan.tier == 'premium' %}featured{% endif %} fade-in-{{ forloop.counter }}">
+      <div class="plan-card {% if plan.tier == 'premium' %}featured{% endif %} fade-in-{{ forloop.counter }}" data-tilt>
         <div class="plan-name">{{ plan.name }}</div>
         <div class="plan-price">{{ plan.currency }} {{ plan.price|floatformat:0 }} <span>/{{ plan.duration }}</span></div>
         <div class="plan-duration">{{ plan.get_tier_display }} plan</div>

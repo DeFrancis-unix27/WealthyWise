@@ -8,16 +8,16 @@
   </div>
   <h2 class="section-title">Your Levels</h2>
   <div class="level-grid">
-    <div class="level-item"><div class="level-label">Overall</div><div class="level-value {{ level.overall }}">{{ level.get_overall_display }}</div></div>
-    <div class="level-item"><div class="level-label">Budgeting</div><div class="level-value {{ level.budgeting }}">{{ level.get_budgeting_display }}</div></div>
-    <div class="level-item"><div class="level-label">Saving</div><div class="level-value {{ level.saving }}">{{ level.get_saving_display }}</div></div>
-    <div class="level-item"><div class="level-label">Investing</div><div class="level-value {{ level.investing }}">{{ level.get_investing_display }}</div></div>
-    <div class="level-item"><div class="level-label">Debt</div><div class="level-value {{ level.debt }}">{{ level.get_debt_display }}</div></div>
-    <div class="level-item"><div class="level-label">Retirement</div><div class="level-value {{ level.retirement }}">{{ level.get_retirement_display }}</div></div>
+    <div class="level-item" data-tilt><div class="level-label">Overall</div><div class="level-value {{ level.overall }}">{{ level.get_overall_display }}</div></div>
+    <div class="level-item" data-tilt><div class="level-label">Budgeting</div><div class="level-value {{ level.budgeting }}">{{ level.get_budgeting_display }}</div></div>
+    <div class="level-item" data-tilt><div class="level-label">Saving</div><div class="level-value {{ level.saving }}">{{ level.get_saving_display }}</div></div>
+    <div class="level-item" data-tilt><div class="level-label">Investing</div><div class="level-value {{ level.investing }}">{{ level.get_investing_display }}</div></div>
+    <div class="level-item" data-tilt><div class="level-label">Debt</div><div class="level-value {{ level.debt }}">{{ level.get_debt_display }}</div></div>
+    <div class="level-item" data-tilt><div class="level-label">Retirement</div><div class="level-value {{ level.retirement }}">{{ level.get_retirement_display }}</div></div>
   </div>
   <h2 class="section-title">Assessment History</h2>
   {% for a in assessments %}
-    <div class="card mb-1">
+    <div class="card mb-1" data-tilt>
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <span style="font-weight:600;">{{ a.get_topic_display }}</span>
         <span style="font-size:1.25rem;font-weight:700;">{{ a.score }}/{{ a.max_score }}</span>

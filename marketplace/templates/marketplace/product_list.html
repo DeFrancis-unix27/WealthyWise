@@ -11,7 +11,7 @@
       <h2 class="section-title">{{ col.title }}</h2>
       <div class="carousel mb-3">
         {% for p in col.products.all %}
-          <a href="{% url 'product_detail' p.slug %}" class="carousel-item product-card">
+          <a href="{% url 'product_detail' p.slug %}" class="carousel-item product-card" data-tilt>
             <div class="product-icon">{% if p.product_type == "ebook" %}📘{% elif p.product_type == "template" %}📋{% elif p.product_type == "guide" %}📄{% elif p.product_type == "tool" %}🛠️{% else %}📦{% endif %}</div>
             <h3>{{ p.title }}</h3>
             <p class="product-desc">{{ p.description|truncatewords:10 }}</p>
@@ -33,7 +33,7 @@
     <div class="m-main" style="flex:1;">
       <div class="grid-3">
         {% for p in products %}
-          <a href="{% url 'product_detail' p.slug %}" class="product-card fade-in-{{ forloop.counter }}">
+          <a href="{% url 'product_detail' p.slug %}" class="product-card fade-in-{{ forloop.counter }}" data-tilt>
             <div class="product-icon">{% if p.product_type == "ebook" %}📘{% elif p.product_type == "template" %}📋{% elif p.product_type == "guide" %}📄{% elif p.product_type == "tool" %}🛠️{% else %}📦{% endif %}</div>
             <h3>{{ p.title }}</h3>
             <p class="product-desc">{{ p.description|truncatewords:12 }}</p>

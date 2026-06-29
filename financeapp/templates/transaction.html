@@ -361,20 +361,20 @@
 
     <!-- Stats -->
     <section class="summary-stats">
-      <div class="card stat-card fade-in">
+      <div class="card stat-card fade-in" data-tilt>
         <h3>💰 Total Balance</h3>
         <div class="stat-value" id="totalBalance">₦{{ total_balance }}</div>
         <div class="stat-trend">
           Across {{ accounts|length }} account{{ accounts|pluralize }}
         </div>
       </div>
-      <div class="card stat-card fade-in *:hover:shadow-lg  active:bg-green-900">
+      <div class="card stat-card fade-in *:hover:shadow-lg  active:bg-green-900" data-tilt>
         <h3>Income</h3>
         <div class="stat-value trend-up">
           ₦{{ monthly_income|floatformat:2 }}
         </div>
       </div>
-      <div class="card stat-card fade-in  hover:shadow-lg  active:bg-red-900">
+      <div class="card stat-card fade-in  hover:shadow-lg  active:bg-red-900" data-tilt>
         <h3>Expenses</h3>
         <div class="stat-value trend-down">
           ₦{{ monthly_expenses|floatformat:2 }}
@@ -385,7 +385,7 @@
     <!-- Accounts -->
     <section class="accounts-grid">
       {% for account in accounts %}
-      <div class="card account-card fade-in">
+      <div class="card account-card fade-in" data-tilt>
         <div class="status-indicator"></div>
         <div class="account-header">
           <span class="account-name">{{ account.name }}</span>
@@ -403,13 +403,13 @@
     </section>
 
     <!-- Chart -->
-    <div class="card content-panel fade-in">
+    <div class="card content-panel fade-in" data-tilt>
       <h3>📊 Balances</h3>
       <canvas id="balanceChart"></canvas>
     </div>
 
     <!-- Transactions -->
-    <div class="card content-panel fade-in">
+    <div class="card content-panel fade-in" data-tilt>
       <h3>🔄 Recent Transactions</h3>
       <div class="table-container">
         <table class="transactions-table">

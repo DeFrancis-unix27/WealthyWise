@@ -1,41 +1,21 @@
-/* ─── Shared Inner Page Design System (Additive only) ─── */
+/* ─── Additive enhancements only — no conflicts with features.css or layout.css ─── */
 
-.page-wrap { max-width: 1200px; margin: 0 auto; }
-.page-header { margin-bottom: 2rem; }
-.page-title {
-  font-size: 1.6rem; font-weight: 700; letter-spacing: -0.3px;
-  background: linear-gradient(135deg, var(--text), var(--muted));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.page-subtitle { font-size: 0.9rem; color: var(--muted); margin-top: 0.25rem; }
-.section-title {
-  font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;
-  display: flex; align-items: center; gap: 0.5rem;
-}
+/* Extra staggered animation delays beyond fade-in-1..4 */
+.fade-in-5 { animation: fadeIn 0.3s ease-out 0.5s both; }
+.fade-in-6 { animation: fadeIn 0.3s ease-out 0.6s both; }
+.fade-in-7 { animation: fadeIn 0.3s ease-out 0.7s both; }
+.fade-in-8 { animation: fadeIn 0.3s ease-out 0.8s both; }
+.fade-in-9 { animation: fadeIn 0.3s ease-out 0.9s both; }
+.fade-in-10 { animation: fadeIn 0.3s ease-out 1.0s both; }
 
-/* Animations */
-.fade-in { animation: fi 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@keyframes fi { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
-.delay-1 { animation-delay: 0.05s; }
-.delay-2 { animation-delay: 0.1s; }
-.delay-3 { animation-delay: 0.15s; }
-.delay-4 { animation-delay: 0.2s; }
-.delay-5 { animation-delay: 0.25s; }
-.delay-6 { animation-delay: 0.3s; }
-.delay-7 { animation-delay: 0.35s; }
-.delay-8 { animation-delay: 0.4s; }
-
-/* Gradient button additive */
-.btn-gradient {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  border: none; color: #fff;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative; overflow: hidden;
-}
-.btn-gradient::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
-  transform: translateX(-100%); transition: transform 0.6s ease;
-}
-.btn-gradient:hover::before { transform: translateX(100%); }
-.btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59,158,255,0.3); }
+/* Space-separated pattern: class="fade-in delay-3" */
+.delay-1 { animation-delay: 0.1s !important; }
+.delay-2 { animation-delay: 0.2s !important; }
+.delay-3 { animation-delay: 0.3s !important; }
+.delay-4 { animation-delay: 0.4s !important; }
+.delay-5 { animation-delay: 0.5s !important; }
+.delay-6 { animation-delay: 0.6s !important; }
+.delay-7 { animation-delay: 0.7s !important; }
+.delay-8 { animation-delay: 0.8s !important; }
+.delay-9 { animation-delay: 0.9s !important; }
+.delay-10 { animation-delay: 1.0s !important; }

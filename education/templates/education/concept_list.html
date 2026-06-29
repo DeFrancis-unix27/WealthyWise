@@ -14,7 +14,7 @@
   </div>
   <div class="grid-3">
     {% for c in concepts %}
-      <a href="{% url 'concept_detail' c.slug %}" class="card card-hover fade-in-{{ forloop.counter }}">
+      <a href="{% url 'concept_detail' c.slug %}" class="card card-hover fade-in-{{ forloop.counter }}" data-tilt>
         <div style="font-size:1.5rem;margin-bottom:0.5rem;">{{ c.icon|default:"📘" }}</div>
         <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ c.title }}</h3>
         <p class="text-muted text-sm" style="margin:0 0 0.75rem;">{{ c.description|truncatewords:20 }}</p>

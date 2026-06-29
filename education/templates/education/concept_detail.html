@@ -12,7 +12,7 @@
   </div>
   <div style="line-height:1.7;">{{ concept.content|linebreaks }}</div>
   {% if concept.prerequisites.exists %}
-    <div class="card mt-3">
+    <div class="card mt-3" data-tilt>
       <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">Prerequisites</h3>
       {% for p in concept.prerequisites.all %}<a href="{% url 'concept_detail' p.slug %}" class="link">{% if not forloop.first %}, {% endif %}{{ p.title }}</a>{% endfor %}
     </div>

@@ -8,7 +8,7 @@
   </div>
   <div class="grid-3">
     {% for g in goals %}
-      <div class="goal-card fade-in-{{ forloop.counter }}">
+      <div class="goal-card fade-in-{{ forloop.counter }}" data-tilt>
         <div class="goal-title">{{ g.title }}</div>
         <div class="goal-category">{{ g.get_category_display }} &middot; {{ g.currency }}</div>
         {% widthratio g.current_amount g.target_amount 100 as pct %}
