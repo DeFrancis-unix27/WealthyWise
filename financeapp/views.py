@@ -244,7 +244,7 @@ def landing(request):
         raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
 
     goals = FinancialGoal.objects.filter(user=user).order_by("-created_at")[:3]
-    linked_banks = LinkedBank.objects.filter(user=user, is_active=True)
+    linked_banks = LinkedBank.objects.filter(user=user, status="active")
     literacy = LiteracyAssessment.objects.filter(user=user).order_by("-assessed_at").first()
     enrollments = Enrollment.objects.filter(user=user).order_by("-enrolled_at")[:3]
     submissions = ProjectSubmission.objects.filter(user=user).order_by("-submitted_at")[:3]
