@@ -1,4 +1,40 @@
-/* ─── Additive enhancements only — no conflicts with features.css or layout.css ─── */
+/* ─── Color system overrides (loaded after layout.css, so these win) ─── */
+:root {
+  --bg: #0a0f1a;
+  --panel: rgba(16, 22, 36, 0.92);
+  --card: rgba(20, 28, 44, 0.85);
+  --muted: #7a8ba0;
+  --text: #eef3f9;
+  --accent: #4db8ff;
+  --accent-2: #a78bfa;
+  --accent-glow: rgba(77, 184, 255, 0.15);
+  --accent-glow-2: rgba(167, 139, 250, 0.15);
+  --danger: #fb7185;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --info: #38bdf8;
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+[data-theme="light"] {
+  --bg: #f1f5f9;
+  --panel: rgba(255, 255, 255, 0.97);
+  --card: rgba(255, 255, 255, 0.93);
+  --muted: #64748b;
+  --text: #0f172a;
+  --accent: #3b82f6;
+  --accent-2: #8b5cf6;
+  --accent-glow: rgba(59, 130, 246, 0.12);
+  --accent-glow-2: rgba(139, 92, 246, 0.12);
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --info: #0ea5e9;
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* ─── Additive enhancements — no conflicts with features.css or layout.css ─── */
 
 /* Extra staggered animation delays beyond fade-in-1..4 */
 .fade-in-5 { animation: fadeIn 0.3s ease-out 0.5s both; }
