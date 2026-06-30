@@ -15,6 +15,13 @@
   --info: #38bdf8;
   --border: rgba(255, 255, 255, 0.08);
   --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  /* Aliases for features.css compatibility */
+  --card-bg: var(--card);
+  --border-color: var(--border);
+  --text-primary: var(--text);
+  --text-secondary: var(--muted);
+  --accent-color: var(--accent);
+  --accent-rgb: 77, 184, 255;
 }
 [data-theme="light"] {
   --bg: #f1f5f9;
@@ -32,9 +39,57 @@
   --info: #0ea5e9;
   --border: rgba(0, 0, 0, 0.08);
   --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  /* Aliases for features.css compatibility */
+  --card-bg: var(--card);
+  --border-color: var(--border);
+  --text-primary: var(--text);
+  --text-secondary: var(--muted);
+  --accent-color: var(--accent);
+  --accent-rgb: 59, 130, 246;
 }
 
-/* ─── Additive enhancements — no conflicts with features.css or layout.css ─── */
+/* ─── Enhanced glassmorphism & interactions (builds on features.css) ─── */
+
+.card, .card-hover, .form-card, .event-card, .product-card, .goal-card, .order-card, .plan-card,
+.glass-card {
+  backdrop-filter: blur(12px) saturate(1.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card:hover, .card-hover:hover, .form-card:hover, .event-card:hover,
+.product-card:hover, .goal-card:hover, .order-card:hover, .plan-card:hover,
+.glass-card:hover, [data-tilt] {
+  border-color: rgba(77, 184, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+[data-theme="light"] .card:hover,
+[data-theme="light"] .card-hover:hover,
+[data-theme="light"] [data-tilt] {
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.btn {
+  position: relative; overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  transform: translateX(-100%); transition: transform 0.5s ease;
+}
+.btn:hover::after { transform: translateX(100%); }
+.btn-primary:hover { transform: translateY(-2px); }
+.btn-secondary:hover { transform: translateY(-2px); }
+.btn-success:hover { transform: translateY(-2px); }
+.btn-danger:hover { transform: translateY(-2px); }
+
+.form-input, .form-select {
+  transition: all 0.25s ease;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.12);
+}
 
 /* Extra staggered animation delays beyond fade-in-1..4 */
 .fade-in-5 { animation: fadeIn 0.3s ease-out 0.5s both; }
