@@ -84,6 +84,93 @@
   .nav-prev-next { flex-direction: column; gap: 0.5rem; }
 
   .order-card .order-top { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+
+  /* ─── Catch-all: template-specific class overrides ─── */
+  .faq-title { font-size: 1.5rem !important; }
+  .faq-container { padding: 1rem !important; }
+  .faq-subtitle { font-size: 0.85rem !important; }
+  .search-input { padding: 0.75rem 1rem !important; padding-left: 2.5rem !important; font-size: 0.85rem !important; }
+  .category-btn { padding: 0.35rem 0.75rem !important; font-size: 0.75rem !important; }
+  .faq-item { padding: 0.75rem !important; }
+
+  .transaction_app { padding: 0 !important; }
+  .header { flex-direction: column !important; align-items: flex-start !important; gap: 0.75rem !important; }
+  .summary-stats { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
+  .accounts-grid { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
+  .charts-row { flex-direction: column !important; gap: 1rem !important; }
+  .chart-box { width: 100% !important; }
+  .transactions-list { width: 100% !important; }
+
+  .dashboard-container { padding: 0.5rem !important; }
+  .stat-card { padding: 0.75rem !important; }
+  .stat-card h3 { font-size: 0.75rem !important; }
+  .account-card { padding: 0.75rem !important; }
+  .add-account-btn { width: 100% !important; justify-content: center !important; }
+
+  .budget-header { flex-direction: column !important; gap: 0.75rem !important; }
+  .budget-header .btn-group { width: 100% !important; }
+  .budget-header select { width: 100% !important; margin: 0 !important; }
+  .budget-summary { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
+  .budget-categories { grid-template-columns: 1fr !important; }
+  .budget-progress { padding: 0.75rem !important; }
+
+  .profile-header { flex-direction: column !important; align-items: center !important; text-align: center !important; }
+  .profile-avatar { margin-bottom: 0.75rem !important; }
+  .profile-stats { grid-template-columns: 1fr 1fr !important; gap: 0.5rem !important; }
+  .profile-actions { flex-direction: column !important; width: 100% !important; }
+  .profile-actions .btn { width: 100% !important; }
+
+  .level-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem; }
+  .assessment-card { padding: 0.75rem !important; }
+  .assessment-card .question { font-size: 0.9rem !important; }
+
+  .goal-card { padding: 0.75rem !important; }
+  .goal-header { flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
+
+  .product-card { padding: 0.75rem !important; }
+  .product-card h3 { font-size: 0.85rem !important; }
+
+  .order-card { padding: 0.75rem !important; }
+
+  .provider-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem !important; }
+  .bank-card { flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
+  .bank-card .bank-info { width: 100% !important; }
+  .bank-card .bank-status { align-self: flex-start !important; }
+
+  .pricing-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+  .plan-card { padding: 1.25rem !important; }
+  .plan-card .plan-features { font-size: 0.85rem !important; }
+
+  .content-area { padding: 0 !important; }
+  .detail-header { flex-direction: column !important; gap: 0.75rem !important; }
+  .detail-meta { flex-wrap: wrap !important; gap: 0.5rem !important; }
+  .detail-body { padding: 0.75rem !important; }
+
+  .concept-content { padding: 0.75rem !important; }
+  .concept-header { font-size: 1.25rem !important; }
+  .course-header { flex-direction: column !important; gap: 0.75rem !important; }
+  .lessons-grid { grid-template-columns: 1fr !important; }
+  .lesson-content { padding: 0.75rem !important; }
+
+  .project-header { flex-direction: column !important; gap: 0.75rem !important; }
+  .steps-grid { grid-template-columns: 1fr !important; }
+
+  .event-card { padding: 0.75rem !important; }
+  .event-card .event-meta { flex-direction: column !important; gap: 0.25rem !important; }
+
+  .checkout-card { padding: 0.75rem !important; }
+  .checkout-summary { padding: 0.75rem !important; }
+
+  .status-card { padding: 0.75rem !important; }
+  .status-header { flex-direction: column !important; gap: 0.5rem !important; }
+
+  .path-card { padding: 0.75rem !important; }
+  .path-header { flex-direction: column !important; gap: 0.5rem !important; }
+
+  .side-hustle-card { padding: 0.75rem !important; }
+
+  .affiliate-card { padding: 0.75rem !important; }
+  .affiliate-header { flex-direction: column !important; gap: 0.5rem !important; }
 }
 
 @media (max-width: 480px) {
@@ -99,4 +186,12 @@
   table th, table td { padding: 0.4rem 0.5rem; font-size: 0.7rem; }
   .level-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem; }
   .badge { font-size: 0.6rem; padding: 0.1rem 0.4rem; }
+  .provider-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.4rem !important; }
+}
+
+/* ─── General mobile overflow prevention ─── */
+@media (max-width: 768px) {
+  img, video, iframe, svg { max-width: 100% !important; height: auto; }
+  pre, code { white-space: pre-wrap !important; word-break: break-word; }
+  .main-content { overflow-x: hidden; }
 }
