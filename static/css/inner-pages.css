@@ -19,3 +19,84 @@
 .delay-8 { animation-delay: 0.8s !important; }
 .delay-9 { animation-delay: 0.9s !important; }
 .delay-10 { animation-delay: 1.0s !important; }
+
+/* ─── Mobile responsive overrides ─── */
+@media (max-width: 768px) {
+  .page-wrap { padding: 1.5rem 1rem; }
+  .page-wrap-md, .page-wrap-sm { padding: 1.5rem 1rem; }
+  .page-header { margin-bottom: 1.25rem; }
+  .page-title { font-size: 1.25rem !important; }
+  .page-subtitle { font-size: 0.8rem; }
+
+  .card, .card-hover, .glass-card, .form-card,
+  .event-card, .product-card, .goal-card, .order-card, .plan-card {
+    padding: 1rem;
+  }
+
+  .grid-2, .grid-3, .grid-4, .grid-auto {
+    grid-template-columns: 1fr !important;
+  }
+  .level-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  .filter-link { font-size: 0.75rem; padding: 0.35rem 0.75rem; }
+
+  .btn, .btn-lg { width: 100%; justify-content: center; }
+  .btn-group { flex-direction: column; width: 100%; }
+  .btn-group .btn { border-radius: 8px !important; margin: 0.25rem 0 !important; }
+
+  .form-row { grid-template-columns: 1fr; }
+  .form-actions { flex-direction: column; }
+  .form-actions .btn { width: 100%; }
+
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { font-size: 0.75rem; }
+  table th, table td { padding: 0.5rem 0.6rem; white-space: nowrap; }
+
+  .carousel-item { min-width: 180px; }
+  .carousel { gap: 0.75rem; }
+
+  .empty-state { padding: 2rem 1rem; }
+  .empty-state i { font-size: 1.5rem; }
+
+  .stat-value { font-size: 1.1rem !important; }
+
+  .modal-content { width: 95% !important; padding: 1.25rem !important; }
+
+  .flex-between { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .page-header.flex { flex-direction: column; align-items: flex-start; }
+
+  .plan-card { padding: 1.25rem; }
+  .plan-price { font-size: 1.75rem !important; }
+
+  .m-sidebar { width: 100% !important; }
+  .m-flex { flex-direction: column !important; gap: 1rem !important; }
+
+  .level-item { padding: 0.5rem; }
+
+  .progress-bar { height: 6px; }
+
+  section { padding: 0 !important; margin-bottom: 1rem; }
+
+  .breadcrumb { font-size: 0.7rem; }
+  .step-item { padding: 0.75rem; }
+  .lesson-item { padding: 0.5rem 0.75rem; flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+
+  .nav-prev-next { flex-direction: column; gap: 0.5rem; }
+
+  .order-card .order-top { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+}
+
+@media (max-width: 480px) {
+  .page-wrap { padding: 1rem 0.75rem; }
+  .page-title { font-size: 1.1rem !important; }
+  .card, .card-hover, .form-card,
+  .event-card, .product-card, .goal-card, .order-card, .plan-card {
+    padding: 0.75rem;
+    border-radius: 10px;
+  }
+  .filter-link { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
+  .filter-bar { gap: 0.3rem; }
+  table th, table td { padding: 0.4rem 0.5rem; font-size: 0.7rem; }
+  .level-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem; }
+  .badge { font-size: 0.6rem; padding: 0.1rem 0.4rem; }
+}
