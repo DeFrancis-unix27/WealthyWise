@@ -8,6 +8,7 @@ crispy-bootstrap5>=2025.6
 django-otp>=1.6
 django-otp-yubikey>=1.1
 django-phonenumber-field>=8.1
+phonenumbers>=8.13
 django-redis>=6.0
 django-two-factor-auth>=1.17
 django-unfold>=0.65
