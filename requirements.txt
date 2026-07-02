@@ -11,6 +11,7 @@ django-phonenumber-field>=8.1
 phonenumbers>=8.13
 django-redis>=6.0
 django-two-factor-auth>=1.17
+webauthn>=2.7
 django-unfold>=0.65
 django-widget-tweaks>=1.5
 gunicorn>=23.0
