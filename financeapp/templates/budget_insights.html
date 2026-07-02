@@ -2,28 +2,26 @@
 {% block content %}
 {% load static %}
 
-
-
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm mb-4" style="background: var(--bg); color: var(--text);" data-tilt>
-                <div class="card-header bg-info text-white py-3">
+            <div class="card card-flush mb-4" data-tilt>
+                <div class="card-header" style="background: linear-gradient(135deg, var(--info), var(--accent-2)); color: #fff; border-radius: 12px 12px 0 0; padding: 1rem 1.5rem;">
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i>Budget Insights</h4>
                         </div>
                         <div class="col-md-6 text-md-end">
-                            <a href="{% url 'budget_manager' %}" class="btn btn-light">
+                            <a href="{% url 'budget_manager' %}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left me-1"></i> Back to Budget Manager
                             </a>
                         </div>
                     </div>
                 </div>
-                <div class="card-body" style="background: var(--bg); color: var(--text);">
+                <div class="card-body">
                     <div class="row mb-4">
                         <div class="col-lg-8">
-                            <div class="card mb-4" style="background: var(--bg); color: var(--text); box-shadow: var(--shadow); border: 2px solid var(--border);" data-tilt>
+                            <div class="card mb-4" data-tilt>
                                 <div class="card-header">
                                     <h5 class="mb-0">Budget vs Actual Spending - {{ current_month }}</h5>
                                 </div>
@@ -33,7 +31,7 @@
                             </div>
                         </div>
                         <div class="col-lg-4">
-                            <div class="card mb-4" style="background: var(--bg); color: var(--text); box-shadow: var(--shadow); border: 2px solid var(--border);" data-tilt>
+                            <div class="card mb-4" data-tilt>
                                 <div class="card-header">
                                     <h5 class="mb-0">Budget History (6 Months)</h5>
                                 </div>
@@ -43,17 +41,17 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-12">
-                            <div class="card" style="background: var(--bg); color: var(--text); box-shadow: var(--shadow); border: 2px solid var(--border);" data-tilt>
+                            <div class="card" data-tilt>
                                 <div class="card-header">
                                     <h5 class="mb-0">Budget Performance Details</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead class="table-light">
+                                    <div class="table-wrap">
+                                        <table class="table-hover">
+                                            <thead>
                                                 <tr>
                                                     <th>Category</th>
                                                     <th>Budgeted</th>
@@ -69,28 +67,25 @@
                                                     <td class="fw-bold">{{ budget.category }}</td>
                                                     <td>₦{{ budget.budgeted|floatformat:2 }}</td>
                                                     <td>₦{{ budget.spent|floatformat:2 }}</td>
-                                                    <td class="{% if budget.remaining < 0 %}text-danger{% else %}text-success{% endif %} fw-bold">
+                                                    <td style="color: {% if budget.remaining < 0 %}var(--danger){% else %}var(--success){% endif %}; font-weight: 700;">
                                                         ₦{{ budget.remaining|floatformat:2 }}
                                                     </td>
                                                     <td>
                                                         {% widthratio budget.spent budget.budgeted 100 as utilization %}
                                                         <div class="d-flex align-items-center">
-                                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
-                                                                <div class="progress-bar {% if utilization > 100 %}bg-danger{% elif utilization > 75 %}bg-warning{% else %}bg-success{% endif %}" 
-                                                                     role="progressbar w-{{ utilization }}%" 
-                                                                     aria-valuenow="{{ utilization }}" aria-valuemin="0" aria-valuemax="100">
-                                                                </div>
+                                                            <div class="progress-bar flex-grow-1 me-2">
+                                                                <div class="progress-fill" style="width: {{ utilization }}%; background: {% if utilization > 100 %}var(--danger){% elif utilization > 75 %}var(--warning){% else %}var(--success){% endif %};"></div>
                                                             </div>
                                                             <small class="text-muted">{{ utilization|floatformat:0 }}%</small>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         {% if utilization > 100 %}
-                                                            <span class="badge bg-danger">Over Budget</span>
+                                                            <span class="badge badge-red">Over Budget</span>
                                                         {% elif utilization > 75 %}
-                                                            <span class="badge bg-warning">Near Limit</span>
+                                                            <span class="badge badge-yellow">Near Limit</span>
                                                         {% else %}
-                                                            <span class="badge bg-success">On Track</span>
+                                                            <span class="badge badge-green">On Track</span>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
@@ -110,7 +105,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Safely pass Python data into JS -->
 {{ budget_data|json_script:"budget-data" }}
 {{ history_labels|json_script:"history-labels" }}
 {{ history_budgeted|json_script:"history-budgeted" }}
@@ -118,13 +112,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Parse the JSON data injected by Django
     const budgetData = JSON.parse(document.getElementById('budget-data').textContent);
     const historyLabels = JSON.parse(document.getElementById('history-labels').textContent);
     const historyBudgeted = JSON.parse(document.getElementById('history-budgeted').textContent);
     const historySpent = JSON.parse(document.getElementById('history-spent').textContent);
 
-    // Budget vs Actual Chart
     const budgetCtx = document.getElementById('budgetChart').getContext('2d');
     new Chart(budgetCtx, {
         type: 'bar',
@@ -161,7 +153,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Budget History Chart
     const historyCtx = document.getElementById('historyChart').getContext('2d');
     new Chart(historyCtx, {
         type: 'line',
@@ -203,27 +194,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-<style>
-    .card { 
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-.card-header {
-  border-radius: var(--radius) var(--radius) 0 0 !important;
-}
-.table th { 
-  border-top: none; 
-  font-weight: 600; 
-}.progress { 
-  border-radius: 10px; 
-}
-.progress-bar { 
-  border-radius: 10px; 
-}
-.badge {
-  border-radius: var(--radius-sm);
-  padding: 0.35rem 0.65rem;
-}
-</style>
 {% endblock %}

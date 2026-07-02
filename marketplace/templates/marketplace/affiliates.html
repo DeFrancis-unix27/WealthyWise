@@ -8,14 +8,17 @@
   </div>
   <div class="grid-3">
     {% for p in partners %}
+      {% if p.website %}
+      <a href="{{ p.website }}" target="_blank" class="card card-hover fade-in-{{ forloop.counter }}" data-tilt>
+      {% else %}
       <div class="card fade-in-{{ forloop.counter }}" data-tilt>
-        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ p.name }}</h3>
-        <p class="text-muted text-sm" style="margin:0 0 0.75rem;">{{ p.description|truncatewords:20 }}</p>
-        <div class="text-sm" style="color:var(--accent-color);">
+      {% endif %}
+        <h3 class="section-title">{{ p.name }}</h3>
+        <p class="text-muted text-sm mb-1">{{ p.description|truncatewords:20 }}</p>
+        <div class="text-sm badge badge-info">
           {% if p.commission_type == "percentage" %}{{ p.commission_value }}% commission{% else %}{{ p.commission_currency }} {{ p.commission_value }}{% endif %}
         </div>
-        {% if p.website %}<a href="{{ p.website }}" target="_blank" class="link" style="display:inline-block;margin-top:0.5rem;">Visit Partner &rarr;</a>{% endif %}
-      </div>
+      {% if p.website %}</a>{% else %}</div>{% endif %}
     {% empty %}
       <div class="empty-state"><i class="fas fa-handshake"></i><p>No affiliate partners yet.</p></div>
     {% endfor %}

@@ -8,12 +8,12 @@
   </div>
   <div class="grid-3">
     {% for h in hustles %}
-      <div class="card fade-in-{{ forloop.counter }}" data-tilt>
-        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ h.name }}</h3>
+      <a href="#" class="card card-hover fade-in-{{ forloop.counter }}" data-tilt>
+        <h3>{{ h.name }}</h3>
         <div class="text-xs text-muted">{{ h.get_platform_type_display }}</div>
         {% if h.is_active %}<span class="active-indicator mt-1">Active</span>{% endif %}
         {% if h.description %}<p class="text-muted text-sm mt-1">{{ h.description|truncatewords:20 }}</p>{% endif %}
-      </div>
+      </a>
     {% empty %}
       <div class="empty-state">
         <i class="fas fa-hand-holding-usd"></i>

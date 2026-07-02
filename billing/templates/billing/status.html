@@ -8,9 +8,9 @@
   <h2 class="section-title">Current Subscriptions</h2>
   {% if subscriptions %}
     {% for sub in subscriptions %}
-      <div class="card card-hover mb-2" style="display:flex;justify-content:space-between;align-items:center;" data-tilt>
+      <div class="card card-hover mb-2 flex" data-tilt>
         <div>
-          <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ sub.plan.name }} <span class="badge badge-{{ sub.status }}">{{ sub.status }}</span></h3>
+          <h3>{{ sub.plan.name }} <span class="badge badge-{{ sub.status }}">{{ sub.status }}</span></h3>
           <p class="text-muted text-sm">{{ sub.plan.currency }} {{ sub.plan.price }}/{{ sub.plan.duration }} &middot; Started {{ sub.start_date|date }}</p>
           {% if sub.end_date %}<p class="text-muted text-xs">Ends: {{ sub.end_date|date }}</p>{% endif %}
         </div>
@@ -26,18 +26,20 @@
   {% endif %}
   <h2 class="section-title mt-3">Invoices</h2>
   {% if invoices %}
-    <div class="card card-flush" data-tilt>
-      <table style="width:100%;border-collapse:collapse;">
-        <thead><tr style="color:var(--text-secondary);font-size:0.85rem;text-align:left;">
-          <th style="padding:0.75rem;">Invoice</th><th style="padding:0.75rem;">Amount</th><th style="padding:0.75rem;">Status</th><th style="padding:0.75rem;">Date</th>
-        </tr></thead>
+    <div class="table-wrap card card-flush" data-tilt>
+      <table>
+        <thead>
+          <tr>
+            <th>Invoice</th><th>Amount</th><th>Status</th><th>Date</th>
+          </tr>
+        </thead>
         <tbody>
           {% for inv in invoices %}
-            <tr style="border-top:1px solid var(--border-color);">
-              <td style="padding:0.75rem;">#{{ inv.id }}</td>
-              <td style="padding:0.75rem;">{{ inv.currency }} {{ inv.amount }}</td>
-              <td style="padding:0.75rem;"><span class="badge badge-{{ inv.status }}">{{ inv.status }}</span></td>
-              <td style="padding:0.75rem;">{{ inv.created_at|date }}</td>
+            <tr>
+              <td>#{{ inv.id }}</td>
+              <td>{{ inv.currency }} {{ inv.amount }}</td>
+              <td><span class="badge badge-{{ inv.status }}">{{ inv.status }}</span></td>
+              <td>{{ inv.created_at|date }}</td>
             </tr>
           {% endfor %}
         </tbody>

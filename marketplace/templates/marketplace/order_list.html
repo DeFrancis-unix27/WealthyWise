@@ -6,14 +6,15 @@
     <h1 class="page-title">My Orders</h1>
   </div>
   {% for order in orders %}
-    <div class="order-card fade-in-{{ forloop.counter }}" data-tilt>
+    <a href="#" class="order-card fade-in-{{ forloop.counter }}" data-tilt>
       <div class="order-top">
         <span class="order-id">Order #{{ order.id }}</span>
         <span class="badge badge-{{ order.status }}">{{ order.status|title }}</span>
       </div>
       <div class="order-total">{{ order.currency }} {{ order.total|floatformat:2 }}</div>
       <div class="order-meta">{{ order.created_at|date:"M d, Y H:i" }} &middot; {{ order.items.count }} item{{ order.items.count|pluralize }}</div>
-    </div>
+      <div class="link text-sm">View Details &rarr;</div>
+    </a>
   {% empty %}
     <div class="empty-state"><i class="fas fa-box"></i><p>No orders yet.</p></div>
   {% endfor %}

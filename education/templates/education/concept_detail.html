@@ -3,20 +3,21 @@
 {% block content %}
 <div class="page-wrap-md">
   <div class="page-header">
-    <div style="font-size:2rem;margin-bottom:0.5rem;">{{ concept.icon|default:"📘" }}</div>
-    <h1 class="page-title">{{ concept.title }}</h1>
-    <div class="meta-block">
+    <h1 class="page-title">{{ concept.icon|default:"📘" }} {{ concept.title }}</h1>
+    <div class="meta-block flex">
       <span class="badge badge-{{ concept.difficulty }}">{{ concept.difficulty|title }}</span>
-      <span class="text-muted text-sm" style="margin-left:0.5rem;">{{ concept.estimated_minutes }} min read</span>
+      <span class="text-muted text-sm">{{ concept.estimated_minutes }} min read</span>
     </div>
   </div>
-  <div style="line-height:1.7;">{{ concept.content|linebreaks }}</div>
+  <div class="card mb-3">{{ concept.content|linebreaks }}</div>
   {% if concept.prerequisites.exists %}
-    <div class="card mt-3" data-tilt>
-      <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">Prerequisites</h3>
-      {% for p in concept.prerequisites.all %}<a href="{% url 'concept_detail' p.slug %}" class="link">{% if not forloop.first %}, {% endif %}{{ p.title }}</a>{% endfor %}
+    <div class="card mb-3" data-tilt>
+      <h3 class="section-title mb-1">Prerequisites</h3>
+      <div class="flex">
+        {% for p in concept.prerequisites.all %}<a href="{% url 'concept_detail' p.slug %}" class="link">{% if not forloop.first %}, {% endif %}{{ p.title }}</a>{% endfor %}
+      </div>
     </div>
   {% endif %}
-  <a href="{% url 'concept_list' %}" class="link mt-3" style="display:inline-block;">&larr; Back to concepts</a>
+  <a href="{% url 'concept_list' %}" class="link">&larr; Back to concepts</a>
 </div>
 {% endblock %}

@@ -15,10 +15,12 @@
   <div class="grid-3">
     {% for p in projects %}
       <a href="{% url 'project_detail' p.slug %}" class="card card-hover fade-in-{{ forloop.counter }}" data-tilt>
-        <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.25rem;">{{ p.title }} {% if p.is_premium %}<span class="badge badge-premium">Premium</span>{% endif %}</h3>
-        <p class="text-muted text-sm" style="margin:0 0 0.75rem;">{{ p.description|truncatewords:20 }}</p>
-        <span class="badge badge-{{ p.difficulty }}">{{ p.difficulty|title }}</span>
-        <span class="text-muted text-xs" style="margin-left:0.5rem;">{{ p.estimated_minutes }} min</span>
+        <h3 class="mb-1">{{ p.title }} {% if p.is_premium %}<span class="badge badge-premium">Premium</span>{% endif %}</h3>
+        <p class="text-muted text-sm mb-2">{{ p.description|truncatewords:20 }}</p>
+        <div class="flex">
+          <span class="badge badge-{{ p.difficulty }}">{{ p.difficulty|title }}</span>
+          <span class="text-muted text-xs">{{ p.estimated_minutes }} min</span>
+        </div>
       </a>
     {% empty %}
       <div class="empty-state"><i class="fas fa-rocket"></i><p>No projects published yet.</p></div>

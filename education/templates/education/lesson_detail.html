@@ -7,7 +7,7 @@
     <h1 class="page-title">{{ lesson.title }}</h1>
     <span class="text-muted text-sm">{{ lesson.duration_minutes }} min</span>
   </div>
-  <div style="line-height:1.7;">{{ lesson.content|linebreaks }}</div>
+  <div class="card mb-3">{{ lesson.content|linebreaks }}</div>
   {% if lesson.video_url %}
     <a href="{{ lesson.video_url }}" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-video"></i> Watch Video</a>
   {% endif %}

@@ -30,7 +30,7 @@
       <a href="{% url 'affiliate_partners' %}">Affiliate Partners</a>
       <a href="{% url 'order_list' %}">My Orders</a>
     </div>
-    <div class="m-main" style="flex:1;">
+    <div class="m-main">
       <div class="grid-3">
         {% for p in products %}
           <a href="{% url 'product_detail' p.slug %}" class="product-card fade-in-{{ forloop.counter }}" data-tilt>
@@ -40,7 +40,7 @@
             <div class="product-price {% if p.price == 0 %}free{% endif %}">{% if p.price == 0 %}Free{% else %}{{ p.currency }} {{ p.price|floatformat:2 }}{% endif %}</div>
           </a>
         {% empty %}
-          <div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-store"></i><p>No products available yet.</p></div>
+          <div class="empty-state"><i class="fas fa-store"></i><p>No products available yet.</p></div>
         {% endfor %}
       </div>
     </div>
