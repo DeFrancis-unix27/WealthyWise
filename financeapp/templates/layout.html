@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ user_theme|default:'dark' }}">
+<html lang="en">
   <head>
     {% load static %}
     <meta charset="UTF-8" />
@@ -30,9 +30,7 @@
       <nav class="sidebar" id="sidebar" role="navigation">
         <div class="sidebar-header">
           <div class="brand"><img src="{% static 'images/logo.png' %}" alt="" /> Wealth<span>Point</span></div>
-          <button id="themeToggle" class="toggle-btn" aria-label="Toggle theme">
-            <i class="fas fa-adjust"></i>
-          </button>
+
         </div>
         <div class="sidebar-nav" id="sidebarNav">
           <div class="nav-item">
@@ -261,19 +259,7 @@
 
     // ─── Theme toggle ───
     document.addEventListener('DOMContentLoaded', function() {
-      const root = document.documentElement;
-      const themeBtn = document.getElementById('themeToggle');
-      if (!themeBtn) return;
-      const icon = themeBtn.querySelector('i');
-      const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      root.setAttribute('data-theme', saved);
-      icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-      themeBtn.addEventListener('click', () => {
-        const t = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        root.setAttribute('data-theme', t);
-        localStorage.setItem('theme', t);
-        icon.className = t === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-      });
+
     });
 
     // ─── Active nav link ───
