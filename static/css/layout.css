@@ -1,8 +1,8 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
-  --bg: #F5F7FA;
-  --panel: rgba(255, 255, 255, 0.95);
-  --card: #FFFFFF;
+  --bg: #DEE5EB;
+  --panel: rgba(245, 247, 250, 0.95);
+  --card: #F2F4F7;
   --muted: #6B7280;
   --text: #111827;
   --accent: #0A2463;
@@ -39,13 +39,13 @@ body {
 .gradient-overlay {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(10, 36, 99, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 30%, rgba(5, 150, 105, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 20%, rgba(10, 36, 99, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(5, 150, 105, 0.03) 0%, transparent 50%);
 }
 .app-container { display: flex; min-height: 100vh; position: relative; z-index: 1; }
 .sidebar {
   width: var(--nav-width);
-  background: var(--card);
+  background: #E8ECF0;
   border-right: 1px solid var(--border);
   position: fixed; height: 100%; z-index: var(--z-sidebar);
   display: flex; flex-direction: column;
@@ -66,7 +66,7 @@ body {
 .brand img { height: 30px; width: auto; display: block; }
 .brand span { color: var(--muted); font-weight: 300; }
 .toggle-btn {
-  background: var(--bg); border: 1px solid var(--border);
+  background: var(--card); border: 1px solid var(--border);
   border-radius: 8px; cursor: pointer; transition: var(--transition);
   width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
   color: var(--muted); font-size: 0.9rem;
