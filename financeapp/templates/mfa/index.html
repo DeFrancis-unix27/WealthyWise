@@ -5,6 +5,8 @@
     {% trans "Two-Factor Authentication" %}
 {% endblock head_title %}
 {% block content %}
+<div class="page-wrap-sm">
+  <div class="card fade-in-1" data-tilt>
     {% element h1 tags="mfa,index" %}
         {% trans "Two-Factor Authentication" %}
     {% endelement %}
@@ -114,4 +116,6 @@
             {% endelement %}
         {% endwith %}
     {% endif %}
+  </div>
+</div>
 {% endblock content %}
