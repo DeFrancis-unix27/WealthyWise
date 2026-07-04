@@ -346,6 +346,11 @@ hr.divider { border: none; height: 1px; background: var(--border-color); margin:
 .flex { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 .items-center { align-items: center; }
 .mr-1 { margin-right: 0.5rem; }
+.m-0 { margin: 0; }
+.mb-0 { margin-bottom: 0; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; }
+.flex-row { display: flex; align-items: center; gap: 0.5rem; }
+.d-none { display: none; }
 
 /* --- Table --- */
 .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
@@ -374,6 +379,34 @@ table tr:hover td { background: rgba(var(--accent-rgb), 0.03); }
 .stat-card.expense .stat-icon { background: rgba(248,113,113,0.1); color: #f87171; }
 .stat-card.balance .stat-icon { background: rgba(96,165,250,0.1); color: #60a5fa; }
 .stat-card.savings .stat-icon { background: rgba(250,204,21,0.1); color: #facc15; }
+
+/* --- Widget Titles --- */
+.card-title-sm { font-size: 0.9rem; font-weight: 600; margin: 0; }
+
+/* --- Search Input --- */
+.search-input { width: 220px; padding: 0.5rem 0.75rem; font-size: 0.8rem; }
+
+/* --- Modal Branding --- */
+.modal-header-brand { background: #0A2463; color: #fff; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+.modal-header-brand h3,
+.modal-header-brand h1 { font-size: 1.2rem; font-weight: 700; margin: 0; }
+.modal-header-brand .close-btn { color: #fff; font-size: 1.5rem; background: none; border: none; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.modal-header-brand .btn-close { filter: brightness(0) invert(1); }
+.modal-body-pad { padding: 1.5rem; }
+.modal-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.modal-form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+.modal-footer-actions { display: flex; gap: 0.75rem; justify-content: flex-end; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); }
+.form-label-brand { color: #0A2463; }
+
+/* --- Type Cards (transaction) --- */
+.type-card { cursor: pointer; border: 2px solid var(--border-color); border-radius: 12px; transition: all 0.2s; background: var(--card-bg); }
+.type-card:hover { border-color: rgba(var(--accent-rgb), 0.3); }
+.type-card.active { border-color: var(--accent-color); background: rgba(var(--accent-rgb), 0.06); }
+
+/* --- Currency Input Group --- */
+.currency-group { display: flex; }
+.currency-prefix { background: var(--bg); border: 1.5px solid var(--border-color); border-right: none; border-radius: 10px 0 0 10px; padding: 0.75rem 0.5rem; color: var(--muted); font-weight: 600; }
+.currency-input { border-radius: 0 10px 10px 0; }
 
 /* --- Animations --- */
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

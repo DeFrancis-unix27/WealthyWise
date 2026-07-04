@@ -75,7 +75,7 @@ catch (e) { window.topCategoryData = []; }
     <div class="card card-compact fade-in-1" data-tilt>
       <div class="flex mb-1">
         <i class="fas fa-chart-line"></i>
-        <h3 style="font-size:0.9rem;font-weight:600;margin:0;">Net Worth</h3>
+        <h3 class="card-title-sm">Net Worth</h3>
       </div>
       <div class="stat-value">₦{{ net_worth|floatformat:0|intcomma }}</div>
       <div class="text-muted text-sm">{{ accounts|length }} account(s) · {{ linked_banks|length }} bank(s) linked</div>
@@ -84,7 +84,7 @@ catch (e) { window.topCategoryData = []; }
     <div class="card card-compact fade-in-2" data-tilt>
       <div class="flex mb-1">
         <i class="fas fa-bullseye"></i>
-        <h3 style="font-size:0.9rem;font-weight:600;margin:0;">Financial Goals</h3>
+        <h3 class="card-title-sm">Financial Goals</h3>
       </div>
       {% if goals %}
         <ul class="list-stack">
@@ -100,7 +100,7 @@ catch (e) { window.topCategoryData = []; }
     <div class="card card-compact fade-in-3" data-tilt>
       <div class="flex mb-1">
         <i class="fas fa-graduation-cap"></i>
-        <h3 style="font-size:0.9rem;font-weight:600;margin:0;">Financial Literacy</h3>
+        <h3 class="card-title-sm">Financial Literacy</h3>
       </div>
       {% if literacy %}
         <div class="stat-value">{{ literacy.score }}/100</div>
@@ -117,7 +117,7 @@ catch (e) { window.topCategoryData = []; }
     <div class="card card-compact fade-in-4" data-tilt>
       <div class="flex mb-1">
         <i class="fas fa-lightbulb"></i>
-        <h3 style="font-size:0.9rem;font-weight:600;margin:0;">Projects & Business</h3>
+        <h3 class="card-title-sm">Projects & Business</h3>
       </div>
       {% if submissions %}
         <div class="text-muted text-sm">{{ submissions|length }} project submission{{ submissions|length|pluralize }}</div>
@@ -137,9 +137,9 @@ catch (e) { window.topCategoryData = []; }
 
   <div class="grid-2">
     <div class="card fade-in-5" data-tilt>
-      <div class="card-header flex" style="justify-content:space-between;align-items:center;">
-        <h2 class="section-title" style="margin:0;">Spending Analysis</h2>
-        <div class="chart-tabs filter-bar" style="margin-bottom:0;">
+      <div class="card-header flex-between">
+        <h2 class="section-title m-0">Spending Analysis</h2>
+        <div class="chart-tabs filter-bar mb-0">
           <button class="tab-btn filter-link active" data-period="week">Week</button>
           <button class="tab-btn filter-link" data-period="month">Month</button>
           <button class="tab-btn filter-link" data-period="year">Year</button>
@@ -150,7 +150,7 @@ catch (e) { window.topCategoryData = []; }
       </div>
     </div>
     <div class="card fade-in-6" data-tilt>
-      <h3 class="mb-2" style="display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-bolt"></i> Quick Insights</h3>
+      <h3 class="mb-2 flex-row"><i class="fas fa-bolt"></i> Quick Insights</h3>
       <ul class="list-stack">
         <li>
           <span class="quick-label">Top Spending Category</span>
@@ -189,9 +189,9 @@ catch (e) { window.topCategoryData = []; }
   </div>
 
   <div class="card fade-in-7" data-tilt>
-    <div class="card-header flex" style="justify-content:space-between;align-items:center;">
-      <h2 class="section-title" style="margin:0;">Recent Activity</h2>
-      <input type="text" class="form-input" style="width:220px;padding:0.5rem 0.75rem;font-size:0.8rem;" placeholder="Search transactions..." id="searchBox">
+    <div class="card-header flex-between">
+      <h2 class="section-title m-0">Recent Activity</h2>
+      <input type="text" class="form-input search-input" placeholder="Search transactions..." id="searchBox">
     </div>
     <div id="transactionList">
       {% for t in transactions %}
@@ -223,22 +223,22 @@ catch (e) { window.topCategoryData = []; }
   {% endif %}
 </div>
 
-<div class="transaction-modal" id="transactionModal" style="display:none;">
+<div class="transaction-modal d-none" id="transactionModal">
   <div class="modal-overlay" onclick="closeModal()"></div>
   <div class="modal-content">
-    <div class="modal-header" style="background: #0A2463; color: #fff; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Add Transaction</h3>
-      <button onclick="closeModal()" class="close-btn" style="color: #fff; font-size: 1.5rem; background: none; border: none; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">&times;</button>
+    <div class="modal-header-brand">
+      <h3>Add Transaction</h3>
+      <button onclick="closeModal()" class="close-btn">&times;</button>
     </div>
-    <form class="transaction-form" id="transactionForm" style="padding: 1.5rem;">
+    <form class="transaction-form modal-body-pad" id="transactionForm">
       {% csrf_token %}
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+      <div class="modal-form-row">
         <div class="form-group">
-          <label class="form-label" style="color: #0A2463;">Amount</label>
+          <label class="form-label form-label-brand">Amount</label>
           <input type="number" name="amount" placeholder="0.00" step="0.01" required class="form-input">
         </div>
         <div class="form-group">
-          <label class="form-label" style="color: #0A2463;">Type</label>
+          <label class="form-label form-label-brand">Type</label>
           <select name="type" required class="form-select">
             <option value="expense">Expense</option>
             <option value="income">Income</option>
@@ -246,12 +246,12 @@ catch (e) { window.topCategoryData = []; }
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label" style="color: #0A2463;">Description</label>
+        <label class="form-label form-label-brand">Description</label>
         <input type="text" name="description" placeholder="What was this for?" required class="form-input">
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+      <div class="modal-form-row">
         <div class="form-group">
-          <label class="form-label" style="color: #0A2463;">Category</label>
+          <label class="form-label form-label-brand">Category</label>
           <select name="category" required class="form-select">
             <option value="">Select category</option>
             <option value="food">Food & Dining</option>
@@ -267,7 +267,7 @@ catch (e) { window.topCategoryData = []; }
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label" style="color: #0A2463;">Account</label>
+          <label class="form-label form-label-brand">Account</label>
           <select name="account" required class="form-select">
             {% for account in accounts %}
             <option value="{{ account.id }}">{{ account.name }}</option>
@@ -275,9 +275,9 @@ catch (e) { window.topCategoryData = []; }
           </select>
         </div>
       </div>
-      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+      <div class="modal-form-actions">
         <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary" style="background: #059669; color: #fff; border: none;">Add Transaction</button>
+        <button type="submit" class="btn btn-primary">Add Transaction</button>
       </div>
     </form>
   </div>
