@@ -1,84 +1,75 @@
 {% extends "layout.html" %} {% block content %} {% load static %}
 <div class="page-wrap">
-  <!-- Profile Header -->
-  <div class="card mb-3 text-center">
+  <div class="card text-center fade-in-1" data-tilt>
     <div class="avatar-wrapper" style="display: inline-block; position: relative; margin-bottom: 1rem;">
-      <div class="avatar" onclick="changeAvatar()" style="width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 2.8rem; color: white; font-weight: 700; position: relative; cursor: pointer; margin: 0 auto;">
+      <div class="avatar" onclick="changeAvatar()" style="width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; margin: 0 auto;">
         {% if user.profile.avatar %}
-        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
         {% else %}
-        <div class="avatar-placeholder" style="font-size: 3.5rem; font-weight: bold;">{{ user.profile.get_initials }}</div>
+        <div style="font-size: 3.5rem; font-weight: bold; color: #fff;">{{ user.profile.get_initials }}</div>
         {% endif %}
-        <div class="avatar-status" style="position: absolute; bottom: 10px; right: 10px; width: 20px; height: 20px; background: #4ade80; border-radius: 50%; border: 3px solid white;"></div>
+        <div style="position: absolute; bottom: 10px; right: 10px; width: 20px; height: 20px; background: #059669; border-radius: 50%; border: 3px solid var(--card-bg);"></div>
       </div>
     </div>
-    <h1 class="page-title">{{ user.get_full_name|default:user.username }}</h1>
-    <div class="badge badge-blue">{{ user.profile.get_account_type_display }} Member</div>
+    <h1 class="page-title" style="color: #0A2463;">{{ user.get_full_name|default:user.username }}</h1>
+    <div class="badge badge-blue" style="margin-bottom: 0.5rem;">{{ user.profile.get_account_type_display }} Member</div>
   </div>
 
-  <!-- Profile Statistics -->
-  <div class="stats-grid">
+  <div class="stats-grid" style="margin-top: 1.5rem;">
     <div class="stat-card" onclick="editEmail()" data-tilt>
       <div class="stat-header">
-        <span class="stat-label">Email Address</span>
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Email</span>
         <span class="stat-icon">📧</span>
       </div>
-      <div class="stat-value">{{ user.email }}</div>
+      <div class="stat-value" style="color: #111827;">{{ user.email }}</div>
       <div class="text-muted text-sm">
-        {% if user.profile.email_verified %}Verified{% else %}Not Verified{% endif %} &bull; Last updated {{ user.profile.updated_at|date:"M j, Y" }}
+        {% if user.profile.email_verified %}<span style="color: #059669;">Verified</span>{% else %}<span style="color: #C9A227;">Not Verified</span>{% endif %} &bull; Last updated {{ user.profile.updated_at|date:"M j, Y" }}
       </div>
     </div>
 
     <div class="stat-card" data-tilt>
       <div class="stat-header">
-        <span class="stat-label">Member Since</span>
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Member Since</span>
         <span class="stat-icon">🗓️</span>
       </div>
-      <div class="stat-value">{{ user.date_joined|date:"M j, Y" }}</div>
+      <div class="stat-value" style="color: #111827;">{{ user.date_joined|date:"M j, Y" }}</div>
       <div class="text-muted text-sm">Active member</div>
     </div>
 
     <div class="stat-card" data-tilt>
       <div class="stat-header">
-        <span class="stat-label">Active Accounts</span>
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Accounts</span>
         <span class="stat-icon">💼</span>
       </div>
-      <div class="stat-value">{{ accounts|length }} Accounts</div>
-      <div class="text-muted text-sm">{{ accounts|length }} Total Accounts</div>
+      <div class="stat-value" style="color: #111827;">{{ accounts|length }}</div>
+      <div class="text-muted text-sm">Total Accounts</div>
     </div>
 
     <div class="stat-card" data-tilt>
       <div class="stat-header">
-        <span class="stat-label">Security Status</span>
-        <span class="stat-icon">💼</span>
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Security</span>
+        <span class="stat-icon">🔒</span>
       </div>
-      <div class="stat-value">{% if user.otp_device %} Enabled {% else %} Not Enabled {% endif %}</div>
+      <div class="stat-value" style="color: #111827; font-size: 0.9rem;">{% if user.otp_device %} 2FA Enabled {% else %} 2FA Not Set {% endif %}</div>
       {% if not user.otp_device %}
-      <div class="alert alert-warning">
-        <h5>🔒 Enhance Your Security</h5>
-        <a href="{% url 'two_factor:setup' %}" class="btn btn-primary btn-sm">Enable 2FA Now</a>
-      </div>
+      <a href="{% url 'two_factor:setup' %}" class="btn btn-primary btn-sm" style="margin-top: 0.5rem;">Enable 2FA</a>
       {% else %}
-      <div class="alert alert-success">
-        <h5>✅ Excellent Security</h5>
-        <a href="{% url 'two_factor:profile' %}" class="btn btn-success btn-sm">Manage 2FA Settings</a>
-      </div>
+      <a href="{% url 'two_factor:profile' %}" class="btn btn-success btn-sm" style="margin-top: 0.5rem;">Manage 2FA</a>
       {% endif %}
     </div>
 
     <div class="stat-card" data-tilt>
       <div class="stat-header">
-        <span class="stat-label">Total Balance</span>
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Balance</span>
         <span class="stat-icon">💰</span>
       </div>
-      <div class="stat-value">₦{{ total_balance|floatformat:2 }}</div>
+      <div class="stat-value" style="color: #059669;">₦{{ total_balance|floatformat:2 }}</div>
       <div class="text-muted text-sm">Across all accounts</div>
     </div>
   </div>
 
-  <!-- Quick Actions -->
-  <div class="card mb-3">
-    <div class="card-header section-title">Quick Actions</div>
+  <div class="card fade-in-3" style="margin-top: 1.5rem;">
+    <div class="card-header section-title" style="color: #0A2463;">Quick Actions</div>
     <div class="grid-auto">
       <a href="{% url 'transaction' %}" class="card card-compact text-center" data-tilt style="text-decoration: none; color: inherit;">
         <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">💸</div>
@@ -107,10 +98,9 @@
     </div>
   </div>
 
-  <!-- Actions Section -->
-  <div class="card">
-    <div class="card-header section-title">Account Management</div>
-    <div class="flex" style="justify-content: center;">
+  <div class="card fade-in-3" style="margin-top: 1.5rem;">
+    <div class="card-header section-title" style="color: #0A2463;">Account Management</div>
+    <div class="flex" style="justify-content: center; gap: 0.75rem;">
       <a class="btn btn-secondary" href="{% url 'edit_profile' %}">✏️ Edit Profile</a>
       <a class="btn btn-secondary" href="{% url 'transaction' %}">📊 View Transactions</a>
       <form method="post" action="{% url 'delete_user_account' %}" style="display: inline">
@@ -137,11 +127,11 @@
   }
 
   function editEmail() {
-    alert("📧 Email Settings\n\nThis would allow you to:\n• Update email address\n• Verify new email\n• Manage email notifications\n• Set backup email");
+    alert("📧 Email Settings");
   }
 
   function contactSupport() {
-    alert("💬 Customer Support\n\nGet help with:\n• Live chat\n• Phone support\n• Email tickets\n• FAQ section");
+    alert("💬 Customer Support");
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -149,45 +139,6 @@
     cards.forEach((card, index) => {
       card.classList.add(`fade-in-${Math.min(index + 1, 10)}`);
     });
-
-    const buttons = document.querySelectorAll(".btn");
-    buttons.forEach((button) => {
-      button.addEventListener("click", function (e) {
-        const ripple = document.createElement("span");
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-
-        ripple.style.cssText = `
-                    position: absolute;
-                    border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.4);
-                    transform: scale(0);
-                    animation: ripple 0.6s linear;
-                    left: ${x}px;
-                    top: ${y}px;
-                    width: ${size}px;
-                    height: ${size}px;
-                    pointer-events: none;
-                `;
-
-        this.appendChild(ripple);
-        setTimeout(() => {
-          if (ripple.parentNode === this) {
-            this.removeChild(ripple);
-          }
-        }, 600);
-      });
-    });
-
-    const style = document.createElement("style");
-    style.textContent = `
-            @keyframes ripple {
-                to { transform: scale(4); opacity: 0; }
-            }
-        `;
-    document.head.appendChild(style);
   });
 </script>
 {% endblock %}
