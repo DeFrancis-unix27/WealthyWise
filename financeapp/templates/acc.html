@@ -3,693 +3,298 @@
 {% load widget_tweaks %}
 {% load humanize %}
 {% load static %}
-<!-- style block removed. Unique classes needing manual addition to features.css: .dashboard-container, .dashboard-header, .dashboard-title, .add-account-btn, .stats-overview, .stat-icon (48x48 gradient), .accounts-grid, .account-card/::before/[data-type], .account-header, .account-type-badge, .account-menu/*, .account-info h3, .account-number, .account-balance/*, .account-meta, .edit-account-modal, .modal-close, .toast/*, .empty-state-icon, @keyframes fadeIn/slideUp -->
 
-<div class="dashboard-container">
-  <!-- Error Display -->
+<div class="page-wrap">
   {% if form.errors %}
-  <div class="alert alert-danger">
-    <i class="fas fa-exclamation-circle me-2"></i>
-    <strong>Please correct the following errors:</strong>
+  <div class="card" style="border-left: 4px solid #DC2626; margin-bottom: 1.5rem;">
+    <div style="color: #DC2626; font-weight: 700; margin-bottom: 0.5rem;">Please correct the following errors:</div>
     {% for field in form %}
       {% for error in field.errors %}
-        <p class="mb-1">{{ field.label }}: {{ error }}</p>
+        <div style="font-size: 0.85rem; color: var(--muted);">• {{ field.label }}: {{ error }}</div>
       {% endfor %}
     {% endfor %}
     {% for error in form.non_field_errors %}
-      <p class="mb-1">{{ error }}</p>
+      <div style="font-size: 0.85rem; color: var(--muted);">• {{ error }}</div>
     {% endfor %}
   </div>
   {% endif %}
 
-  <!-- Dashboard Header -->
-  <div class="dashboard-header">
-    <h1 class="dashboard-title">
-      <i class="fas fa-university me-2"></i>
-      Accounts Dashboard
-    </h1>
-    <button
-      type="button"
-      class="add-account-btn"
-      data-bs-toggle="modal"
-      data-bs-target="#addAccountModal"
-    >
-      <i class="fas fa-plus"></i>
-      Add Account
+  <div class="page-header flex">
+    <div>
+      <h1 class="page-title" style="color: #0A2463;">Accounts Dashboard</h1>
+      <p class="page-subtitle">Manage your financial accounts</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAccountModal" style="background: #059669; color: #fff; border: none;">
+      <i class="fas fa-plus"></i> Add Account
     </button>
   </div>
 
-  <!-- Statistics Overview -->
-  <div class="stats-overview">
+  <div class="stats-grid" style="margin-bottom: 1.5rem;">
     <div class="stat-card fade-in-1" data-tilt>
-      <div class="stat-icon">
-        <i class="fas fa-credit-card"></i>
+      <div class="stat-header">
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Total Accounts</span>
+        <span class="stat-icon"><i class="fas fa-credit-card" style="color: #059669;"></i></span>
       </div>
-      <div class="stat-value">{{ accounts|length }}</div>
-      <div class="stat-label">Total Accounts</div>
+      <div class="stat-value" style="color: #111827;">{{ accounts|length }}</div>
     </div>
-    
     <div class="stat-card fade-in-2" data-tilt>
-      <div class="stat-icon">
-        <i class="fas fa-wallet"></i>
+      <div class="stat-header">
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Total Balance</span>
+        <span class="stat-icon"><i class="fas fa-wallet" style="color: #C9A227;"></i></span>
       </div>
-      <div class="stat-value">
-        {% if accounts %}
-         ₦{{ total_balance|intcomma }}
-        {% else %}
-          $0.00
-        {% endif %}
-      </div>
-      <div class="stat-label">Total Balance</div>
+      <div class="stat-value" style="color: #059669;">₦{{ total_balance|intcomma }}</div>
     </div>
-    
     <div class="stat-card fade-in-3" data-tilt>
-      <div class="stat-icon">
-        <i class="fas fa-chart-line"></i>
+      <div class="stat-header">
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Active</span>
+        <span class="stat-icon"><i class="fas fa-chart-line" style="color: #059669;"></i></span>
       </div>
-      <div class="stat-value">
-        {% if accounts %}
-          {{ accounts|length }}
-        {% else %}
-          0
-        {% endif %}
-      </div>
-      <div class="stat-label">Active Accounts</div>
+      <div class="stat-value" style="color: #111827;">{{ accounts|length }}</div>
     </div>
-    
     <div class="stat-card fade-in-4" data-tilt>
-      <div class="stat-icon">
-        <i class="fas fa-history"></i>
+      <div class="stat-header">
+        <span class="stat-label" style="color: #0A2463; font-weight: 700;">Last Transaction</span>
+        <span class="stat-icon"><i class="fas fa-history" style="color: #0A2463;"></i></span>
       </div>
-      <div class="stat-value">
-        {% if accounts %}
-          {{ accounts.0.last_transaction_date |naturaltime }}
-        {% else %}
-          N/A
-        {% endif %}
+      <div class="stat-value" style="color: #111827; font-size: 0.9rem;">
+        {% if accounts %}{{ accounts.0.last_transaction_date|naturaltime }}{% else %}N/A{% endif %}
       </div>
-      <div class="stat-label">Last Transaction</div>
     </div>
   </div>
 
-  <!-- Accounts Grid -->
   {% if accounts %}
-<div class="accounts-grid">
+  <div class="grid-2" id="accountsGrid">
     {% for account in accounts %}
-    <div class="account-card fade-in-{{ forloop.counter|add:4 }}" data-type="{{ account.account_type|lower }}" data-id="{{ account.id}}" data-tilt>
-        <div class="account-header">
-            <span class="account-type-badge">
-                <i class="fas fa-{{ account.account_type|lower|default:'wallet' }} me-1"></i>
-                {{ account.account_type }}
-            </span>
-            <div class="account-menu">
-                <button class="account-menu-btn" onclick="toggleMenu(this)">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <div class="account-menu-dropdown">
-                    <div class="account-menu-item edit" onclick="openEditModal(this.dataset.id)" data-id="{{ account.id }}">
-                        <i class="fas fa-edit"></i>
-                        Edit Account
-                    </div>
-                    <div class="account-menu-item delete delete-account-btn" onclick="confirmDelete(this.dataset.id)" data-id="{{ account.id }}">
-                        <i class="fas fa-trash"></i>
-                       <a href="#" class="text-decoration-none" onclick="return false;">Delete Account</a>
-                    </div>
-                </div>
+    <div class="card card-hover fade-in-{{ forloop.counter|add:4 }}" data-tilt style="position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span class="badge badge-blue">{{ account.account_type }}</span>
+        <div style="position: relative;">
+          <button onclick="toggleMenu(this)" style="background: none; border: none; color: var(--muted); cursor: pointer; padding: 0.25rem 0.5rem; font-size: 1rem;">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+          <div class="account-menu-dropdown" style="display: none; position: absolute; right: 0; top: 100%; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: var(--shadow); z-index: 10; min-width: 160px;">
+            <div class="account-menu-item edit" onclick="openEditModal({{ account.id }})" style="padding: 0.6rem 1rem; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fas fa-edit"></i> Edit Account
             </div>
-        </div>
-
-        <div class="account-info">
-            <h3>{{ account.name }}</h3>
-            <div class="account-number">
-                <i class="fas fa-hashtag me-1"></i>
-                {{ account.account_number }}
+            <div class="account-menu-item delete delete-account-btn" onclick="confirmDelete({{ account.id }})" style="padding: 0.6rem 1rem; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; color: #DC2626;">
+              <i class="fas fa-trash"></i> Delete Account
             </div>
+          </div>
         </div>
-
-        <div class="account-balance">
-            <span class="balance-label">
-                <i class="fas fa-coins me-1"></i>
-                Available Balance
-            </span>
-            <span class="balance-amount">
-                {{ account.currency }} {{ account.balance|intcomma }}
-            </span>
-        </div>
-
-        <div class="account-meta">
-            <span>
-                <i class="fas fa-clock me-1"></i>
-                Last Txn: {{ account.last_transaction_date|date:"M d, Y" }}
-            </span>
-            <span>
-                <i class="fas fa-sync-alt me-1"></i>
-                Updated: {{ account.last_updated|date:"M d, H:i" }}
-            </span>
-        </div>
+      </div>
+      <h3 style="color: #0A2463; font-size: 1.1rem; font-weight: 700; margin: 0 0 0.25rem;">{{ account.name }}</h3>
+      <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem;">
+        <i class="fas fa-hashtag"></i> {{ account.account_number }}
+      </div>
+      <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">Available Balance</div>
+      <div style="font-size: 1.5rem; font-weight: 800; color: #059669;">{{ account.currency }} {{ account.balance|intcomma }}</div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+        <span><i class="fas fa-clock"></i> Last: {{ account.last_transaction_date|date:"M d, Y" }}</span>
+        <span><i class="fas fa-sync-alt"></i> {{ account.last_updated|date:"M d, H:i" }}</span>
+      </div>
     </div>
-{{ accounts_json|json_script:"account-data-"|safe }}
     {% endfor %}
-</div>
+  </div>
 
-<!-- Edit Account Modal -->
-<div class="edit-account-modal" id="editAccountModal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="closeEditModal()">&times;</button>
-        
-        <div class="modal-header">
-            <h2 class="modal-title">Edit Account</h2>
+  <div class="modal fade" id="editAccountModal" tabindex="-1" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius: 16px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.15);">
+        <div class="modal-header" style="background: #0A2463; color: #fff; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <h1 style="font-size: 1.2rem; font-weight: 700; margin: 0;">✏️ Edit Account</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0) invert(1);"></button>
         </div>
-        
         <form id="editAccountForm">
-            {% csrf_token %}
-            <input type="hidden" id="accountId" name="account_id">
-            
+          {% csrf_token %}
+          <input type="hidden" id="accountId" name="account_id">
+          <div style="padding: 1.5rem;">
             <div class="form-group">
-                <label for="accountName" class="form-label">Account Name</label>
-                <input type="text" id="accountName" name="account_name" class="form-control" required>
+              <label class="form-label" style="color: #0A2463;">Account Name</label>
+              <input type="text" id="accountName" name="account_name" class="form-input" required>
             </div>
-            
             <div class="form-group">
-                <label for="accountType" class="form-label">Account Type</label>
-                <select id="accountType" name="account_type" class="form-select" required>
-                    <option value="savings">Savings Account</option>
-                    <option value="checking">Checking Account</option>
-                    <option value="business">Business Account</option>
-                    <option value="cash">Cash Wallet</option>
-                </select>
+              <label class="form-label" style="color: #0A2463;">Account Type</label>
+              <select id="accountType" name="account_type" class="form-select" required>
+                <option value="savings">Savings Account</option>
+                <option value="checking">Checking Account</option>
+                <option value="business">Business Account</option>
+                <option value="cash">Cash Wallet</option>
+              </select>
             </div>
-            
-            <div class="form-group">
-                <label for="accountBalance" class="form-label">Balance</label>
-                <input type="number" id="accountBalance" name="account_balance" class="form-control" step="0.01" min="0" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="accountCurrency" class="form-label">Currency</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label" style="color: #0A2463;">Balance</label>
+                <input type="number" id="accountBalance" name="account_balance" class="form-input" step="0.01" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="color: #0A2463;">Currency</label>
                 <select id="accountCurrency" name="account_currency" class="form-select" required>
-                    <option value="NGN">Naira (NGN)</option>
-                    <option value="USD">US Dollar (USD)</option>
-                    <option value="EUR">Euro (EUR)</option>
-                    <option value="GBP">British Pound (GBP)</option>
+                  <option value="NGN">Naira (NGN)</option>
+                  <option value="USD">US Dollar (USD)</option>
+                  <option value="EUR">Euro (EUR)</option>
+                  <option value="GBP">British Pound (GBP)</option>
                 </select>
+              </div>
             </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color);">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="background: #059669; color: #fff; border: none;">Save Changes</button>
+          </div>
         </form>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
   {% else %}
-  <!-- Empty State -->
-  <div class="empty-state">
-    <div class="empty-state-icon">
-      <i class="fas fa-university"></i>
-    </div>
-    <h3>No Accounts Yet</h3>
+  <div class="empty-state" style="margin-top: 2rem;">
+    <i class="fas fa-university" style="color: #C9A227;"></i>
+    <h3 style="color: #0A2463;">No Accounts Yet</h3>
     <p>Start by adding your first account to track your finances effectively.</p>
-    <button
-      type="button"
-      class="add-account-btn"
-      data-bs-toggle="modal"
-      data-bs-target="#addAccountModal"
-    >
-      <i class="fas fa-plus me-2"></i>
-      Create Your First Account
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAccountModal" style="background: #059669; color: #fff; border: none; margin-top: 0.75rem;">
+      <i class="fas fa-plus"></i> Create Your First Account
     </button>
   </div>
   {% endif %}
 </div>
 
-<!-- Enhanced Add Account Modal -->
-<div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+<div class="modal fade" id="addAccountModal" tabindex="-1" style="z-index: 1060;">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="addAccountModalLabel">
-          <i class="fas fa-plus-circle me-2"></i>
-          Add New Account
-        </h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content" style="border-radius: 16px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.15);">
+      <div class="modal-header" style="background: #0A2463; color: #fff; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <h1 class="modal-title fs-5" style="font-size: 1.2rem; font-weight: 700; margin: 0;">➕ Add New Account</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0) invert(1);"></button>
       </div>
-      
       <form method="POST" novalidate>
-        <div class="modal-body">
-          {% csrf_token %}
-          
-          <div class="row">
-            <!-- Account Type -->
-            <div class="col-md-6 mb-3">
-              <label for="{{ form.account_type.id_for_label }}" class="form-label">
-                <i class="fas fa-tags me-1"></i>
-                {{ form.account_type.label }}
-              </label>
+        {% csrf_token %}
+        <div style="padding: 1.5rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" style="color: #0A2463;">{{ form.account_type.label }}</label>
               {{ form.account_type|add_class:"form-select" }}
-              {% for error in form.account_type.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
+              {% for error in form.account_type.errors %}<div style="font-size: 0.75rem; color: #DC2626;">{{ error }}</div>{% endfor %}
             </div>
-
-            <!-- Currency -->
-            <div class="col-md-6 mb-3">
-              <label for="{{ form.currency.id_for_label }}" class="form-label">
-                <i class="fas fa-dollar-sign me-1"></i>
-                {{ form.currency.label }}
-              </label>
+            <div class="form-group">
+              <label class="form-label" style="color: #0A2463;">{{ form.currency.label }}</label>
               {{ form.currency|add_class:"form-select" }}
-              {% for error in form.currency.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
+              {% for error in form.currency.errors %}<div style="font-size: 0.75rem; color: #DC2626;">{{ error }}</div>{% endfor %}
             </div>
           </div>
-
-          <!-- Account Name -->
-          <div class="mb-3">
-            <label for="{{ form.name.id_for_label }}" class="form-label">
-              <i class="fas fa-signature me-1"></i>
-              {{ form.name.label }}
-            </label>
-            {{ form.name|add_class:"form-control"|attr:"placeholder:(e.g. Main Checking)" }}
-            {% for error in form.name.errors %}
-              <div class="invalid-feedback d-block">{{ error }}</div>
-            {% endfor %}
+          <div class="form-group">
+            <label class="form-label" style="color: #0A2463;">{{ form.name.label }}</label>
+            {{ form.name|add_class:"form-input"|attr:"placeholder:(e.g. Main Checking)" }}
+            {% for error in form.name.errors %}<div style="font-size: 0.75rem; color: #DC2626;">{{ error }}</div>{% endfor %}
           </div>
-
-          <div class="row">
-            <!-- Account Number -->
-            <div class="col-md-6 mb-3">
-              <label for="{{ form.account_number.id_for_label }}" class="form-label">
-                <i class="fas fa-hashtag me-1"></i>
-                {{ form.account_number.label }}
-              </label>
-              {{ form.account_number|add_class:"form-control"|attr:"placeholder:Enter account number" }}
-              {% for error in form.account_number.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" style="color: #0A2463;">{{ form.account_number.label }}</label>
+              {{ form.account_number|add_class:"form-input"|attr:"placeholder:Enter account number" }}
+              {% for error in form.account_number.errors %}<div style="font-size: 0.75rem; color: #DC2626;">{{ error }}</div>{% endfor %}
             </div>
-
-            <!-- Balance -->
-            <div class="col-md-6 mb-3">
-              <label for="{{ form.balance.id_for_label }}" class="form-label">
-                <i class="fas fa-wallet me-1"></i>
-                {{ form.balance.label }}
-              </label>
-              {{ form.balance|add_class:"form-control"|attr:"placeholder:0.00" }}
-              {% for error in form.balance.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <div class="row">
-            <!-- Last Transaction Date -->
-            <div class="col-md-6 mb-3">
-              <label for="{{ form.last_transaction_date.id_for_label }}" class="form-label">
-                <i class="fas fa-calendar-alt me-1"></i>
-                {{ form.last_transaction_date.label }}
-              </label>
-              {{ form.last_transaction_date|add_class:"form-control" }}
-              {% for error in form.last_transaction_date.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-
-            <!-- Last Updated -->
-            <div class="col-md-6 mb-3">
-              <label for="{{ form.last_updated.id_for_label }}" class="form-label">
-                <i class="fas fa-sync-alt me-1"></i>
-                {{ form.last_updated.label }}
-              </label>
-              {{ form.last_updated|add_class:"form-control" }}
-              {% for error in form.last_updated.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
+            <div class="form-group">
+              <label class="form-label" style="color: #0A2463;">{{ form.balance.label }}</label>
+              {{ form.balance|add_class:"form-input"|attr:"placeholder:0.00" }}
+              {% for error in form.balance.errors %}<div style="font-size: 0.75rem; color: #DC2626;">{{ error }}</div>{% endfor %}
             </div>
           </div>
         </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            <i class="fas fa-times me-1"></i>
-            Cancel
-          </button>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save me-1"></i>
-            Save Account
-          </button>
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveAccountBtn" style="background: #059669; color: #fff; border: none;">Save Account</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-
-
-<script id="accounts-data" type="application/json">
-    {{ accounts_json|json_script:"accounts-json"|safe }}
-</script>
+<div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 
 {% csrf_token %}
 <script>
-    window.CSRF_TOKEN = "{{ csrf_token }}";
-    window.DELETE_ACCOUNT_URL = "{% url 'delete_account' %}";
-</script>
+window.CSRF_TOKEN = "{{ csrf_token }}";
+window.DELETE_ACCOUNT_URL = "{% url 'delete_account' %}";
 
- <script>
-  // Enhanced form interactions
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-focus first form field when modal opens
-    const modal = document.getElementById('addAccountModal');
-    if (modal) {
-        modal.addEventListener('shown.bs.modal', function() {
-            const firstInput = modal.querySelector('select, input');
-            if (firstInput) firstInput.focus();
-        });
-
-        // Add loading state to form submission
-        const form = modal.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const submitBtn = form.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
-                }
-            });
-        }
-    }
-
-    // Account card interactions
-    const accountCards = document.querySelectorAll('.account-card');
-    accountCards.forEach(card => {
-        card.addEventListener('click', function() {
-            // Add click animation
-            this.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
-        });
+  const modal = document.getElementById('addAccountModal');
+  if (modal) {
+    modal.addEventListener('shown.bs.modal', function() {
+      const firstInput = modal.querySelector('select, input');
+      if (firstInput) firstInput.focus();
     });
-
-    // Theme-aware date picker
-    const dateInputs = document.querySelectorAll('input[type="date"], input[type="datetime-local"]');
-    dateInputs.forEach(input => {
-        const theme = document.documentElement.getAttribute('data-theme');
-        if (theme === 'dark' || theme === 'neon') {
-            input.style.colorScheme = 'dark';
-        }
-    });
-
-    // Add account ID data attribute to all account cards
-    const accountCardsWithId = document.querySelectorAll('.account-card');
-    accountCardsWithId.forEach((card, index) => {
-        card.setAttribute('data-account-id', index + 1);
-    });
-
-    // Initialize currency formatting
-    const balanceInput = document.querySelector('input[name="balance"]');
-    if (balanceInput) {
-        balanceInput.addEventListener('input', function() {
-            formatCurrency(this);
-        });
+    const form = modal.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+      });
     }
+  }
 
-    // Initialize edit modal event listeners
-    const editModal = document.getElementById('editAccountModal');
-    if (editModal) {
-        editModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeEditModal();
-            }
-        });
+  document.querySelectorAll('.account-menu-dropdown.show').forEach(m => m.classList.remove('show'));
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.account-menu-dropdown') && !e.target.closest('[onclick*="toggleMenu"]')) {
+      document.querySelectorAll('.account-menu-dropdown').forEach(m => m.style.display = 'none');
     }
+  });
 
-    // Initialize edit form submission
-    const editForm = document.getElementById('editAccountForm');
-    if (editForm) {
-        editForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleEditFormSubmission(this);
-        });
-    }
-
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeEditModal();
-        }
+  const editForm = document.getElementById('editAccountForm');
+  if (editForm) {
+    editForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const submitBtn = editForm.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...'; }
+      setTimeout(() => {
+        showToast('Account updated successfully!', 'success');
+        const modalEl = document.getElementById('editAccountModal');
+        const bsModal = bootstrap.Modal.getInstance(modalEl);
+        if (bsModal) bsModal.hide();
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Save Changes'; }
+      }, 1000);
     });
+  }
 });
 
-// Format currency input
-function formatCurrency(input) {
-    let value = input.value.replace(/[^\d.]/g, '');
-    let parts = value.split('.');
-    if (parts.length > 2) {
-        parts = [parts[0], parts.slice(1).join('')];
-    }
-    if (parts[1] && parts[1].length > 2) {
-        parts[1] = parts[1].substring(0, 2);
-    }
-    input.value = parts.join('.');
+function toggleMenu(btn) {
+  const menu = btn.nextElementSibling;
+  const isVisible = menu.style.display === 'block';
+  document.querySelectorAll('.account-menu-dropdown').forEach(m => m.style.display = 'none');
+  menu.style.display = isVisible ? 'none' : 'block';
 }
 
-// Toggle account menu
-function toggleMenu(button) {
-    const menu = button.nextElementSibling;
-    const isShowing = menu.classList.contains('show');
-    
-    // Close all other menus
-    document.querySelectorAll('.account-menu-dropdown.show').forEach(dropdown => {
-        if (dropdown !== menu) {
-            dropdown.classList.remove('show');
-        }
-    });
-    
-    // Toggle current menu
-    if (isShowing) {
-        menu.classList.remove('show');
-    } else {
-        menu.classList.add('show');
-    }
-    
-    // Close menu when clicking outside
-    if (!isShowing) {
-        const clickHandler = (e) => {
-            if (!menu.contains(e.target) && e.target !== button) {
-                menu.classList.remove('show');
-                document.removeEventListener('click', clickHandler);
-            }
-        };
-        setTimeout(() => document.addEventListener('click', clickHandler), 0);
-    }
-}
-
-// Open edit modal with account data
 function openEditModal(accountId) {
-    // Close menus
-    document.querySelectorAll('.account-menu-dropdown.show').forEach(menu => {
-        menu.classList.remove('show');
-    });
-
-    // Get account data from data attributes or make API call
-    const accountElement = document.querySelector(`[data-account-id="${accountId}"]`);
-    if (accountElement) {
-        const accountData = {
-            id: accountId,
-            name: accountElement.dataset.name || '',
-            account_type: accountElement.dataset.type || '',
-            balance: accountElement.dataset.balance || '',
-            currency: accountElement.dataset.currency || ''
-        };
-
-        // Populate the form
-        document.getElementById('accountId').value = accountData.id;
-        document.getElementById('accountName').value = accountData.name;
-        document.getElementById('accountType').value = accountData.account_type;
-        document.getElementById('accountBalance').value = accountData.balance;
-        document.getElementById('accountCurrency').value = accountData.currency;
-
-        // Show the modal
-        const modal = document.getElementById('editAccountModal');
-        if (modal) {
-            modal.classList.add('show');
-            modal.style.display = 'block';
-        }
-    }
+  const el = document.querySelector(`[data-account-id="${accountId}"]`);
+  if (!el) return;
+  document.getElementById('accountId').value = accountId;
+  document.getElementById('accountName').value = el.querySelector('h3')?.textContent?.trim() || '';
+  document.getElementById('accountBalance').value = '';
+  const modal = new bootstrap.Modal(document.getElementById('editAccountModal'));
+  modal.show();
 }
 
-// Close edit modal
-function closeEditModal() {
-    const modal = document.getElementById('editAccountModal');
-    if (modal) {
-        modal.classList.remove('show');
-        modal.style.display = 'none';
-    }
-    const form = document.getElementById('editAccountForm');
-    if (form) {
-        form.reset();
-    }
-}
-
-// Handle edit form submission
-function handleEditFormSubmission(form) {
-    const formData = new FormData(form);
-    const accountId = formData.get('account_id');
-    
-    // Show loading state
-    const submitBtn = form.querySelector('button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Updating...';
-    }
-    
-    // Simulate API call (replace with actual fetch)
-    setTimeout(() => {
-        showToast('Account updated successfully!', 'success');
-        closeEditModal();
-        
-        // Reset button state
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Update Account';
-        }
-    }, 1000);
-}
-
-// Confirm account deletion
 function confirmDelete(accountId) {
-    if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
-        deleteAccount(accountId);
-    }
+  if (confirm('Delete this account? This cannot be undone.')) deleteAccount(accountId);
 }
 
-// Delete account function
 function deleteAccount(accountId) {
-    const csrfToken = getCookie('csrftoken') || window.CSRF_TOKEN;
-    
-    // Use the global variable set in your HTML template
-    if (!window.DELETE_ACCOUNT_URL) {
-        showToast('Error: Delete URL not configured', 'error');
-        return;
-    }
-    
-    fetch(window.DELETE_ACCOUNT_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        },
-        body: JSON.stringify({ account_id: accountId })
-    })
-    .then(response => {
-        // Check if response is JSON
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            return response.json();
-        }
-        throw new Error('Server returned non-JSON response');
-    })
-    .then(data => {
-        if (data.success) {
-            showToast('Account deleted successfully!', 'success');
-            // Remove the account card with smooth animation
-            const accountCard = document.querySelector(`[data-account-id="${accountId}"]`);
-            if (accountCard) {
-                accountCard.style.opacity = '0';
-                accountCard.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => {
-                    accountCard.remove();
-                }, 300);
-            } else {
-                // Fallback: reload after a delay
-                setTimeout(() => location.reload(), 1000);
-            }
-        } else {
-            showToast('Error: ' + data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Delete error:', error);
-        showToast('Error deleting account. Please try again.', 'error');
-    });
+  fetch(window.DELETE_ACCOUNT_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-CSRFToken': window.CSRF_TOKEN},
+    body: JSON.stringify({ account_id: accountId })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) { showToast('Account deleted!', 'success'); setTimeout(() => location.reload(), 800); }
+    else showToast('Error: ' + d.message, 'error');
+  })
+  .catch(() => showToast('Error deleting account', 'error'));
 }
 
-// Helper function to get CSRF token
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-// Show toast notification
 function showToast(message, type = 'success') {
-    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
-    
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    
-    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-    toast.innerHTML = `
-        <span class="toast-icon">${icon}</span>
-        <span class="toast-message">${message}</span>
-    `;
-    
-    toastContainer.appendChild(toast);
-    
-    // Show toast
-    setTimeout(() => toast.classList.add('show'), 100);
-    
-    // Remove toast after 3 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            if (toastContainer.contains(toast)) {
-                toastContainer.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.style.cssText = 'background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.75rem 1.25rem; margin-bottom: 0.5rem; box-shadow: var(--shadow); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; animation: fadeInUp 0.3s ease-out both;';
+  toast.innerHTML = `${type === 'success' ? '✅' : '❌'} ${message}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
 }
-
-// Create toast container if it doesn't exist
-function createToastContainer() {
-    const container = document.createElement('div');
-    container.id = 'toastContainer';
-    container.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-    `;
-    document.body.appendChild(container);
-    return container;
-}
-
-// Utility function to get account data (for demo purposes)
-function getAccountData(accountId) {
-    // This would typically come from an API call
-    return {
-        id: accountId,
-        name: `Account ${accountId}`,
-        account_type: 'checking',
-        balance: '1000.00',
-        currency: 'USD'
-    };
-}
- </script>
-
+</script>
 {% endblock %}
