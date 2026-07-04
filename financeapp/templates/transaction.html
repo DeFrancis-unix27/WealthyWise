@@ -104,56 +104,51 @@
     </div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="addTransactionModal" tabindex="-1">
+  <div class="modal fade" id="addTransactionModal" tabindex="-1" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5">➕ Add Transaction</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      <div class="modal-content" style="border-radius: 16px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.15);">
+        <div class="modal-header" style="background: #0A2463; color: #fff; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <h1 style="font-size: 1.2rem; font-weight: 700; margin: 0;">➕ Add Transaction</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0) invert(1);"></button>
         </div>
         <form id="transactionForm" method="post" data-url="{% url 'add_transaction' %}">
           {% csrf_token %}
-          <div class="modal-body">
+          <div style="padding: 1.5rem;">
             <div class="form-group">
-              <label class="form-label">Type</label>
-              <div class="d-flex gap-3 mb-2">
-                <div class="card flex-fill text-center py-3 type-card expense" data-type="expense">📉 Expense</div>
-                <div class="card flex-fill text-center py-3 type-card income" data-type="income">📈 Income</div>
+              <label class="form-label" style="color: #0A2463;">Type</label>
+              <div style="display: flex; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <div class="card flex-fill text-center py-3 type-card expense" data-type="expense" style="cursor: pointer; border: 2px solid var(--border-color); border-radius: 12px; transition: all 0.2s; background: var(--card-bg);">📉 Expense</div>
+                <div class="card flex-fill text-center py-3 type-card income" data-type="income" style="cursor: pointer; border: 2px solid var(--border-color); border-radius: 12px; transition: all 0.2s; background: var(--card-bg);">📈 Income</div>
               </div>
               <input type="hidden" id="transactionType" name="transaction_type" required />
             </div>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="form-label">Account</label>
-                  <select class="form-select" id="account" name="account" required>
-                    <option value="">Select Account</option>
-                    {% for account in accounts %}
-                    <option value="{{ account.id }}" data-balance="{{ account.balance|floatformat:2 }}">{{ account.name }}</option>
-                    {% endfor %}
-                  </select>
-                  <div class="account-balance-info d-none mt-1 text-muted small" id="balanceInfo">
-                    Current Balance: ₦<span id="currentBalance">0.00</span>
-                  </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label" style="color: #0A2463;">Account</label>
+                <select class="form-select" id="account" name="account" required>
+                  <option value="">Select Account</option>
+                  {% for account in accounts %}
+                  <option value="{{ account.id }}" data-balance="{{ account.balance|floatformat:2 }}">{{ account.name }}</option>
+                  {% endfor %}
+                </select>
+                <div class="account-balance-info d-none mt-1 text-muted small" id="balanceInfo">
+                  Current Balance: ₦<span id="currentBalance">0.00</span>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="form-label">Amount</label>
-                  <div class="input-group">
-                    <span class="input-group-text">₦</span>
-                    <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0" required />
-                  </div>
+              <div class="form-group">
+                <label class="form-label" style="color: #0A2463;">Amount</label>
+                <div style="display: flex;">
+                  <span style="background: var(--bg); border: 1.5px solid var(--border-color); border-right: none; border-radius: 10px 0 0 10px; padding: 0.75rem 0.5rem; color: var(--muted); font-weight: 600;">₦</span>
+                  <input type="number" class="form-input" id="amount" name="amount" step="0.01" min="0" required style="border-radius: 0 10px 10px 0;" />
                 </div>
               </div>
             </div>
             <div class="form-group">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" id="description" name="description" rows="2"></textarea>
+              <label class="form-label" style="color: #0A2463;">Description</label>
+              <textarea class="form-input" id="description" name="description" rows="2"></textarea>
             </div>
             <div class="form-group">
-              <label class="form-label">Category</label>
+              <label class="form-label" style="color: #0A2463;">Category</label>
               <select class="form-select" id="category" name="category" required>
                 <option value="">Select</option>
                 {% for value,label in transaction_categories %}
@@ -162,13 +157,13 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Date</label>
-              <input type="date" class="form-control" id="transactionDate" name="transaction_date" required />
+              <label class="form-label" style="color: #0A2463;">Date</label>
+              <input type="date" class="form-input" id="transactionDate" name="transaction_date" required />
             </div>
           </div>
-          <div class="modal-footer">
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color);">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary" id="saveTransactionBtn">Save</button>
+            <button type="submit" class="btn btn-primary" id="saveTransactionBtn" style="background: #059669; color: #fff; border: none;">Save</button>
           </div>
         </form>
       </div>

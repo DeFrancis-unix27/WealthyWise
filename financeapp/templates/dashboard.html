@@ -226,33 +226,33 @@ catch (e) { window.topCategoryData = []; }
 <div class="transaction-modal" id="transactionModal" style="display:none;">
   <div class="modal-overlay" onclick="closeModal()"></div>
   <div class="modal-content">
-    <div class="modal-header">
-      <h3>Add Transaction</h3>
-      <button onclick="closeModal()" class="close-btn">&times;</button>
+    <div class="modal-header" style="background: #0A2463; color: #fff; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Add Transaction</h3>
+      <button onclick="closeModal()" class="close-btn" style="color: #fff; font-size: 1.5rem; background: none; border: none; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">&times;</button>
     </div>
-    <form class="transaction-form" id="transactionForm">
+    <form class="transaction-form" id="transactionForm" style="padding: 1.5rem;">
       {% csrf_token %}
-      <div class="form-row">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
         <div class="form-group">
-          <label>Amount</label>
-          <input type="number" name="amount" placeholder="0.00" step="0.01" required>
+          <label class="form-label" style="color: #0A2463;">Amount</label>
+          <input type="number" name="amount" placeholder="0.00" step="0.01" required class="form-input">
         </div>
         <div class="form-group">
-          <label>Type</label>
-          <select name="type" required>
+          <label class="form-label" style="color: #0A2463;">Type</label>
+          <select name="type" required class="form-select">
             <option value="expense">Expense</option>
             <option value="income">Income</option>
           </select>
         </div>
       </div>
       <div class="form-group">
-        <label>Description</label>
-        <input type="text" name="description" placeholder="What was this for?" required>
+        <label class="form-label" style="color: #0A2463;">Description</label>
+        <input type="text" name="description" placeholder="What was this for?" required class="form-input">
       </div>
-      <div class="form-row">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
         <div class="form-group">
-          <label>Category</label>
-          <select name="category" required>
+          <label class="form-label" style="color: #0A2463;">Category</label>
+          <select name="category" required class="form-select">
             <option value="">Select category</option>
             <option value="food">Food & Dining</option>
             <option value="transport">Transportation</option>
@@ -267,17 +267,17 @@ catch (e) { window.topCategoryData = []; }
           </select>
         </div>
         <div class="form-group">
-          <label>Account</label>
-          <select name="account" required>
+          <label class="form-label" style="color: #0A2463;">Account</label>
+          <select name="account" required class="form-select">
             {% for account in accounts %}
             <option value="{{ account.id }}">{{ account.name }}</option>
             {% endfor %}
           </select>
         </div>
       </div>
-      <div class="form-actions">
-        <button type="button" onclick="closeModal()" class="btn-cancel">Cancel</button>
-        <button type="submit" class="btn-add">Add Transaction</button>
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="background: #059669; color: #fff; border: none;">Add Transaction</button>
       </div>
     </form>
   </div>
