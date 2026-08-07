@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 # ==========================
 # Base & Environment
 # ==========================
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.par[]
 load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.environ.get(
